@@ -2,6 +2,7 @@ package gonbt
 
 import (
 	"fmt"
+	"io"
 )
 
 // Tag Name
@@ -11,19 +12,34 @@ type TagName string
 type (
 	Payload interface {
 		TypeId() TagType
+		Decode(r io.Reader) error
 	}
 
-	BytePayload      int8
-	ShortPayload     int16
-	IntPayload       int32
-	LongPayload      int64
-	FloatPayload     float32
-	DoublePayload    float64
+	BytePayload int8
+
+	ShortPayload int16
+
+	IntPayload int32
+
+	LongPayload int64
+
+	FloatPayload float32
+
+	DoublePayload float64
+
 	ByteArrayPayload []int8
-	StringPayload    string
-	ListPayload      []Payload
-	CompoundPayload  []Tag
-	IntArrayPayload  []int32
+
+	StringPayload string
+
+	ListPayload struct {
+		PayloadType TagType
+		Payloads    []Payload
+	}
+
+	CompoundPayload []Tag
+
+	IntArrayPayload []int32
+
 	LongArrayPayload []int64
 )
 
@@ -62,6 +78,7 @@ func NewPayload(typ TagType) (Payload, error) {
 type (
 	Tag interface {
 		TypeId() TagType
+		Decode(r io.Reader) error
 	}
 
 	EndTag struct {
