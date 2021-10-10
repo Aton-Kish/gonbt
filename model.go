@@ -13,6 +13,7 @@ type (
 	Payload interface {
 		TypeId() TagType
 		Decode(r io.Reader) error
+		Encode(w io.Writer) error
 	}
 
 	BytePayload int8
@@ -79,6 +80,7 @@ type (
 	Tag interface {
 		TypeId() TagType
 		Decode(r io.Reader) error
+		Encode(w io.Writer) error
 	}
 
 	EndTag struct {
