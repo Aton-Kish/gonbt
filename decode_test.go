@@ -31,7 +31,7 @@ func TestDecodeNBT(t *testing.T) {
 		},
 	}
 
-	for _, v := range NBTEncodingValidCases {
+	for _, v := range NBTValidTestCases {
 		c := decodeTestCase{
 			name:    v.name,
 			raw:     v.raw,
@@ -75,7 +75,7 @@ func TestTagName_Decode(t *testing.T) {
 		},
 	}
 
-	for _, v := range TagNameEncodingValidCases {
+	for _, v := range TagNameValidTestCases {
 		c := decodeTestCase{
 			name:    v.name,
 			raw:     v.raw,
@@ -185,7 +185,7 @@ func TestPayload_Decode(t *testing.T) {
 		},
 	}
 
-	for _, v := range PayloadEncodingValidCases {
+	for _, v := range PayloadValidTestCases {
 		c := decodeTestCase{
 			name:    v.name,
 			raw:     v.raw,
@@ -297,7 +297,7 @@ func TestTag_Decode(t *testing.T) {
 		},
 	}
 
-	for _, v := range TagEncodingValidCases {
+	for _, v := range TagValidTestCases {
 		c := decodeTestCase{
 			name:    v.name,
 			raw:     v.raw,

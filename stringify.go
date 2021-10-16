@@ -10,15 +10,54 @@ import (
 var quotedPattern = regexp.MustCompile(`[ !"#$%&'()*,/:;<=>?@[\\\]^\x60{|}~]`)
 
 func Stringify(tag *Tag) string {
-	return (*tag).Stringify(" ", "", 0)
+	return PrettyStringify(tag, " ", "")
 }
 
 func CompactStringify(tag *Tag) string {
-	return (*tag).Stringify("", "", 0)
+	return PrettyStringify(tag, "", "")
 }
 
-func PrettyStringify(tag *Tag, indent string) string {
-	return (*tag).Stringify(" ", indent, 0)
+func PrettyStringify(tag *Tag, space string, indent string) string {
+	var rootName string
+	switch t := (*tag).(type) {
+	case *EndTag:
+		rootName = ""
+	case *ByteTag:
+		rootName = string(t.TagName)
+	case *ShortTag:
+		rootName = string(t.TagName)
+	case *IntTag:
+		rootName = string(t.TagName)
+	case *LongTag:
+		rootName = string(t.TagName)
+	case *FloatTag:
+		rootName = string(t.TagName)
+	case *DoubleTag:
+		rootName = string(t.TagName)
+	case *ByteArrayTag:
+		rootName = string(t.TagName)
+	case *StringTag:
+		rootName = string(t.TagName)
+	case *ListTag:
+		rootName = string(t.TagName)
+	case *CompoundTag:
+		rootName = string(t.TagName)
+	case *IntArrayTag:
+		rootName = string(t.TagName)
+	case *LongArrayTag:
+		rootName = string(t.TagName)
+	}
+
+	if rootName == "" {
+		snbt := (*tag).Stringify(space, indent, 0)
+		return strings.TrimLeft(snbt[1:], " ")
+	}
+
+	if indent == "" {
+		return "{" + indent + (*tag).Stringify(space, indent, 1) + "}"
+	}
+
+	return "{\n" + indent + (*tag).Stringify(space, indent, 1) + "\n}"
 }
 
 // Tag Name

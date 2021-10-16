@@ -17,7 +17,7 @@ func TestEncodeNBT(t *testing.T) {
 
 	cases := []encodeTestCase{}
 
-	for _, v := range NBTEncodingValidCases {
+	for _, v := range NBTValidTestCases {
 		c := encodeTestCase{
 			name:    v.name,
 			nbt:     v.nbt,
@@ -52,7 +52,7 @@ func TestTagName_Encode(t *testing.T) {
 
 	cases := []encodeTestCase{}
 
-	for _, v := range TagNameEncodingValidCases {
+	for _, v := range TagNameValidTestCases {
 		c := encodeTestCase{
 			name:    v.name,
 			nbt:     v.nbt,
@@ -87,7 +87,7 @@ func TestPayload_Encode(t *testing.T) {
 
 	cases := []encodeTestCase{}
 
-	for _, v := range PayloadEncodingValidCases {
+	for _, v := range PayloadValidTestCases {
 		c := encodeTestCase{
 			name:    v.name,
 			nbt:     v.nbt,
@@ -122,7 +122,7 @@ func TestTag_Encode(t *testing.T) {
 
 	cases := []encodeTestCase{}
 
-	for _, v := range TagEncodingValidCases {
+	for _, v := range TagValidTestCases {
 		c := encodeTestCase{
 			name:    v.name,
 			nbt:     v.nbt,

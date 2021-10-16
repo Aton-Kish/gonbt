@@ -1,9 +1,16 @@
 package gonbt
 
-var NBTEncodingValidCases = []struct {
-	name string
-	raw  []byte
-	nbt  Tag
+import (
+	"go.uber.org/thriftrw/ptr"
+)
+
+var NBTValidTestCases = []struct {
+	name        string
+	raw         []byte
+	nbt         Tag
+	snbt        *string
+	snbtCompact *string
+	snbtPretty  *string
 }{
 	{
 		name: `Valid Case: Simple`,
@@ -39,6 +46,13 @@ var NBTEncodingValidCases = []struct {
 				&EndTag{},
 			},
 		},
+		snbt:        ptr.String(`{"Hello World": {Name: "Steve"}}`),
+		snbtCompact: ptr.String(`{"Hello World":{Name:"Steve"}}`),
+		snbtPretty: ptr.String(`{
+    "Hello World": {
+        Name: "Steve"
+    }
+}`),
 	},
 	{
 		name: `Valid Case: Tag Check`,
@@ -52,7 +66,7 @@ var NBTEncodingValidCases = []struct {
 			0x00, 0x05,
 			0x53, 0x68, 0x6f, 0x72, 0x74,
 			0x30, 0x39,
-			//   - ByteArrayTag("ByteArray"): [B; 0, 1]
+			//   - ByteArrayTag("ByteArray"): [B; 0b, 1b]
 			0x07,
 			0x00, 0x09,
 			0x42, 0x79, 0x74, 0x65, 0x41, 0x72, 0x72, 0x61, 0x79,
@@ -97,26 +111,76 @@ var NBTEncodingValidCases = []struct {
 				&EndTag{},
 			},
 		},
+		snbt:        ptr.String(`{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`),
+		snbtCompact: ptr.String(`{Compound:{ByteArray:[B;0b,1b],Compound:{String:"World"},List:[123b],Short:12345s,String:"Hello"}}`),
+		snbtPretty: ptr.String(`{
+    Compound: {
+        ByteArray: [B; 0b, 1b],
+        Compound: {
+            String: "World"
+        },
+        List: [
+            123b
+        ],
+        Short: 12345s,
+        String: "Hello"
+    }
+}`),
 	},
 }
 
-var TagNameEncodingValidCases = []struct {
+var TagNameValidTestCases = []struct {
 	name string
 	raw  []byte
 	nbt  *TagName
+	snbt *string
 }{
 	{
-		name: `Valid Case: "Test"`,
+		name: `Valid Case: Test`,
 		raw: []byte{
 			// Name Length: 4
 			0x00, 0x04,
-			// Name: "Test"
+			// Name: Test
 			0x54, 0x65, 0x73, 0x74,
 		},
-		nbt: TagNamePtr(`Test`),
+		nbt:  TagNamePtr(`Test`),
+		snbt: ptr.String(`Test`),
 	},
 	{
-		name: `Valid Case: "minecraft:the_end"`,
+		name: `Valid Case: "Test`,
+		raw: []byte{
+			// Name Length: 5
+			0x00, 0x05,
+			// Name: "Test
+			0x22, 0x54, 0x65, 0x73, 0x74,
+		},
+		nbt:  TagNamePtr(`"Test`),
+		snbt: ptr.String(`'"Test'`),
+	},
+	{
+		name: `Valid Case: 'Test`,
+		raw: []byte{
+			// Name Length: 5
+			0x00, 0x05,
+			// Name: 'Test
+			0x27, 0x54, 0x65, 0x73, 0x74,
+		},
+		nbt:  TagNamePtr(`'Test`),
+		snbt: ptr.String(`"'Test"`),
+	},
+	{
+		name: `Valid Case: "'Test`,
+		raw: []byte{
+			// Name Length: 6
+			0x00, 0x06,
+			// Name: "'Test
+			0x22, 0x27, 0x54, 0x65, 0x73, 0x74,
+		},
+		nbt:  TagNamePtr(`"'Test`),
+		snbt: ptr.String(`"\"'Test"`),
+	},
+	{
+		name: `Valid Case: minecraft:the_end`,
 		raw: []byte{
 			// Name Length: 17
 			0x00, 0x11,
@@ -124,35 +188,41 @@ var TagNameEncodingValidCases = []struct {
 			0x6D, 0x69, 0x6E, 0x65, 0x63, 0x72, 0x61, 0x66, 0x74, 0x3A,
 			0x74, 0x68, 0x65, 0x5F, 0x65, 0x6E, 0x64,
 		},
-		nbt: TagNamePtr(`minecraft:the_end`),
+		nbt:  TagNamePtr(`minecraft:the_end`),
+		snbt: ptr.String(`"minecraft:the_end"`),
 	},
 	{
-		name: `Valid Case: ""`,
+		name: `Valid Case: (empty)`,
 		raw: []byte{
 			// Name Length: 0
 			0x00, 0x00,
-			// Name: ""
+			// Name: (empty)
 		},
-		nbt: TagNamePtr(``),
+		nbt:  TagNamePtr(``),
+		snbt: ptr.String(``),
 	},
 	{
-		name: `Valid Case: "マインクラフト"`,
+		name: `Valid Case: マインクラフト`,
 		raw: []byte{
 			// Name Length: 21
 			0x00, 0x15,
-			// Name: "マインクラフト"
+			// Name: マインクラフト
 			0xE3, 0x83, 0x9E, 0xE3, 0x82, 0xA4, 0xE3, 0x83, 0xB3, 0xE3,
 			0x82, 0xAF, 0xE3, 0x83, 0xA9, 0xE3, 0x83, 0x95, 0xE3, 0x83,
 			0x88,
 		},
-		nbt: TagNamePtr(`マインクラフト`),
+		nbt:  TagNamePtr(`マインクラフト`),
+		snbt: ptr.String(`マインクラフト`),
 	},
 }
 
-var PayloadEncodingValidCases = []struct {
-	name string
-	raw  []byte
-	nbt  Payload
+var PayloadValidTestCases = []struct {
+	name        string
+	raw         []byte
+	nbt         Payload
+	snbt        *string
+	snbtCompact *string
+	snbtPretty  *string
 }{
 	{
 		name: `Valid Case: BytePayload`,
@@ -160,7 +230,10 @@ var PayloadEncodingValidCases = []struct {
 			// Payload: 123
 			0x7B,
 		},
-		nbt: BytePayloadPtr(123),
+		nbt:         BytePayloadPtr(123),
+		snbt:        ptr.String(`123b`),
+		snbtCompact: ptr.String(`123b`),
+		snbtPretty:  ptr.String(`123b`),
 	},
 	{
 		name: `Valid Case: ShortPayload`,
@@ -168,7 +241,10 @@ var PayloadEncodingValidCases = []struct {
 			// Payload: 12345
 			0x30, 0x39,
 		},
-		nbt: ShortPayloadPtr(12345),
+		nbt:         ShortPayloadPtr(12345),
+		snbt:        ptr.String(`12345s`),
+		snbtCompact: ptr.String(`12345s`),
+		snbtPretty:  ptr.String(`12345s`),
 	},
 	{
 		name: `Valid Case: IntPayload`,
@@ -176,7 +252,10 @@ var PayloadEncodingValidCases = []struct {
 			// Payload: 123456789
 			0x07, 0x5B, 0xCD, 0x15,
 		},
-		nbt: IntPayloadPtr(123456789),
+		nbt:         IntPayloadPtr(123456789),
+		snbt:        ptr.String(`123456789`),
+		snbtCompact: ptr.String(`123456789`),
+		snbtPretty:  ptr.String(`123456789`),
 	},
 	{
 		name: `Valid Case: LongPayload`,
@@ -184,7 +263,10 @@ var PayloadEncodingValidCases = []struct {
 			// Payload: 123456789123456789
 			0x01, 0xB6, 0x9B, 0x4B, 0xAC, 0xD0, 0x5F, 0x15,
 		},
-		nbt: LongPayloadPtr(123456789123456789),
+		nbt:         LongPayloadPtr(123456789123456789),
+		snbt:        ptr.String(`123456789123456789L`),
+		snbtCompact: ptr.String(`123456789123456789L`),
+		snbtPretty:  ptr.String(`123456789123456789L`),
 	},
 	{
 		name: `Valid Case: FloatPayload`,
@@ -192,7 +274,10 @@ var PayloadEncodingValidCases = []struct {
 			// Payload: 0.12345678
 			0x3D, 0xFC, 0xD6, 0xE9,
 		},
-		nbt: FloatPayloadPtr(0.12345678),
+		nbt:         FloatPayloadPtr(0.12345678),
+		snbt:        ptr.String(`0.12345678f`),
+		snbtCompact: ptr.String(`0.12345678f`),
+		snbtPretty:  ptr.String(`0.12345678f`),
 	},
 	{
 		name: `Valid Case: DoublePayload`,
@@ -200,17 +285,23 @@ var PayloadEncodingValidCases = []struct {
 			// Payload: 0.123456789
 			0x3F, 0xBF, 0x9A, 0xDD, 0x37, 0x39, 0x63, 0x5F,
 		},
-		nbt: DoublePayloadPtr(0.123456789),
+		nbt:         DoublePayloadPtr(0.123456789),
+		snbt:        ptr.String(`0.123456789d`),
+		snbtCompact: ptr.String(`0.123456789d`),
+		snbtPretty:  ptr.String(`0.123456789d`),
 	},
 	{
 		name: `Valid Case: ByteArrayPayload`,
 		raw: []byte{
 			// Payload Length: 10
 			0x00, 0x00, 0x00, 0x0A,
-			// Payload: [B; 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+			// Payload: [B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]
 			0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
 		},
-		nbt: &ByteArrayPayload{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+		nbt:         &ByteArrayPayload{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+		snbt:        ptr.String(`[B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]`),
+		snbtCompact: ptr.String(`[B;0b,1b,2b,3b,4b,5b,6b,7b,8b,9b]`),
+		snbtPretty:  ptr.String(`[B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]`),
 	},
 	{
 		name: `Valid Case: StringPayload "Test"`,
@@ -220,7 +311,49 @@ var PayloadEncodingValidCases = []struct {
 			// Payload: "Test"
 			0x54, 0x65, 0x73, 0x74,
 		},
-		nbt: StringPayloadPtr(`Test`),
+		nbt:         StringPayloadPtr(`Test`),
+		snbt:        ptr.String(`"Test"`),
+		snbtCompact: ptr.String(`"Test"`),
+		snbtPretty:  ptr.String(`"Test"`),
+	},
+	{
+		name: `Valid Case: StringPayload '"Test'`,
+		raw: []byte{
+			// Payload Length: 5
+			0x00, 0x05,
+			// Payload: '"Test'
+			0x22, 0x54, 0x65, 0x73, 0x74,
+		},
+		nbt:         StringPayloadPtr(`"Test`),
+		snbt:        ptr.String(`'"Test'`),
+		snbtCompact: ptr.String(`'"Test'`),
+		snbtPretty:  ptr.String(`'"Test'`),
+	},
+	{
+		name: `Valid Case: StringPayload "'Test"`,
+		raw: []byte{
+			// Payload Length: 5
+			0x00, 0x05,
+			// Payload: "'Test"
+			0x27, 0x54, 0x65, 0x73, 0x74,
+		},
+		nbt:         StringPayloadPtr(`'Test`),
+		snbt:        ptr.String(`"'Test"`),
+		snbtCompact: ptr.String(`"'Test"`),
+		snbtPretty:  ptr.String(`"'Test"`),
+	},
+	{
+		name: `Valid Case: StringPayload '"Test'`,
+		raw: []byte{
+			// Payload Length: 6
+			0x00, 0x06,
+			// Payload: "\"'Test"
+			0x22, 0x27, 0x54, 0x65, 0x73, 0x74,
+		},
+		nbt:         StringPayloadPtr(`"'Test`),
+		snbt:        ptr.String(`"\"'Test"`),
+		snbtCompact: ptr.String(`"\"'Test"`),
+		snbtPretty:  ptr.String(`"\"'Test"`),
 	},
 	{
 		name: `Valid Case: StringPayload "minecraft:the_end"`,
@@ -231,7 +364,10 @@ var PayloadEncodingValidCases = []struct {
 			0x6D, 0x69, 0x6E, 0x65, 0x63, 0x72, 0x61, 0x66, 0x74, 0x3A,
 			0x74, 0x68, 0x65, 0x5F, 0x65, 0x6E, 0x64,
 		},
-		nbt: StringPayloadPtr(`minecraft:the_end`),
+		nbt:         StringPayloadPtr(`minecraft:the_end`),
+		snbt:        ptr.String(`"minecraft:the_end"`),
+		snbtCompact: ptr.String(`"minecraft:the_end"`),
+		snbtPretty:  ptr.String(`"minecraft:the_end"`),
 	},
 	{
 		name: `Valid Case: StringPayload ""`,
@@ -240,7 +376,10 @@ var PayloadEncodingValidCases = []struct {
 			0x00, 0x00,
 			// Payload: ""
 		},
-		nbt: StringPayloadPtr(``),
+		nbt:         StringPayloadPtr(``),
+		snbt:        ptr.String(`""`),
+		snbtCompact: ptr.String(`""`),
+		snbtPretty:  ptr.String(`""`),
 	},
 	{
 		name: `Valid Case: StringPayload "マインクラフト"`,
@@ -252,7 +391,10 @@ var PayloadEncodingValidCases = []struct {
 			0xE3, 0x82, 0xAF, 0xE3, 0x83, 0xA9, 0xE3, 0x83, 0x95,
 			0xE3, 0x83, 0x88,
 		},
-		nbt: StringPayloadPtr(`マインクラフト`),
+		nbt:         StringPayloadPtr(`マインクラフト`),
+		snbt:        ptr.String(`"マインクラフト"`),
+		snbtCompact: ptr.String(`"マインクラフト"`),
+		snbtPretty:  ptr.String(`"マインクラフト"`),
 	},
 	{
 		name: `Valid Case: ListPayload - Short`,
@@ -267,7 +409,13 @@ var PayloadEncodingValidCases = []struct {
 			//   - ShortPayload: 6789
 			0x1A, 0x85,
 		},
-		nbt: &ListPayload{PayloadType: TagShort, Payloads: []Payload{ShortPayloadPtr(12345), ShortPayloadPtr(6789)}},
+		nbt:         &ListPayload{PayloadType: TagShort, Payloads: []Payload{ShortPayloadPtr(12345), ShortPayloadPtr(6789)}},
+		snbt:        ptr.String(`[12345s, 6789s]`),
+		snbtCompact: ptr.String(`[12345s,6789s]`),
+		snbtPretty: ptr.String(`[
+    12345s,
+    6789s
+]`),
 	},
 	{
 		name: `Valid Case: ListPayload - ByteArray`,
@@ -277,14 +425,20 @@ var PayloadEncodingValidCases = []struct {
 			// Payload Length: 2
 			0x00, 0x00, 0x00, 0x02,
 			// Payload:
-			//   - ByteArrayPayload: [B; 0, 1]
+			//   - ByteArrayPayload: [B; 0b, 1b]
 			0x00, 0x00, 0x00, 0x02,
 			0x00, 0x01,
-			//   - ByteArrayPayload: [B; 2, 3]
+			//   - ByteArrayPayload: [B; 2b, 3b]
 			0x00, 0x00, 0x00, 0x02,
 			0x02, 0x03,
 		},
-		nbt: &ListPayload{PayloadType: TagByteArray, Payloads: []Payload{&ByteArrayPayload{0, 1}, &ByteArrayPayload{2, 3}}},
+		nbt:         &ListPayload{PayloadType: TagByteArray, Payloads: []Payload{&ByteArrayPayload{0, 1}, &ByteArrayPayload{2, 3}}},
+		snbt:        ptr.String(`[[B; 0b, 1b], [B; 2b, 3b]]`),
+		snbtCompact: ptr.String(`[[B;0b,1b],[B;2b,3b]]`),
+		snbtPretty: ptr.String(`[
+    [B; 0b, 1b],
+    [B; 2b, 3b]
+]`),
 	},
 	{
 		name: `Valid Case: ListPayload - String`,
@@ -301,7 +455,13 @@ var PayloadEncodingValidCases = []struct {
 			0x00, 0x05,
 			0x57, 0x6F, 0x72, 0x6C, 0x64,
 		},
-		nbt: &ListPayload{PayloadType: TagString, Payloads: []Payload{StringPayloadPtr(`Hello`), StringPayloadPtr(`World`)}},
+		nbt:         &ListPayload{PayloadType: TagString, Payloads: []Payload{StringPayloadPtr(`Hello`), StringPayloadPtr(`World`)}},
+		snbt:        ptr.String(`["Hello", "World"]`),
+		snbtCompact: ptr.String(`["Hello","World"]`),
+		snbtPretty: ptr.String(`[
+    "Hello",
+    "World"
+]`),
 	},
 	{
 		name: `Valid Case: ListPayload - List`,
@@ -328,6 +488,16 @@ var PayloadEncodingValidCases = []struct {
 				&ListPayload{PayloadType: TagString, Payloads: []Payload{StringPayloadPtr(`Test`)}},
 			},
 		},
+		snbt:        ptr.String(`[[123b], ["Test"]]`),
+		snbtCompact: ptr.String(`[[123b],["Test"]]`),
+		snbtPretty: ptr.String(`[
+    [
+        123b
+    ],
+    [
+        "Test"
+    ]
+]`),
 	},
 	{
 		name: `Valid Case: ListPayload - Compound`,
@@ -362,6 +532,16 @@ var PayloadEncodingValidCases = []struct {
 				&CompoundPayload{&StringTag{TagName(`String`), StringPayload(`Hello`)}, &EndTag{}},
 			},
 		},
+		snbt:        ptr.String(`[{Byte: 123b}, {String: "Hello"}]`),
+		snbtCompact: ptr.String(`[{Byte:123b},{String:"Hello"}]`),
+		snbtPretty: ptr.String(`[
+    {
+        Byte: 123b
+    },
+    {
+        String: "Hello"
+    }
+]`),
 	},
 	{
 		name: `Valid Case: CompoundPayload`,
@@ -372,7 +552,7 @@ var PayloadEncodingValidCases = []struct {
 			0x00, 0x05,
 			0x53, 0x68, 0x6f, 0x72, 0x74,
 			0x30, 0x39,
-			//   - ByteArrayTag("ByteArray"): [B; 0, 1]
+			//   - ByteArrayTag("ByteArray"): [B; 0b, 1b]
 			0x07,
 			0x00, 0x09,
 			0x42, 0x79, 0x74, 0x65, 0x41, 0x72, 0x72, 0x61, 0x79,
@@ -414,6 +594,19 @@ var PayloadEncodingValidCases = []struct {
 			&CompoundTag{TagName(`Compound`), CompoundPayload{&StringTag{TagName(`String`), StringPayload(`World`)}, &EndTag{}}},
 			&EndTag{},
 		},
+		snbt:        ptr.String(`{ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}`),
+		snbtCompact: ptr.String(`{ByteArray:[B;0b,1b],Compound:{String:"World"},List:[123b],Short:12345s,String:"Hello"}`),
+		snbtPretty: ptr.String(`{
+    ByteArray: [B; 0b, 1b],
+    Compound: {
+        String: "World"
+    },
+    List: [
+        123b
+    ],
+    Short: 12345s,
+    String: "Hello"
+}`),
 	},
 	{
 		name: `Valid Case: CompoundPayload - Empty`,
@@ -422,7 +615,10 @@ var PayloadEncodingValidCases = []struct {
 			//   - EndTag
 			0x00,
 		},
-		nbt: &CompoundPayload{&EndTag{}},
+		nbt:         &CompoundPayload{&EndTag{}},
+		snbt:        ptr.String(`{}`),
+		snbtCompact: ptr.String(`{}`),
+		snbtPretty:  ptr.String(`{}`),
 	},
 	{
 		name: `Valid Case: IntArrayPayload`,
@@ -435,139 +631,175 @@ var PayloadEncodingValidCases = []struct {
 			0x00, 0x00, 0x00, 0x02,
 			0x00, 0x00, 0x00, 0x03,
 		},
-		nbt: &IntArrayPayload{0, 1, 2, 3},
+		nbt:         &IntArrayPayload{0, 1, 2, 3},
+		snbt:        ptr.String(`[I; 0, 1, 2, 3]`),
+		snbtCompact: ptr.String(`[I;0,1,2,3]`),
+		snbtPretty:  ptr.String(`[I; 0, 1, 2, 3]`),
 	},
 	{
 		name: `Valid Case: LongArrayPayload`,
 		raw: []byte{
 			// Payload Length: 4
 			0x00, 0x00, 0x00, 0x04,
-			// Payload: [L; 0, 1, 2, 3]
+			// Payload: [L; 0L, 1L, 2L, 3L]
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02,
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,
 		},
-		nbt: &LongArrayPayload{0, 1, 2, 3},
+		nbt:         &LongArrayPayload{0, 1, 2, 3},
+		snbt:        ptr.String(`[L; 0L, 1L, 2L, 3L]`),
+		snbtCompact: ptr.String(`[L;0L,1L,2L,3L]`),
+		snbtPretty:  ptr.String(`[L; 0L, 1L, 2L, 3L]`),
 	},
 }
 
-var TagEncodingValidCases = []struct {
-	name string
-	raw  []byte
-	nbt  Tag
+var TagValidTestCases = []struct {
+	name        string
+	raw         []byte
+	nbt         Tag
+	snbt        *string
+	snbtCompact *string
+	snbtPretty  *string
 }{
 	{
-		name: `Valid Case: EndTag`,
-		raw:  []byte{},
-		nbt:  new(EndTag),
+		name:        `Valid Case: EndTag`,
+		raw:         []byte{},
+		nbt:         new(EndTag),
+		snbt:        ptr.String(``),
+		snbtCompact: ptr.String(``),
+		snbtPretty:  ptr.String(``),
 	},
 	{
 		name: `Valid Case: ByteTag`,
 		raw: []byte{
 			// Name Length: 4
 			0x00, 0x04,
-			// Name: "Byte"
+			// Name: Byte
 			0x42, 0x79, 0x74, 0x65,
 			// Payload: 123
 			0x7B,
 		},
-		nbt: &ByteTag{TagName(`Byte`), BytePayload(123)},
+		nbt:         &ByteTag{TagName(`Byte`), BytePayload(123)},
+		snbt:        ptr.String(`Byte: 123b`),
+		snbtCompact: ptr.String(`Byte:123b`),
+		snbtPretty:  ptr.String(`Byte: 123b`),
 	},
 	{
 		name: `Valid Case: ShortTag`,
 		raw: []byte{
 			// Name Length: 5
 			0x00, 0x05,
-			// Name: "Short"
+			// Name: Short
 			0x53, 0x68, 0x6f, 0x72, 0x74,
 			// Payload: 12345
 			0x30, 0x39,
 		},
-		nbt: &ShortTag{TagName(`Short`), ShortPayload(12345)},
+		nbt:         &ShortTag{TagName(`Short`), ShortPayload(12345)},
+		snbt:        ptr.String(`Short: 12345s`),
+		snbtCompact: ptr.String(`Short:12345s`),
+		snbtPretty:  ptr.String(`Short: 12345s`),
 	},
 	{
 		name: `Valid Case: IntTag`,
 		raw: []byte{
 			// Name Length: 3
 			0x00, 0x03,
-			// Name: "Int"
+			// Name: Int
 			0x49, 0x6E, 0x74,
 			// Payload: 123456789
 			0x07, 0x5B, 0xCD, 0x15,
 		},
-		nbt: &IntTag{TagName(`Int`), IntPayload(123456789)},
+		nbt:         &IntTag{TagName(`Int`), IntPayload(123456789)},
+		snbt:        ptr.String(`Int: 123456789`),
+		snbtCompact: ptr.String(`Int:123456789`),
+		snbtPretty:  ptr.String(`Int: 123456789`),
 	},
 	{
 		name: `Valid Case: LongTag`,
 		raw: []byte{
 			// Name Length: 4
 			0x00, 0x04,
-			// Name: "Long"
+			// Name: Long
 			0x4C, 0x6F, 0x6E, 0x67,
 			// Payload: 123456789123456789
 			0x01, 0xB6, 0x9B, 0x4B, 0xAC, 0xD0, 0x5F, 0x15,
 		},
-		nbt: &LongTag{TagName(`Long`), LongPayload(123456789123456789)},
+		nbt:         &LongTag{TagName(`Long`), LongPayload(123456789123456789)},
+		snbt:        ptr.String(`Long: 123456789123456789L`),
+		snbtCompact: ptr.String(`Long:123456789123456789L`),
+		snbtPretty:  ptr.String(`Long: 123456789123456789L`),
 	},
 	{
 		name: `Valid Case: FloatTag`,
 		raw: []byte{
 			// Name Length: 5
 			0x00, 0x05,
-			// Name: "Float"
+			// Name: Float
 			0x46, 0x6C, 0x6F, 0x61, 0x74,
 			// Payload: 0.12345678
 			0x3D, 0xFC, 0xD6, 0xE9,
 		},
-		nbt: &FloatTag{TagName(`Float`), FloatPayload(0.12345678)},
+		nbt:         &FloatTag{TagName(`Float`), FloatPayload(0.12345678)},
+		snbt:        ptr.String(`Float: 0.12345678f`),
+		snbtCompact: ptr.String(`Float:0.12345678f`),
+		snbtPretty:  ptr.String(`Float: 0.12345678f`),
 	},
 	{
 		name: `Valid Case: DoubleTag`,
 		raw: []byte{
 			// Name Length: 6
 			0x00, 0x06,
-			// Name: "Double"
+			// Name: Double
 			0x44, 0x6F, 0x75, 0x62, 0x6C, 0x65,
 			// Payload: 0.123456789
 			0x3F, 0xBF, 0x9A, 0xDD, 0x37, 0x39, 0x63, 0x5F,
 		},
-		nbt: &DoubleTag{TagName(`Double`), DoublePayload(0.123456789)},
+		nbt:         &DoubleTag{TagName(`Double`), DoublePayload(0.123456789)},
+		snbt:        ptr.String(`Double: 0.123456789d`),
+		snbtCompact: ptr.String(`Double:0.123456789d`),
+		snbtPretty:  ptr.String(`Double: 0.123456789d`),
 	},
 	{
 		name: `Valid Case: ByteArrayTag`,
 		raw: []byte{
 			// Name Length: 9
 			0x00, 0x09,
-			// Name: "Double"
+			// Name: ByteArray
 			0x42, 0x79, 0x74, 0x65, 0x41, 0x72, 0x72, 0x61, 0x79,
 			// Payload Length: 10
 			0x00, 0x00, 0x00, 0x0A,
-			// Payload: [B; 0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+			// Payload: [B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]
 			0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
 		},
-		nbt: &ByteArrayTag{TagName(`ByteArray`), ByteArrayPayload{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}},
+		nbt:         &ByteArrayTag{TagName(`ByteArray`), ByteArrayPayload{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}},
+		snbt:        ptr.String(`ByteArray: [B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]`),
+		snbtCompact: ptr.String(`ByteArray:[B;0b,1b,2b,3b,4b,5b,6b,7b,8b,9b]`),
+		snbtPretty:  ptr.String(`ByteArray: [B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]`),
 	},
 	{
 		name: `Valid Case: StringTag`,
 		raw: []byte{
 			// Name Length: 6
 			0x00, 0x06,
-			// Name: "String"
+			// Name: String
 			0x53, 0x74, 0x72, 0x69, 0x6E, 0x67,
 			// Payload Length: 11
 			0x00, 0x0B,
 			// Payload: "Hello World"
 			0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64,
 		},
-		nbt: &StringTag{TagName(`String`), StringPayload(`Hello World`)},
+		nbt:         &StringTag{TagName(`String`), StringPayload(`Hello World`)},
+		snbt:        ptr.String(`String: "Hello World"`),
+		snbtCompact: ptr.String(`String:"Hello World"`),
+		snbtPretty:  ptr.String(`String: "Hello World"`),
 	},
 	{
 		name: `Valid Case: ListTag`,
 		raw: []byte{
 			// Name Length: 4
 			0x00, 0x04,
-			// Name: "List"
+			// Name: List
 			0x4C, 0x69, 0x73, 0x74,
 			// Payload Type: TagShort(=2)
 			0x02,
@@ -579,14 +811,20 @@ var TagEncodingValidCases = []struct {
 			//   - ShortPayload: 6789
 			0x1A, 0x85,
 		},
-		nbt: &ListTag{TagName(`List`), ListPayload{PayloadType: TagShort, Payloads: []Payload{ShortPayloadPtr(12345), ShortPayloadPtr(6789)}}},
+		nbt:         &ListTag{TagName(`List`), ListPayload{PayloadType: TagShort, Payloads: []Payload{ShortPayloadPtr(12345), ShortPayloadPtr(6789)}}},
+		snbt:        ptr.String(`List: [12345s, 6789s]`),
+		snbtCompact: ptr.String(`List:[12345s,6789s]`),
+		snbtPretty: ptr.String(`List: [
+    12345s,
+    6789s
+]`),
 	},
 	{
 		name: `Valid Case: CompoundTag`,
 		raw: []byte{
 			// Name Length: 8
 			0x00, 0x08,
-			// Name: "Compound"
+			// Name: Compound
 			0x43, 0x6F, 0x6D, 0x70, 0x6F, 0x75, 0x6E, 0x64,
 			// Payload:
 			//   - ShortTag("Short"): 12345
@@ -594,7 +832,7 @@ var TagEncodingValidCases = []struct {
 			0x00, 0x05,
 			0x53, 0x68, 0x6f, 0x72, 0x74,
 			0x30, 0x39,
-			//   - ByteArrayTag("ByteArray"): [B; 0, 1]
+			//   - ByteArrayTag("ByteArray"): [B; 0b, 1b]
 			0x07,
 			0x00, 0x09,
 			0x42, 0x79, 0x74, 0x65, 0x41, 0x72, 0x72, 0x61, 0x79,
@@ -639,13 +877,26 @@ var TagEncodingValidCases = []struct {
 				&EndTag{},
 			},
 		},
+		snbt:        ptr.String(`Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}`),
+		snbtCompact: ptr.String(`Compound:{ByteArray:[B;0b,1b],Compound:{String:"World"},List:[123b],Short:12345s,String:"Hello"}`),
+		snbtPretty: ptr.String(`Compound: {
+    ByteArray: [B; 0b, 1b],
+    Compound: {
+        String: "World"
+    },
+    List: [
+        123b
+    ],
+    Short: 12345s,
+    String: "Hello"
+}`),
 	},
 	{
 		name: `Valid Case: IntArrayTag`,
 		raw: []byte{
 			// Name Length: 8
 			0x00, 0x08,
-			// Name: "IntArray"
+			// Name: IntArray
 			0x49, 0x6E, 0x74, 0x41, 0x72, 0x72, 0x61, 0x79,
 			// Payload Length: 4
 			0x00, 0x00, 0x00, 0x04,
@@ -655,23 +906,29 @@ var TagEncodingValidCases = []struct {
 			0x00, 0x00, 0x00, 0x02,
 			0x00, 0x00, 0x00, 0x03,
 		},
-		nbt: &IntArrayTag{TagName(`IntArray`), IntArrayPayload{0, 1, 2, 3}},
+		nbt:         &IntArrayTag{TagName(`IntArray`), IntArrayPayload{0, 1, 2, 3}},
+		snbt:        ptr.String(`IntArray: [I; 0, 1, 2, 3]`),
+		snbtCompact: ptr.String(`IntArray:[I;0,1,2,3]`),
+		snbtPretty:  ptr.String(`IntArray: [I; 0, 1, 2, 3]`),
 	},
 	{
 		name: `Valid Case: LongArrayTag`,
 		raw: []byte{
 			// Name Length: 9
 			0x00, 0x09,
-			// Name: "LongArray"
+			// Name: LongArray
 			0x4C, 0x6F, 0x6E, 0x67, 0x41, 0x72, 0x72, 0x61, 0x79,
 			// Payload Length: 4
 			0x00, 0x00, 0x00, 0x04,
-			// Payload: [L; 0, 1, 2, 3]
+			// Payload: [L; 0L, 1L, 2L, 3L]
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02,
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,
 		},
-		nbt: &LongArrayTag{TagName(`LongArray`), LongArrayPayload{0, 1, 2, 3}},
+		nbt:         &LongArrayTag{TagName(`LongArray`), LongArrayPayload{0, 1, 2, 3}},
+		snbt:        ptr.String(`LongArray: [L; 0L, 1L, 2L, 3L]`),
+		snbtCompact: ptr.String(`LongArray:[L;0L,1L,2L,3L]`),
+		snbtPretty:  ptr.String(`LongArray: [L; 0L, 1L, 2L, 3L]`),
 	},
 }
