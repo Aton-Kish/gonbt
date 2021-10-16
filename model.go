@@ -14,6 +14,7 @@ type (
 		TypeId() TagType
 		Decode(r io.Reader) error
 		Encode(w io.Writer) error
+		Stringify(string, string, int) string
 	}
 
 	BytePayload int8
@@ -81,6 +82,7 @@ type (
 		TypeId() TagType
 		Decode(r io.Reader) error
 		Encode(w io.Writer) error
+		Stringify(string, string, int) string
 	}
 
 	EndTag struct {
