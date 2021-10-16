@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestEncodeNBT(t *testing.T) {
+func TestEncode(t *testing.T) {
 	type encodeTestCase struct {
 		name    string
 		nbt     Tag

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDecodeNBT(t *testing.T) {
+func TestDecode(t *testing.T) {
 	type decodeTestCase struct {
 		name    string
 		raw     []byte
