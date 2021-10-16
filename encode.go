@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-func EncodeNBT(w io.Writer, tag *Tag) error {
+func Encode(w io.Writer, tag *Tag) error {
 	if err := (*tag).Encode(w); err != nil {
 		return err
 	}

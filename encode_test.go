@@ -30,7 +30,7 @@ func TestEncodeNBT(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			buf := new(bytes.Buffer)
-			err := EncodeNBT(buf, &c.nbt)
+			err := Encode(buf, &c.nbt)
 
 			if c.wantErr == nil {
 				assert.NoError(t, err)

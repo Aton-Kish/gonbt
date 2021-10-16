@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-func DecodeNBT(r io.Reader, tag *Tag) error {
+func Decode(r io.Reader, tag *Tag) error {
 	var typ TagType
 	if err := binary.Read(r, binary.BigEndian, &typ); err != nil {
 		return err
@@ -148,7 +148,7 @@ func (p *ListPayload) Decode(r io.Reader) error {
 func (p *CompoundPayload) Decode(r io.Reader) error {
 	for {
 		tag := new(Tag)
-		if err := DecodeNBT(r, tag); err != nil {
+		if err := Decode(r, tag); err != nil {
 			return err
 		}
 

@@ -46,7 +46,7 @@ func TestDecodeNBT(t *testing.T) {
 			buf := bytes.NewBuffer(c.raw)
 
 			tag := new(Tag)
-			err := DecodeNBT(buf, tag)
+			err := Decode(buf, tag)
 
 			if c.wantErr == nil {
 				assert.NoError(t, err)
