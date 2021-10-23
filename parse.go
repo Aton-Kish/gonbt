@@ -4,6 +4,7 @@ import (
 	"errors"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 var (
@@ -134,43 +135,49 @@ func (p *DoublePayload) Parse(bm *SnbtTokenBitmaps) error {
 }
 
 func (p *ByteArrayPayload) Parse(bm *SnbtTokenBitmaps) error {
-	for {
-		if bm.CurrToken == nil || bm.CurrToken.Char == ']' {
-			break
-		}
+	if c := bm.Raw[bm.CurrToken.Index+1]; c != ']' {
+		for {
+			if bm.CurrToken.Char == ']' {
+				break
+			}
 
-		if err := bm.NextToken(``, `" `); err != nil {
-			return err
-		}
+			bm.NextToken(``, `" `)
 
-		payload, err := NewPayloadFromSnbt(bm)
-		if err != nil {
-			return err
-		}
+			payload, err := NewPayloadFromSnbt(bm)
+			if err != nil {
+				return err
+			}
 
-		if err := payload.Parse(bm); err != nil {
-			return err
-		}
+			if err := payload.Parse(bm); err != nil {
+				return err
+			}
 
-		cp, ok := payload.(*BytePayload)
-		if !ok {
-			return errors.New("invalid snbt format")
-		}
+			cp, ok := payload.(*BytePayload)
+			if !ok {
+				return errors.New("invalid snbt format")
+			}
 
-		*p = append(*p, int8(*cp))
+			*p = append(*p, int8(*cp))
+		}
 	}
 
-	if bm.CurrToken != nil {
-		bm.NextToken(``, `" `)
-	}
+	bm.NextToken(``, `" `)
 
 	return nil
 }
 
 func (p *StringPayload) Parse(bm *SnbtTokenBitmaps) error {
 	b := bm.Raw[bm.PrevToken.Index+1 : bm.CurrToken.Index]
+	qs := string(b)
 
-	s, err := strconv.Unquote(string(b))
+	if qs[0] == '\'' {
+		ms := qs[1 : len(qs)-1]
+		ms = strings.ReplaceAll(ms, `\'`, `'`)
+		ms = strings.ReplaceAll(ms, `"`, `\"`)
+		qs = `"` + ms + `"`
+	}
+
+	s, err := strconv.Unquote(qs)
 	if err != nil {
 		return err
 	}
@@ -181,51 +188,51 @@ func (p *StringPayload) Parse(bm *SnbtTokenBitmaps) error {
 }
 
 func (p *ListPayload) Parse(bm *SnbtTokenBitmaps) error {
-	for {
-		if bm.CurrToken == nil || bm.CurrToken.Char == ']' {
-			break
+	if c := bm.Raw[bm.CurrToken.Index+1]; c != ']' {
+		for {
+			if bm.CurrToken.Char == ']' {
+				break
+			}
+
+			bm.NextToken(``, `" `)
+
+			payload, err := NewPayloadFromSnbt(bm)
+			if err != nil {
+				return err
+			}
+
+			if err := payload.Parse(bm); err != nil {
+				return err
+			}
+
+			p.Payloads = append(p.Payloads, payload)
 		}
 
-		if err := bm.NextToken(``, `" `); err != nil {
-			return err
-		}
-
-		payload, err := NewPayloadFromSnbt(bm)
-		if err != nil {
-			return err
-		}
-
-		if err := payload.Parse(bm); err != nil {
-			return err
-		}
-
-		p.Payloads = append(p.Payloads, payload)
+		p.PayloadType = p.Payloads[0].TypeId()
 	}
 
-	if bm.CurrToken != nil {
-		bm.NextToken(``, `" `)
-	}
+	bm.NextToken(``, `" `)
 
 	return nil
 }
 
 func (p *CompoundPayload) Parse(bm *SnbtTokenBitmaps) error {
-	for {
-		if bm.CurrToken == nil || bm.CurrToken.Char == '}' {
-			break
+	if c := bm.Raw[bm.CurrToken.Index+1]; c != '}' {
+		for {
+			if bm.CurrToken.Char == '}' {
+				break
+			}
+
+			tag := new(Tag)
+			if err := Parse(bm, tag); err != nil {
+				return err
+			}
+
+			*p = append(*p, *tag)
 		}
 
-		tag := new(Tag)
-		if err := Parse(bm, tag); err != nil {
-			return err
-		}
+		*p = append(*p, &EndTag{})
 
-		*p = append(*p, *tag)
-	}
-
-	*p = append(*p, &EndTag{})
-
-	if bm.CurrToken != nil {
 		bm.NextToken(``, `" `)
 	}
 
@@ -233,69 +240,65 @@ func (p *CompoundPayload) Parse(bm *SnbtTokenBitmaps) error {
 }
 
 func (p *IntArrayPayload) Parse(bm *SnbtTokenBitmaps) error {
-	for {
-		if bm.CurrToken == nil || bm.CurrToken.Char == ']' {
-			break
-		}
+	if c := bm.Raw[bm.CurrToken.Index+1]; c != ']' {
+		for {
+			if bm.CurrToken.Char == ']' {
+				break
+			}
 
-		if err := bm.NextToken(``, `" `); err != nil {
-			return err
-		}
+			bm.NextToken(``, `" `)
 
-		payload, err := NewPayloadFromSnbt(bm)
-		if err != nil {
-			return err
-		}
+			payload, err := NewPayloadFromSnbt(bm)
+			if err != nil {
+				return err
+			}
 
-		if err := payload.Parse(bm); err != nil {
-			return err
-		}
+			if err := payload.Parse(bm); err != nil {
+				return err
+			}
 
-		cp, ok := payload.(*IntPayload)
-		if !ok {
-			return errors.New("invalid snbt format")
-		}
+			cp, ok := payload.(*IntPayload)
+			if !ok {
+				return errors.New("invalid snbt format")
+			}
 
-		*p = append(*p, int32(*cp))
+			*p = append(*p, int32(*cp))
+		}
 	}
 
-	if bm.CurrToken != nil {
-		bm.NextToken(``, `" `)
-	}
+	bm.NextToken(``, `" `)
 
 	return nil
 }
 
 func (p *LongArrayPayload) Parse(bm *SnbtTokenBitmaps) error {
-	for {
-		if bm.CurrToken == nil || bm.CurrToken.Char == ']' {
-			break
-		}
+	if c := bm.Raw[bm.CurrToken.Index+1]; c != ']' {
+		for {
+			if bm.CurrToken.Char == ']' {
+				break
+			}
 
-		if err := bm.NextToken(``, `" `); err != nil {
-			return err
-		}
+			bm.NextToken(``, `" `)
 
-		payload, err := NewPayloadFromSnbt(bm)
-		if err != nil {
-			return err
-		}
+			payload, err := NewPayloadFromSnbt(bm)
+			if err != nil {
+				return err
+			}
 
-		if err := payload.Parse(bm); err != nil {
-			return err
-		}
+			if err := payload.Parse(bm); err != nil {
+				return err
+			}
 
-		cp, ok := payload.(*LongPayload)
-		if !ok {
-			return errors.New("invalid snbt format")
-		}
+			cp, ok := payload.(*LongPayload)
+			if !ok {
+				return errors.New("invalid snbt format")
+			}
 
-		*p = append(*p, int64(*cp))
+			*p = append(*p, int64(*cp))
+		}
 	}
 
-	if bm.CurrToken != nil {
-		bm.NextToken(``, `" `)
-	}
+	bm.NextToken(``, `" `)
 
 	return nil
 }

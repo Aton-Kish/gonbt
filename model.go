@@ -87,9 +87,9 @@ func NewPayloadFromSnbt(bm *SnbtTokenBitmaps) (Payload, error) {
 		typ := bm.Raw[bm.CurrToken.Index+1]
 		switch typ {
 		case 'B', 'I', 'L':
-			if err := bm.NextToken(``, `" `); err != nil {
-				return nil, err
-			} else if bm.CurrToken.Char != ';' {
+			bm.NextToken(``, `" `)
+
+			if bm.CurrToken.Char != ';' {
 				return nil, errors.New("invalid snbt format")
 			}
 
@@ -108,7 +108,13 @@ func NewPayloadFromSnbt(bm *SnbtTokenBitmaps) (Payload, error) {
 		return nil, errors.New("invalid snbt format")
 	}
 
-	b := bm.Raw[bm.PrevToken.Index+1 : bm.CurrToken.Index]
+	var b []byte
+	if bm.CurrToken.Index < 0 {
+		b = bm.Raw[bm.PrevToken.Index+1:]
+	} else {
+		b = bm.Raw[bm.PrevToken.Index+1 : bm.CurrToken.Index]
+	}
+
 	if bytePattern.Match(b) {
 		return new(BytePayload), nil
 	}
@@ -244,9 +250,7 @@ func NewTag(typ TagType) (Tag, error) {
 }
 
 func NewTagFromSnbt(bm *SnbtTokenBitmaps) (Tag, error) {
-	if err := bm.NextToken(``, `" `); err != nil {
-		return nil, err
-	}
+	bm.NextToken(``, `" `)
 
 	var n TagName
 	if bm.CurrToken.Index > 0 {
@@ -258,9 +262,7 @@ func NewTagFromSnbt(bm *SnbtTokenBitmaps) (Tag, error) {
 			n = TagName(s)
 		}
 
-		if err := bm.NextToken(``, `" `); err != nil {
-			return nil, err
-		}
+		bm.NextToken(``, `" `)
 	}
 
 	p, err := NewPayloadFromSnbt(bm)

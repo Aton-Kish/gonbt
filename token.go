@@ -15,8 +15,8 @@ type SnbtTokenBitmaps struct {
 	StringMaskBitmap []uint64
 	ValueMaskBitmap  []uint64
 	TokenBitmaps     map[rune][]uint64
-	PrevToken        *Token
-	CurrToken        *Token
+	PrevToken        Token
+	CurrToken        Token
 }
 
 func NewSnbtTokenBitmaps(snbt string) SnbtTokenBitmaps {
@@ -48,8 +48,8 @@ func newSnbtTokenBitmapsWithoutRaw(bitmapLen int) SnbtTokenBitmaps {
 			':': make([]uint64, bitmapLen),
 			';': make([]uint64, bitmapLen),
 		},
-		PrevToken: &Token{Index: -1},
-		CurrToken: &Token{Index: -1},
+		PrevToken: Token{Index: -1},
+		CurrToken: Token{Index: -1},
 	}
 }
 
@@ -151,17 +151,16 @@ func (bm *SnbtTokenBitmaps) NextToken(allow, deny string) error {
 		}
 	}
 
+	bm.PrevToken = bm.CurrToken
+	bm.CurrToken = Token{Char: token, Index: index}
+
 	if index == l {
-		bm.PrevToken = bm.CurrToken
-		bm.CurrToken = nil
 		return errors.New("stop iteration")
 	}
 
 	i := index / 64
 	bm.TokenBitmaps[token][i] = removeRightmost(bm.TokenBitmaps[token][i])
 
-	bm.PrevToken = bm.CurrToken
-	bm.CurrToken = &Token{Char: token, Index: index}
 	return nil
 }
 
