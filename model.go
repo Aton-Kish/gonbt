@@ -18,6 +18,7 @@ type (
 		Encode(w io.Writer) error
 		Stringify(string, string, int) string
 		Parse(*SnbtTokenBitmaps) error
+		Json(string, string, int) string
 	}
 
 	BytePayload int8
@@ -147,6 +148,7 @@ type (
 		Encode(w io.Writer) error
 		Stringify(string, string, int) string
 		Parse(*SnbtTokenBitmaps) error
+		Json(string, string, int) string
 	}
 
 	EndTag struct {
