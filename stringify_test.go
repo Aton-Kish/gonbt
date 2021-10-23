@@ -21,8 +21,8 @@ func TestStringify(t *testing.T) {
 			nbt:  v.nbt,
 			want: map[string]*string{
 				"default": v.snbt,
-				"compact": v.snbtCompact,
-				"pretty":  v.snbtPretty,
+				"compact": v.compactSnbt,
+				"pretty":  v.prettySnbt,
 			},
 		}
 		cases = append(cases, c)
@@ -77,8 +77,8 @@ func TestPayload_Stringify(t *testing.T) {
 			nbt:  v.nbt,
 			want: map[string]*string{
 				"default": v.snbt,
-				"compact": v.snbtCompact,
-				"pretty":  v.snbtPretty,
+				"compact": v.compactSnbt,
+				"pretty":  v.prettySnbt,
 			},
 		}
 		cases = append(cases, c)
@@ -108,8 +108,8 @@ func TestTag_Stringify(t *testing.T) {
 			nbt:  v.nbt,
 			want: map[string]*string{
 				"default": v.snbt,
-				"compact": v.snbtCompact,
-				"pretty":  v.snbtPretty,
+				"compact": v.compactSnbt,
+				"pretty":  v.prettySnbt,
 			},
 		}
 		cases = append(cases, c)

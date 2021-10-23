@@ -9,8 +9,8 @@ var NBTValidTestCases = []struct {
 	raw         []byte
 	nbt         Tag
 	snbt        *string
-	snbtCompact *string
-	snbtPretty  *string
+	compactSnbt *string
+	prettySnbt  *string
 	json        *string
 	compactJson *string
 	prettyJson  *string
@@ -50,8 +50,8 @@ var NBTValidTestCases = []struct {
 			},
 		},
 		snbt:        ptr.String(`{"Hello World": {Name: "Steve"}}`),
-		snbtCompact: ptr.String(`{"Hello World":{Name:"Steve"}}`),
-		snbtPretty: ptr.String(`{
+		compactSnbt: ptr.String(`{"Hello World":{Name:"Steve"}}`),
+		prettySnbt: ptr.String(`{
     "Hello World": {
         Name: "Steve"
     }
@@ -122,8 +122,8 @@ var NBTValidTestCases = []struct {
 			},
 		},
 		snbt:        ptr.String(`{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`),
-		snbtCompact: ptr.String(`{Compound:{ByteArray:[B;0b,1b],Compound:{String:"World"},List:[123b],Short:12345s,String:"Hello"}}`),
-		snbtPretty: ptr.String(`{
+		compactSnbt: ptr.String(`{Compound:{ByteArray:[B;0b,1b],Compound:{String:"World"},List:[123b],Short:12345s,String:"Hello"}}`),
+		prettySnbt: ptr.String(`{
     Compound: {
         ByteArray: [B; 0b, 1b],
         Compound: {
@@ -257,8 +257,8 @@ var PayloadValidTestCases = []struct {
 	raw         []byte
 	nbt         Payload
 	snbt        *string
-	snbtCompact *string
-	snbtPretty  *string
+	compactSnbt *string
+	prettySnbt  *string
 	json        *string
 	compactJson *string
 	prettyJson  *string
@@ -271,8 +271,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         BytePayloadPtr(123),
 		snbt:        ptr.String(`123b`),
-		snbtCompact: ptr.String(`123b`),
-		snbtPretty:  ptr.String(`123b`),
+		compactSnbt: ptr.String(`123b`),
+		prettySnbt:  ptr.String(`123b`),
 		json:        ptr.String(`123`),
 		compactJson: ptr.String(`123`),
 		prettyJson:  ptr.String(`123`),
@@ -285,8 +285,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         ShortPayloadPtr(12345),
 		snbt:        ptr.String(`12345s`),
-		snbtCompact: ptr.String(`12345s`),
-		snbtPretty:  ptr.String(`12345s`),
+		compactSnbt: ptr.String(`12345s`),
+		prettySnbt:  ptr.String(`12345s`),
 		json:        ptr.String(`12345`),
 		compactJson: ptr.String(`12345`),
 		prettyJson:  ptr.String(`12345`),
@@ -299,8 +299,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         IntPayloadPtr(123456789),
 		snbt:        ptr.String(`123456789`),
-		snbtCompact: ptr.String(`123456789`),
-		snbtPretty:  ptr.String(`123456789`),
+		compactSnbt: ptr.String(`123456789`),
+		prettySnbt:  ptr.String(`123456789`),
 		json:        ptr.String(`123456789`),
 		compactJson: ptr.String(`123456789`),
 		prettyJson:  ptr.String(`123456789`),
@@ -313,8 +313,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         LongPayloadPtr(123456789123456789),
 		snbt:        ptr.String(`123456789123456789L`),
-		snbtCompact: ptr.String(`123456789123456789L`),
-		snbtPretty:  ptr.String(`123456789123456789L`),
+		compactSnbt: ptr.String(`123456789123456789L`),
+		prettySnbt:  ptr.String(`123456789123456789L`),
 		json:        ptr.String(`123456789123456789`),
 		compactJson: ptr.String(`123456789123456789`),
 		prettyJson:  ptr.String(`123456789123456789`),
@@ -327,8 +327,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         FloatPayloadPtr(0.12345678),
 		snbt:        ptr.String(`0.12345678f`),
-		snbtCompact: ptr.String(`0.12345678f`),
-		snbtPretty:  ptr.String(`0.12345678f`),
+		compactSnbt: ptr.String(`0.12345678f`),
+		prettySnbt:  ptr.String(`0.12345678f`),
 		json:        ptr.String(`0.12345678`),
 		compactJson: ptr.String(`0.12345678`),
 		prettyJson:  ptr.String(`0.12345678`),
@@ -341,8 +341,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         DoublePayloadPtr(0.123456789),
 		snbt:        ptr.String(`0.123456789d`),
-		snbtCompact: ptr.String(`0.123456789d`),
-		snbtPretty:  ptr.String(`0.123456789d`),
+		compactSnbt: ptr.String(`0.123456789d`),
+		prettySnbt:  ptr.String(`0.123456789d`),
 		json:        ptr.String(`0.123456789`),
 		compactJson: ptr.String(`0.123456789`),
 		prettyJson:  ptr.String(`0.123456789`),
@@ -357,8 +357,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         &ByteArrayPayload{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
 		snbt:        ptr.String(`[B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]`),
-		snbtCompact: ptr.String(`[B;0b,1b,2b,3b,4b,5b,6b,7b,8b,9b]`),
-		snbtPretty:  ptr.String(`[B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]`),
+		compactSnbt: ptr.String(`[B;0b,1b,2b,3b,4b,5b,6b,7b,8b,9b]`),
+		prettySnbt:  ptr.String(`[B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]`),
 		json:        ptr.String(`[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]`),
 		compactJson: ptr.String(`[0,1,2,3,4,5,6,7,8,9]`),
 		prettyJson: ptr.String(`[
@@ -383,8 +383,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         &ByteArrayPayload{},
 		snbt:        ptr.String(`[B; ]`),
-		snbtCompact: ptr.String(`[B;]`),
-		snbtPretty:  ptr.String(`[B; ]`),
+		compactSnbt: ptr.String(`[B;]`),
+		prettySnbt:  ptr.String(`[B; ]`),
 		json:        ptr.String(`[]`),
 		compactJson: ptr.String(`[]`),
 		prettyJson:  ptr.String(`[]`),
@@ -399,8 +399,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         StringPayloadPtr(`Test`),
 		snbt:        ptr.String(`"Test"`),
-		snbtCompact: ptr.String(`"Test"`),
-		snbtPretty:  ptr.String(`"Test"`),
+		compactSnbt: ptr.String(`"Test"`),
+		prettySnbt:  ptr.String(`"Test"`),
 		json:        ptr.String(`"Test"`),
 		compactJson: ptr.String(`"Test"`),
 		prettyJson:  ptr.String(`"Test"`),
@@ -415,8 +415,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         StringPayloadPtr(`"Test`),
 		snbt:        ptr.String(`'"Test'`),
-		snbtCompact: ptr.String(`'"Test'`),
-		snbtPretty:  ptr.String(`'"Test'`),
+		compactSnbt: ptr.String(`'"Test'`),
+		prettySnbt:  ptr.String(`'"Test'`),
 		json:        ptr.String(`"\"Test"`),
 		compactJson: ptr.String(`"\"Test"`),
 		prettyJson:  ptr.String(`"\"Test"`),
@@ -431,8 +431,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         StringPayloadPtr(`'Test`),
 		snbt:        ptr.String(`"'Test"`),
-		snbtCompact: ptr.String(`"'Test"`),
-		snbtPretty:  ptr.String(`"'Test"`),
+		compactSnbt: ptr.String(`"'Test"`),
+		prettySnbt:  ptr.String(`"'Test"`),
 		json:        ptr.String(`"'Test"`),
 		compactJson: ptr.String(`"'Test"`),
 		prettyJson:  ptr.String(`"'Test"`),
@@ -447,8 +447,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         StringPayloadPtr(`"'Test`),
 		snbt:        ptr.String(`"\"'Test"`),
-		snbtCompact: ptr.String(`"\"'Test"`),
-		snbtPretty:  ptr.String(`"\"'Test"`),
+		compactSnbt: ptr.String(`"\"'Test"`),
+		prettySnbt:  ptr.String(`"\"'Test"`),
 		json:        ptr.String(`"\"'Test"`),
 		compactJson: ptr.String(`"\"'Test"`),
 		prettyJson:  ptr.String(`"\"'Test"`),
@@ -464,8 +464,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         StringPayloadPtr(`minecraft:the_end`),
 		snbt:        ptr.String(`"minecraft:the_end"`),
-		snbtCompact: ptr.String(`"minecraft:the_end"`),
-		snbtPretty:  ptr.String(`"minecraft:the_end"`),
+		compactSnbt: ptr.String(`"minecraft:the_end"`),
+		prettySnbt:  ptr.String(`"minecraft:the_end"`),
 		json:        ptr.String(`"minecraft:the_end"`),
 		compactJson: ptr.String(`"minecraft:the_end"`),
 		prettyJson:  ptr.String(`"minecraft:the_end"`),
@@ -479,8 +479,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         StringPayloadPtr(``),
 		snbt:        ptr.String(`""`),
-		snbtCompact: ptr.String(`""`),
-		snbtPretty:  ptr.String(`""`),
+		compactSnbt: ptr.String(`""`),
+		prettySnbt:  ptr.String(`""`),
 		json:        ptr.String(`""`),
 		compactJson: ptr.String(`""`),
 		prettyJson:  ptr.String(`""`),
@@ -497,8 +497,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         StringPayloadPtr(`マインクラフト`),
 		snbt:        ptr.String(`"マインクラフト"`),
-		snbtCompact: ptr.String(`"マインクラフト"`),
-		snbtPretty:  ptr.String(`"マインクラフト"`),
+		compactSnbt: ptr.String(`"マインクラフト"`),
+		prettySnbt:  ptr.String(`"マインクラフト"`),
 		json:        ptr.String(`"マインクラフト"`),
 		compactJson: ptr.String(`"マインクラフト"`),
 		prettyJson:  ptr.String(`"マインクラフト"`),
@@ -518,8 +518,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         &ListPayload{ShortPayloadPtr(12345), ShortPayloadPtr(6789)},
 		snbt:        ptr.String(`[12345s, 6789s]`),
-		snbtCompact: ptr.String(`[12345s,6789s]`),
-		snbtPretty: ptr.String(`[
+		compactSnbt: ptr.String(`[12345s,6789s]`),
+		prettySnbt: ptr.String(`[
     12345s,
     6789s
 ]`),
@@ -547,8 +547,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         &ListPayload{&ByteArrayPayload{0, 1}, &ByteArrayPayload{2, 3}},
 		snbt:        ptr.String(`[[B; 0b, 1b], [B; 2b, 3b]]`),
-		snbtCompact: ptr.String(`[[B;0b,1b],[B;2b,3b]]`),
-		snbtPretty: ptr.String(`[
+		compactSnbt: ptr.String(`[[B;0b,1b],[B;2b,3b]]`),
+		prettySnbt: ptr.String(`[
     [B; 0b, 1b],
     [B; 2b, 3b]
 ]`),
@@ -582,8 +582,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         &ListPayload{StringPayloadPtr(`Hello`), StringPayloadPtr(`World`)},
 		snbt:        ptr.String(`["Hello", "World"]`),
-		snbtCompact: ptr.String(`["Hello","World"]`),
-		snbtPretty: ptr.String(`[
+		compactSnbt: ptr.String(`["Hello","World"]`),
+		prettySnbt: ptr.String(`[
     "Hello",
     "World"
 ]`),
@@ -617,8 +617,8 @@ var PayloadValidTestCases = []struct {
 			&ListPayload{StringPayloadPtr(`Test`)},
 		},
 		snbt:        ptr.String(`[[123b], ["Test"]]`),
-		snbtCompact: ptr.String(`[[123b],["Test"]]`),
-		snbtPretty: ptr.String(`[
+		compactSnbt: ptr.String(`[[123b],["Test"]]`),
+		prettySnbt: ptr.String(`[
     [
         123b
     ],
@@ -668,8 +668,8 @@ var PayloadValidTestCases = []struct {
 			&CompoundPayload{&StringTag{TagName(`String`), StringPayload(`Hello`)}, &EndTag{}},
 		},
 		snbt:        ptr.String(`[{Byte: 123b}, {String: "Hello"}]`),
-		snbtCompact: ptr.String(`[{Byte:123b},{String:"Hello"}]`),
-		snbtPretty: ptr.String(`[
+		compactSnbt: ptr.String(`[{Byte:123b},{String:"Hello"}]`),
+		prettySnbt: ptr.String(`[
     {
         Byte: 123b
     },
@@ -699,8 +699,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         &ListPayload{},
 		snbt:        ptr.String(`[]`),
-		snbtCompact: ptr.String(`[]`),
-		snbtPretty:  ptr.String(`[]`),
+		compactSnbt: ptr.String(`[]`),
+		prettySnbt:  ptr.String(`[]`),
 		json:        ptr.String(`[]`),
 		compactJson: ptr.String(`[]`),
 		prettyJson:  ptr.String(`[]`),
@@ -757,8 +757,8 @@ var PayloadValidTestCases = []struct {
 			&EndTag{},
 		},
 		snbt:        ptr.String(`{ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}`),
-		snbtCompact: ptr.String(`{ByteArray:[B;0b,1b],Compound:{String:"World"},List:[123b],Short:12345s,String:"Hello"}`),
-		snbtPretty: ptr.String(`{
+		compactSnbt: ptr.String(`{ByteArray:[B;0b,1b],Compound:{String:"World"},List:[123b],Short:12345s,String:"Hello"}`),
+		prettySnbt: ptr.String(`{
     ByteArray: [B; 0b, 1b],
     Compound: {
         String: "World"
@@ -795,8 +795,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         &CompoundPayload{&EndTag{}},
 		snbt:        ptr.String(`{}`),
-		snbtCompact: ptr.String(`{}`),
-		snbtPretty:  ptr.String(`{}`),
+		compactSnbt: ptr.String(`{}`),
+		prettySnbt:  ptr.String(`{}`),
 		json:        ptr.String(`{}`),
 		compactJson: ptr.String(`{}`),
 		prettyJson:  ptr.String(`{}`),
@@ -814,8 +814,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         &IntArrayPayload{0, 1, 2, 3},
 		snbt:        ptr.String(`[I; 0, 1, 2, 3]`),
-		snbtCompact: ptr.String(`[I;0,1,2,3]`),
-		snbtPretty:  ptr.String(`[I; 0, 1, 2, 3]`),
+		compactSnbt: ptr.String(`[I;0,1,2,3]`),
+		prettySnbt:  ptr.String(`[I; 0, 1, 2, 3]`),
 		json:        ptr.String(`[0, 1, 2, 3]`),
 		compactJson: ptr.String(`[0,1,2,3]`),
 		prettyJson: ptr.String(`[
@@ -834,8 +834,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         &IntArrayPayload{},
 		snbt:        ptr.String(`[I; ]`),
-		snbtCompact: ptr.String(`[I;]`),
-		snbtPretty:  ptr.String(`[I; ]`),
+		compactSnbt: ptr.String(`[I;]`),
+		prettySnbt:  ptr.String(`[I; ]`),
 		json:        ptr.String(`[]`),
 		compactJson: ptr.String(`[]`),
 		prettyJson:  ptr.String(`[]`),
@@ -853,8 +853,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         &LongArrayPayload{0, 1, 2, 3},
 		snbt:        ptr.String(`[L; 0L, 1L, 2L, 3L]`),
-		snbtCompact: ptr.String(`[L;0L,1L,2L,3L]`),
-		snbtPretty:  ptr.String(`[L; 0L, 1L, 2L, 3L]`),
+		compactSnbt: ptr.String(`[L;0L,1L,2L,3L]`),
+		prettySnbt:  ptr.String(`[L; 0L, 1L, 2L, 3L]`),
 		json:        ptr.String(`[0, 1, 2, 3]`),
 		compactJson: ptr.String(`[0,1,2,3]`),
 		prettyJson: ptr.String(`[
@@ -873,8 +873,8 @@ var PayloadValidTestCases = []struct {
 		},
 		nbt:         &LongArrayPayload{},
 		snbt:        ptr.String(`[L; ]`),
-		snbtCompact: ptr.String(`[L;]`),
-		snbtPretty:  ptr.String(`[L; ]`),
+		compactSnbt: ptr.String(`[L;]`),
+		prettySnbt:  ptr.String(`[L; ]`),
 		json:        ptr.String(`[]`),
 		compactJson: ptr.String(`[]`),
 		prettyJson:  ptr.String(`[]`),
@@ -886,8 +886,8 @@ var TagValidTestCases = []struct {
 	raw         []byte
 	nbt         Tag
 	snbt        *string
-	snbtCompact *string
-	snbtPretty  *string
+	compactSnbt *string
+	prettySnbt  *string
 	json        *string
 	compactJson *string
 	prettyJson  *string
@@ -897,8 +897,8 @@ var TagValidTestCases = []struct {
 		raw:         []byte{},
 		nbt:         new(EndTag),
 		snbt:        ptr.String(``),
-		snbtCompact: ptr.String(``),
-		snbtPretty:  ptr.String(``),
+		compactSnbt: ptr.String(``),
+		prettySnbt:  ptr.String(``),
 		json:        ptr.String(``),
 		compactJson: ptr.String(``),
 		prettyJson:  ptr.String(``),
@@ -915,8 +915,8 @@ var TagValidTestCases = []struct {
 		},
 		nbt:         &ByteTag{TagName(`Byte`), BytePayload(123)},
 		snbt:        ptr.String(`Byte: 123b`),
-		snbtCompact: ptr.String(`Byte:123b`),
-		snbtPretty:  ptr.String(`Byte: 123b`),
+		compactSnbt: ptr.String(`Byte:123b`),
+		prettySnbt:  ptr.String(`Byte: 123b`),
 		json:        ptr.String(`"Byte": 123`),
 		compactJson: ptr.String(`"Byte":123`),
 		prettyJson:  ptr.String(`"Byte": 123`),
@@ -933,8 +933,8 @@ var TagValidTestCases = []struct {
 		},
 		nbt:         &ShortTag{TagName(`Short`), ShortPayload(12345)},
 		snbt:        ptr.String(`Short: 12345s`),
-		snbtCompact: ptr.String(`Short:12345s`),
-		snbtPretty:  ptr.String(`Short: 12345s`),
+		compactSnbt: ptr.String(`Short:12345s`),
+		prettySnbt:  ptr.String(`Short: 12345s`),
 		json:        ptr.String(`"Short": 12345`),
 		compactJson: ptr.String(`"Short":12345`),
 		prettyJson:  ptr.String(`"Short": 12345`),
@@ -951,8 +951,8 @@ var TagValidTestCases = []struct {
 		},
 		nbt:         &IntTag{TagName(`Int`), IntPayload(123456789)},
 		snbt:        ptr.String(`Int: 123456789`),
-		snbtCompact: ptr.String(`Int:123456789`),
-		snbtPretty:  ptr.String(`Int: 123456789`),
+		compactSnbt: ptr.String(`Int:123456789`),
+		prettySnbt:  ptr.String(`Int: 123456789`),
 		json:        ptr.String(`"Int": 123456789`),
 		compactJson: ptr.String(`"Int":123456789`),
 		prettyJson:  ptr.String(`"Int": 123456789`),
@@ -969,8 +969,8 @@ var TagValidTestCases = []struct {
 		},
 		nbt:         &LongTag{TagName(`Long`), LongPayload(123456789123456789)},
 		snbt:        ptr.String(`Long: 123456789123456789L`),
-		snbtCompact: ptr.String(`Long:123456789123456789L`),
-		snbtPretty:  ptr.String(`Long: 123456789123456789L`),
+		compactSnbt: ptr.String(`Long:123456789123456789L`),
+		prettySnbt:  ptr.String(`Long: 123456789123456789L`),
 		json:        ptr.String(`"Long": 123456789123456789`),
 		compactJson: ptr.String(`"Long":123456789123456789`),
 		prettyJson:  ptr.String(`"Long": 123456789123456789`),
@@ -987,8 +987,8 @@ var TagValidTestCases = []struct {
 		},
 		nbt:         &FloatTag{TagName(`Float`), FloatPayload(0.12345678)},
 		snbt:        ptr.String(`Float: 0.12345678f`),
-		snbtCompact: ptr.String(`Float:0.12345678f`),
-		snbtPretty:  ptr.String(`Float: 0.12345678f`),
+		compactSnbt: ptr.String(`Float:0.12345678f`),
+		prettySnbt:  ptr.String(`Float: 0.12345678f`),
 		json:        ptr.String(`"Float": 0.12345678`),
 		compactJson: ptr.String(`"Float":0.12345678`),
 		prettyJson:  ptr.String(`"Float": 0.12345678`),
@@ -1005,8 +1005,8 @@ var TagValidTestCases = []struct {
 		},
 		nbt:         &DoubleTag{TagName(`Double`), DoublePayload(0.123456789)},
 		snbt:        ptr.String(`Double: 0.123456789d`),
-		snbtCompact: ptr.String(`Double:0.123456789d`),
-		snbtPretty:  ptr.String(`Double: 0.123456789d`),
+		compactSnbt: ptr.String(`Double:0.123456789d`),
+		prettySnbt:  ptr.String(`Double: 0.123456789d`),
 		json:        ptr.String(`"Double": 0.123456789`),
 		compactJson: ptr.String(`"Double":0.123456789`),
 		prettyJson:  ptr.String(`"Double": 0.123456789`),
@@ -1025,8 +1025,8 @@ var TagValidTestCases = []struct {
 		},
 		nbt:         &ByteArrayTag{TagName(`ByteArray`), ByteArrayPayload{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}},
 		snbt:        ptr.String(`ByteArray: [B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]`),
-		snbtCompact: ptr.String(`ByteArray:[B;0b,1b,2b,3b,4b,5b,6b,7b,8b,9b]`),
-		snbtPretty:  ptr.String(`ByteArray: [B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]`),
+		compactSnbt: ptr.String(`ByteArray:[B;0b,1b,2b,3b,4b,5b,6b,7b,8b,9b]`),
+		prettySnbt:  ptr.String(`ByteArray: [B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]`),
 		json:        ptr.String(`"ByteArray": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]`),
 		compactJson: ptr.String(`"ByteArray":[0,1,2,3,4,5,6,7,8,9]`),
 		prettyJson: ptr.String(`"ByteArray": [
@@ -1056,8 +1056,8 @@ var TagValidTestCases = []struct {
 		},
 		nbt:         &StringTag{TagName(`String`), StringPayload(`Hello World`)},
 		snbt:        ptr.String(`String: "Hello World"`),
-		snbtCompact: ptr.String(`String:"Hello World"`),
-		snbtPretty:  ptr.String(`String: "Hello World"`),
+		compactSnbt: ptr.String(`String:"Hello World"`),
+		prettySnbt:  ptr.String(`String: "Hello World"`),
 		json:        ptr.String(`"String": "Hello World"`),
 		compactJson: ptr.String(`"String":"Hello World"`),
 		prettyJson:  ptr.String(`"String": "Hello World"`),
@@ -1081,8 +1081,8 @@ var TagValidTestCases = []struct {
 		},
 		nbt:         &ListTag{TagName(`List`), ListPayload{ShortPayloadPtr(12345), ShortPayloadPtr(6789)}},
 		snbt:        ptr.String(`List: [12345s, 6789s]`),
-		snbtCompact: ptr.String(`List:[12345s,6789s]`),
-		snbtPretty: ptr.String(`List: [
+		compactSnbt: ptr.String(`List:[12345s,6789s]`),
+		prettySnbt: ptr.String(`List: [
     12345s,
     6789s
 ]`),
@@ -1152,8 +1152,8 @@ var TagValidTestCases = []struct {
 			},
 		},
 		snbt:        ptr.String(`Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}`),
-		snbtCompact: ptr.String(`Compound:{ByteArray:[B;0b,1b],Compound:{String:"World"},List:[123b],Short:12345s,String:"Hello"}`),
-		snbtPretty: ptr.String(`Compound: {
+		compactSnbt: ptr.String(`Compound:{ByteArray:[B;0b,1b],Compound:{String:"World"},List:[123b],Short:12345s,String:"Hello"}`),
+		prettySnbt: ptr.String(`Compound: {
     ByteArray: [B; 0b, 1b],
     Compound: {
         String: "World"
@@ -1198,8 +1198,8 @@ var TagValidTestCases = []struct {
 		},
 		nbt:         &IntArrayTag{TagName(`IntArray`), IntArrayPayload{0, 1, 2, 3}},
 		snbt:        ptr.String(`IntArray: [I; 0, 1, 2, 3]`),
-		snbtCompact: ptr.String(`IntArray:[I;0,1,2,3]`),
-		snbtPretty:  ptr.String(`IntArray: [I; 0, 1, 2, 3]`),
+		compactSnbt: ptr.String(`IntArray:[I;0,1,2,3]`),
+		prettySnbt:  ptr.String(`IntArray: [I; 0, 1, 2, 3]`),
 		json:        ptr.String(`"IntArray": [0, 1, 2, 3]`),
 		compactJson: ptr.String(`"IntArray":[0,1,2,3]`),
 		prettyJson: ptr.String(`"IntArray": [
@@ -1226,8 +1226,8 @@ var TagValidTestCases = []struct {
 		},
 		nbt:         &LongArrayTag{TagName(`LongArray`), LongArrayPayload{0, 1, 2, 3}},
 		snbt:        ptr.String(`LongArray: [L; 0L, 1L, 2L, 3L]`),
-		snbtCompact: ptr.String(`LongArray:[L;0L,1L,2L,3L]`),
-		snbtPretty:  ptr.String(`LongArray: [L; 0L, 1L, 2L, 3L]`),
+		compactSnbt: ptr.String(`LongArray:[L;0L,1L,2L,3L]`),
+		prettySnbt:  ptr.String(`LongArray: [L; 0L, 1L, 2L, 3L]`),
 		json:        ptr.String(`"LongArray": [0, 1, 2, 3]`),
 		compactJson: ptr.String(`"LongArray":[0,1,2,3]`),
 		prettyJson: ptr.String(`"LongArray": [

@@ -18,7 +18,7 @@ func TestParse(t *testing.T) {
 	for _, v := range NBTValidTestCases {
 		c := parseTestCase{
 			name: v.name,
-			snbt: v.snbtCompact,
+			snbt: v.compactSnbt,
 			want: v.nbt,
 		}
 		cases = append(cases, c)
@@ -52,7 +52,7 @@ func TestPayload_Parse(t *testing.T) {
 	for _, v := range PayloadValidTestCases {
 		c := parseTestCase{
 			name:    v.name,
-			snbt:    v.snbtCompact,
+			snbt:    v.compactSnbt,
 			want:    v.nbt,
 			wantErr: nil,
 		}
@@ -98,7 +98,7 @@ func TestTag_Parse(t *testing.T) {
 	for _, v := range TagValidTestCases {
 		c := parseTestCase{
 			name:    v.name,
-			snbt:    v.snbtCompact,
+			snbt:    v.compactSnbt,
 			want:    v.nbt,
 			wantErr: nil,
 		}

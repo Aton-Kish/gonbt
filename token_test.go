@@ -135,14 +135,14 @@ func TestSnbtTokenBitmaps_Compact(t *testing.T) {
 		dc := compactTestCase{
 			name: v.name,
 			snbt: v.snbt,
-			want: v.snbtCompact,
+			want: v.compactSnbt,
 		}
 		cases = append(cases, dc)
 
 		pc := compactTestCase{
 			name: v.name,
-			snbt: v.snbtPretty,
-			want: v.snbtCompact,
+			snbt: v.prettySnbt,
+			want: v.compactSnbt,
 		}
 		cases = append(cases, pc)
 	}
