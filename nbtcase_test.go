@@ -304,6 +304,18 @@ var PayloadValidTestCases = []struct {
 		snbtPretty:  ptr.String(`[B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]`),
 	},
 	{
+		name: `Valid Case: ByteArrayPayload - Empty`,
+		raw: []byte{
+			// Payload Length: 0
+			0x00, 0x00, 0x00, 0x00,
+			// Payload: [B; ]
+		},
+		nbt:         &ByteArrayPayload{},
+		snbt:        ptr.String(`[B; ]`),
+		snbtCompact: ptr.String(`[B;]`),
+		snbtPretty:  ptr.String(`[B; ]`),
+	},
+	{
 		name: `Valid Case: StringPayload "Test"`,
 		raw: []byte{
 			// Payload Length: 4
@@ -544,6 +556,20 @@ var PayloadValidTestCases = []struct {
 ]`),
 	},
 	{
+		name: `Valid Case: ListPayload - Empty`,
+		raw: []byte{
+			// Payload Type: TagEnd(=0)
+			0x00,
+			// Payload Length: 0
+			0x00, 0x00, 0x00, 0x00,
+			// Payload: []
+		},
+		nbt:         &ListPayload{PayloadType: TagEnd, Payloads: []Payload{}},
+		snbt:        ptr.String(`[]`),
+		snbtCompact: ptr.String(`[]`),
+		snbtPretty:  ptr.String(`[]`),
+	},
+	{
 		name: `Valid Case: CompoundPayload`,
 		raw: []byte{
 			// Payload:
@@ -637,6 +663,18 @@ var PayloadValidTestCases = []struct {
 		snbtPretty:  ptr.String(`[I; 0, 1, 2, 3]`),
 	},
 	{
+		name: `Valid Case: IntArrayPayload - Empty`,
+		raw: []byte{
+			// Payload Length: 0
+			0x00, 0x00, 0x00, 0x00,
+			// Payload: [I; ]
+		},
+		nbt:         &IntArrayPayload{},
+		snbt:        ptr.String(`[I; ]`),
+		snbtCompact: ptr.String(`[I;]`),
+		snbtPretty:  ptr.String(`[I; ]`),
+	},
+	{
 		name: `Valid Case: LongArrayPayload`,
 		raw: []byte{
 			// Payload Length: 4
@@ -651,6 +689,18 @@ var PayloadValidTestCases = []struct {
 		snbt:        ptr.String(`[L; 0L, 1L, 2L, 3L]`),
 		snbtCompact: ptr.String(`[L;0L,1L,2L,3L]`),
 		snbtPretty:  ptr.String(`[L; 0L, 1L, 2L, 3L]`),
+	},
+	{
+		name: `Valid Case: LongArrayPayload - Empty`,
+		raw: []byte{
+			// Payload Length: 0
+			0x00, 0x00, 0x00, 0x00,
+			// Payload: [L; ]
+		},
+		nbt:         &LongArrayPayload{},
+		snbt:        ptr.String(`[L; ]`),
+		snbtCompact: ptr.String(`[L;]`),
+		snbtPretty:  ptr.String(`[L; ]`),
 	},
 }
 
