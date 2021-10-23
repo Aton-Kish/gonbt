@@ -36,10 +36,7 @@ type (
 
 	StringPayload string
 
-	ListPayload struct {
-		PayloadType TagType
-		Payloads    []Payload
-	}
+	ListPayload []Payload
 
 	CompoundPayload []Tag
 

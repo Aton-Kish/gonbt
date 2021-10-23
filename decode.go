@@ -119,7 +119,8 @@ func (p *StringPayload) Decode(r io.Reader) error {
 }
 
 func (p *ListPayload) Decode(r io.Reader) error {
-	if err := binary.Read(r, binary.BigEndian, &p.PayloadType); err != nil {
+	var typ TagType
+	if err := binary.Read(r, binary.BigEndian, &typ); err != nil {
 		return err
 	}
 
@@ -128,9 +129,9 @@ func (p *ListPayload) Decode(r io.Reader) error {
 		return err
 	}
 
-	p.Payloads = make([]Payload, 0, l)
+	*p = make([]Payload, 0, l)
 	for i := 0; i < int(l); i++ {
-		payload, err := NewPayload(p.PayloadType)
+		payload, err := NewPayload(typ)
 		if err != nil {
 			return err
 		}
@@ -139,7 +140,7 @@ func (p *ListPayload) Decode(r io.Reader) error {
 			return err
 		}
 
-		p.Payloads = append(p.Payloads, payload)
+		*p = append(*p, payload)
 	}
 
 	return nil

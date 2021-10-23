@@ -207,10 +207,8 @@ func (p *ListPayload) Parse(bm *SnbtTokenBitmaps) error {
 				return err
 			}
 
-			p.Payloads = append(p.Payloads, payload)
+			*p = append(*p, payload)
 		}
-
-		p.PayloadType = p.Payloads[0].TypeId()
 	} else {
 		bm.NextToken(``, `" `)
 	}

@@ -105,16 +105,22 @@ func (p *StringPayload) Encode(w io.Writer) error {
 }
 
 func (p *ListPayload) Encode(w io.Writer) error {
-	if err := binary.Write(w, binary.BigEndian, &p.PayloadType); err != nil {
+	l := int32(len(*p))
+
+	typ := TagEnd
+	if l > 0 {
+		cp := []Payload(*p)
+		typ = cp[0].TypeId()
+	}
+	if err := binary.Write(w, binary.BigEndian, &typ); err != nil {
 		return err
 	}
 
-	l := int32(len(p.Payloads))
 	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
 		return err
 	}
 
-	for _, payload := range p.Payloads {
+	for _, payload := range *p {
 		if err := payload.Encode(w); err != nil {
 			return err
 		}

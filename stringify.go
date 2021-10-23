@@ -125,9 +125,9 @@ func (p *StringPayload) Stringify(space string, indent string, depth int) string
 }
 
 func (p *ListPayload) Stringify(space string, indent string, depth int) string {
-	l := len(p.Payloads)
+	l := len(*p)
 	sl := make([]string, 0, l)
-	for _, payload := range p.Payloads {
+	for _, payload := range *p {
 		sl = append(sl, payload.Stringify(space, indent, depth+1))
 	}
 
