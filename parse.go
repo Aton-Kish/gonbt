@@ -12,8 +12,8 @@ var (
 	shortPattern  = regexp.MustCompile(`^(-?\d+)[Ss]$`)
 	intPattern    = regexp.MustCompile(`^-?\d+$`)
 	longPattern   = regexp.MustCompile(`^(-?\d+)[Ll]$`)
-	floatPattern  = regexp.MustCompile(`^(-?\d+\.\d+([Ee][+-]?\d+)?)[Ff]$`)
-	doublePattern = regexp.MustCompile(`^(-?\d+\.\d+([Ee][+-]?\d+)?)[Dd]?$`)
+	floatPattern  = regexp.MustCompile(`^(-?\d+(\.\d+)?([Ee][+-]?\d+)?)[Ff]$`)
+	doublePattern = regexp.MustCompile(`^(-?\d+(\.\d+)?([Ee][+-]?\d+)?)[Dd]?$`)
 )
 
 func Parse(bm *SnbtTokenBitmaps, tag *Tag) error {
@@ -135,7 +135,7 @@ func (p *DoublePayload) Parse(bm *SnbtTokenBitmaps) error {
 }
 
 func (p *ByteArrayPayload) Parse(bm *SnbtTokenBitmaps) error {
-	if c := bm.Raw[bm.CurrToken.Index+1]; c != ']' {
+	if bm.Raw[bm.CurrToken.Index+1] != ']' {
 		for {
 			if bm.CurrToken.Char == ']' {
 				break
@@ -159,6 +159,8 @@ func (p *ByteArrayPayload) Parse(bm *SnbtTokenBitmaps) error {
 
 			*p = append(*p, int8(*cp))
 		}
+	} else {
+		bm.NextToken(``, `" `)
 	}
 
 	bm.NextToken(``, `" `)
@@ -188,7 +190,7 @@ func (p *StringPayload) Parse(bm *SnbtTokenBitmaps) error {
 }
 
 func (p *ListPayload) Parse(bm *SnbtTokenBitmaps) error {
-	if c := bm.Raw[bm.CurrToken.Index+1]; c != ']' {
+	if bm.Raw[bm.CurrToken.Index+1] != ']' {
 		for {
 			if bm.CurrToken.Char == ']' {
 				break
@@ -209,6 +211,8 @@ func (p *ListPayload) Parse(bm *SnbtTokenBitmaps) error {
 		}
 
 		p.PayloadType = p.Payloads[0].TypeId()
+	} else {
+		bm.NextToken(``, `" `)
 	}
 
 	bm.NextToken(``, `" `)
@@ -217,7 +221,7 @@ func (p *ListPayload) Parse(bm *SnbtTokenBitmaps) error {
 }
 
 func (p *CompoundPayload) Parse(bm *SnbtTokenBitmaps) error {
-	if c := bm.Raw[bm.CurrToken.Index+1]; c != '}' {
+	if bm.Raw[bm.CurrToken.Index+1] != '}' {
 		for {
 			if bm.CurrToken.Char == '}' {
 				break
@@ -232,15 +236,17 @@ func (p *CompoundPayload) Parse(bm *SnbtTokenBitmaps) error {
 		}
 
 		*p = append(*p, &EndTag{})
-
+	} else {
 		bm.NextToken(``, `" `)
 	}
+
+	bm.NextToken(``, `" `)
 
 	return nil
 }
 
 func (p *IntArrayPayload) Parse(bm *SnbtTokenBitmaps) error {
-	if c := bm.Raw[bm.CurrToken.Index+1]; c != ']' {
+	if bm.Raw[bm.CurrToken.Index+1] != ']' {
 		for {
 			if bm.CurrToken.Char == ']' {
 				break
@@ -264,6 +270,8 @@ func (p *IntArrayPayload) Parse(bm *SnbtTokenBitmaps) error {
 
 			*p = append(*p, int32(*cp))
 		}
+	} else {
+		bm.NextToken(``, `" `)
 	}
 
 	bm.NextToken(``, `" `)
@@ -272,7 +280,7 @@ func (p *IntArrayPayload) Parse(bm *SnbtTokenBitmaps) error {
 }
 
 func (p *LongArrayPayload) Parse(bm *SnbtTokenBitmaps) error {
-	if c := bm.Raw[bm.CurrToken.Index+1]; c != ']' {
+	if bm.Raw[bm.CurrToken.Index+1] != ']' {
 		for {
 			if bm.CurrToken.Char == ']' {
 				break
@@ -296,6 +304,8 @@ func (p *LongArrayPayload) Parse(bm *SnbtTokenBitmaps) error {
 
 			*p = append(*p, int64(*cp))
 		}
+	} else {
+		bm.NextToken(``, `" `)
 	}
 
 	bm.NextToken(``, `" `)
