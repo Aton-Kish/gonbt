@@ -1,8 +1,10 @@
 package gonbt
 
 import (
+	"errors"
 	"fmt"
 	"io"
+	"strconv"
 )
 
 // Tag Name
@@ -15,6 +17,7 @@ type (
 		Decode(r io.Reader) error
 		Encode(w io.Writer) error
 		Stringify(string, string, int) string
+		Parse(*SnbtTokenBitmaps) error
 	}
 
 	BytePayload int8
@@ -76,6 +79,63 @@ func NewPayload(typ TagType) (Payload, error) {
 	return nil, fmt.Errorf(`invalid tag type %d`, typ)
 }
 
+func NewPayloadFromSnbt(bm *SnbtTokenBitmaps) (Payload, error) {
+	switch bm.CurrToken.Char {
+	case '{':
+		return new(CompoundPayload), nil
+	case '[':
+		typ := bm.Raw[bm.CurrToken.Index+1]
+		switch typ {
+		case 'B', 'I', 'L':
+			if err := bm.NextToken(``, `" `); err != nil {
+				return nil, err
+			} else if bm.CurrToken.Char != ';' {
+				return nil, errors.New("invalid snbt format")
+			}
+
+			switch typ {
+			case 'B':
+				return new(ByteArrayPayload), nil
+			case 'I':
+				return new(IntArrayPayload), nil
+			case 'L':
+				return new(LongArrayPayload), nil
+			}
+		}
+
+		return new(ListPayload), nil
+	case '"', ' ', ':', ';':
+		return nil, errors.New("invalid snbt format")
+	}
+
+	b := bm.Raw[bm.PrevToken.Index+1 : bm.CurrToken.Index]
+	if bytePattern.Match(b) {
+		return new(BytePayload), nil
+	}
+
+	if shortPattern.Match(b) {
+		return new(ShortPayload), nil
+	}
+
+	if intPattern.Match(b) {
+		return new(IntPayload), nil
+	}
+
+	if longPattern.Match(b) {
+		return new(LongPayload), nil
+	}
+
+	if floatPattern.Match(b) {
+		return new(FloatPayload), nil
+	}
+
+	if doublePattern.Match(b) {
+		return new(DoublePayload), nil
+	}
+
+	return new(StringPayload), nil
+}
+
 // Tag
 type (
 	Tag interface {
@@ -83,6 +143,7 @@ type (
 		Decode(r io.Reader) error
 		Encode(w io.Writer) error
 		Stringify(string, string, int) string
+		Parse(*SnbtTokenBitmaps) error
 	}
 
 	EndTag struct {
@@ -180,4 +241,59 @@ func NewTag(typ TagType) (Tag, error) {
 	}
 
 	return nil, fmt.Errorf(`invalid tag type %d`, typ)
+}
+
+func NewTagFromSnbt(bm *SnbtTokenBitmaps) (Tag, error) {
+	if err := bm.NextToken(``, `" `); err != nil {
+		return nil, err
+	}
+
+	var n TagName
+	if bm.CurrToken.Index > 0 {
+		b := bm.Raw[bm.PrevToken.Index+1 : bm.CurrToken.Index]
+
+		if s, err := strconv.Unquote(string(b)); err != nil {
+			n = TagName(b)
+		} else {
+			n = TagName(s)
+		}
+
+		if err := bm.NextToken(``, `" `); err != nil {
+			return nil, err
+		}
+	}
+
+	p, err := NewPayloadFromSnbt(bm)
+	if err != nil {
+		return nil, err
+	}
+
+	switch cp := p.(type) {
+	case *BytePayload:
+		return &ByteTag{TagName: n, BytePayload: *cp}, nil
+	case *ShortPayload:
+		return &ShortTag{TagName: n, ShortPayload: *cp}, nil
+	case *IntPayload:
+		return &IntTag{TagName: n, IntPayload: *cp}, nil
+	case *LongPayload:
+		return &LongTag{TagName: n, LongPayload: *cp}, nil
+	case *FloatPayload:
+		return &FloatTag{TagName: n, FloatPayload: *cp}, nil
+	case *DoublePayload:
+		return &DoubleTag{TagName: n, DoublePayload: *cp}, nil
+	case *ByteArrayPayload:
+		return &ByteArrayTag{TagName: n, ByteArrayPayload: *cp}, nil
+	case *StringPayload:
+		return &StringTag{TagName: n, StringPayload: *cp}, nil
+	case *ListPayload:
+		return &ListTag{TagName: n, ListPayload: *cp}, nil
+	case *CompoundPayload:
+		return &CompoundTag{TagName: n, CompoundPayload: *cp}, nil
+	case *IntArrayPayload:
+		return &IntArrayTag{TagName: n, IntArrayPayload: *cp}, nil
+	case *LongArrayPayload:
+		return &LongArrayTag{TagName: n, LongArrayPayload: *cp}, nil
+	}
+
+	return nil, errors.New("invalid snbt format")
 }

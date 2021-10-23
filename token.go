@@ -48,7 +48,8 @@ func newSnbtTokenBitmapsWithoutRaw(bitmapLen int) SnbtTokenBitmaps {
 			':': make([]uint64, bitmapLen),
 			';': make([]uint64, bitmapLen),
 		},
-		CurrToken: &Token{Char: ':', Index: 0},
+		PrevToken: &Token{Index: -1},
+		CurrToken: &Token{Index: -1},
 	}
 }
 
