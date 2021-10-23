@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -67,7 +68,7 @@ func (t *TagName) Stringify() string {
 		return s
 	}
 
-	qs := fmt.Sprintf("%#v", s)
+	qs := strconv.Quote(s)
 	if strings.Contains(s, `"`) && !strings.Contains(s, `'`) {
 		qs = `'` + qs[1:len(qs)-1] + `'`
 		qs = strings.ReplaceAll(qs, `\"`, `"`)
@@ -113,7 +114,7 @@ func (p *ByteArrayPayload) Stringify(space string, indent string, depth int) str
 
 func (p *StringPayload) Stringify(space string, indent string, depth int) string {
 	s := string(*p)
-	qs := fmt.Sprintf("%#v", s)
+	qs := strconv.Quote(s)
 	if strings.Contains(s, `"`) && !strings.Contains(s, `'`) {
 		qs = `'` + qs[1:len(qs)-1] + `'`
 		qs = strings.ReplaceAll(qs, `\"`, `"`)
