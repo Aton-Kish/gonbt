@@ -21,33 +21,22 @@
 package nbt
 
 import (
+	"encoding/binary"
 	"io"
 )
 
-type TagType byte
+type TagName string
 
-const (
-	EndType TagType = iota
-	ByteType
-	ShortType
-	IntType
-	LongType
-	FloatType
-	DoubleType
-	ByteArrayType
-	StringType
-	ListType
-	CompoundType
-	IntArrayType
-	LongArrayType
-)
+func (n *TagName) Encode(w io.Writer) error {
+	l := uint16(len(*n))
+	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
+		return err
+	}
 
-type Tag interface {
-	TypeId() TagType
-	Encode(w io.Writer) error
-}
+	b := []byte(*n)
+	if err := binary.Write(w, binary.BigEndian, b); err != nil {
+		return err
+	}
 
-type Payload interface {
-	TypeId() TagType
-	Encode(w io.Writer) error
+	return nil
 }
