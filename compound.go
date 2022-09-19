@@ -18,32 +18,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package payload
+package nbt
 
-import (
-	"testing"
+type CompoundTag struct {
+	TagName
+	CompoundPayload
+}
 
-	"github.com/Aton-Kish/gonbt/tag"
-	"github.com/stretchr/testify/assert"
-)
+func NewCompoundTag() Tag {
+	return new(CompoundTag)
+}
 
-func TestIntArrayPayload_TypeId(t *testing.T) {
-	cases := []struct {
-		name     string
-		payload  Payload
-		expected tag.Type
-	}{
-		{
-			name:     "positive case",
-			payload:  NewIntArrayPayload(),
-			expected: tag.IntArrayType,
-		},
-	}
+func (t *CompoundTag) TypeId() TagType {
+	return CompoundType
+}
 
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := tt.payload.TypeId()
-			assert.Equal(t, tt.expected, actual)
-		})
-	}
+type CompoundPayload []Tag
+
+func NewCompoundPayload() Payload {
+	return new(CompoundPayload)
+}
+
+func (p *CompoundPayload) TypeId() TagType {
+	return CompoundType
 }

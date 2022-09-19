@@ -18,25 +18,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package payload
+package nbt
 
 import (
 	"testing"
 
-	"github.com/Aton-Kish/gonbt/tag"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFloatPayload_TypeId(t *testing.T) {
+func TestListTag_TypeId(t *testing.T) {
 	cases := []struct {
 		name     string
-		payload  Payload
-		expected tag.Type
+		tag      Tag
+		expected TagType
 	}{
 		{
 			name:     "positive case",
-			payload:  NewFloatPayload(),
-			expected: tag.FloatType,
+			tag:      NewListTag(),
+			expected: ListType,
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.TypeId()
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestListPayload_TypeId(t *testing.T) {
+	cases := []struct {
+		name     string
+		payload  Payload
+		expected TagType
+	}{
+		{
+			name:     "positive case",
+			payload:  NewListPayload(),
+			expected: ListType,
 		},
 	}
 

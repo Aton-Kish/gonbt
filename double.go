@@ -18,18 +18,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package payload
+package nbt
 
-import (
-	"github.com/Aton-Kish/gonbt/tag"
-)
-
-type LongPayload int64
-
-func NewLongPayload() Payload {
-	return new(LongPayload)
+type DoubleTag struct {
+	TagName
+	DoublePayload
 }
 
-func (p *LongPayload) TypeId() tag.Type {
-	return tag.LongType
+func NewDoubleTag() Tag {
+	return new(DoubleTag)
+}
+
+func (t *DoubleTag) TypeId() TagType {
+	return DoubleType
+}
+
+type DoublePayload float64
+
+func NewDoublePayload() Payload {
+	return new(DoublePayload)
+}
+
+func (p *DoublePayload) TypeId() TagType {
+	return DoubleType
 }

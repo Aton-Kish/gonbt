@@ -18,8 +18,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package tag
+package nbt
 
-type Tag interface {
-	TypeId() Type
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestByteTag_TypeId(t *testing.T) {
+	cases := []struct {
+		name     string
+		tag      Tag
+		expected TagType
+	}{
+		{
+			name:     "positive case",
+			tag:      NewByteTag(),
+			expected: ByteType,
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.TypeId()
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestBytePayload_TypeId(t *testing.T) {
+	cases := []struct {
+		name     string
+		payload  Payload
+		expected TagType
+	}{
+		{
+			name:     "positive case",
+			payload:  NewBytePayload(),
+			expected: ByteType,
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.TypeId()
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }

@@ -18,18 +18,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package payload
+package nbt
 
 import (
-	"github.com/Aton-Kish/gonbt/tag"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-type LongArrayPayload []int64
+func TestLongArrayTag_TypeId(t *testing.T) {
+	cases := []struct {
+		name     string
+		tag      Tag
+		expected TagType
+	}{
+		{
+			name:     "positive case",
+			tag:      NewLongArrayTag(),
+			expected: LongArrayType,
+		},
+	}
 
-func NewLongArrayPayload() Payload {
-	return new(LongArrayPayload)
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.TypeId()
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
-func (p *LongArrayPayload) TypeId() tag.Type {
-	return tag.LongArrayType
+func TestLongArrayPayload_TypeId(t *testing.T) {
+	cases := []struct {
+		name     string
+		payload  Payload
+		expected TagType
+	}{
+		{
+			name:     "positive case",
+			payload:  NewLongArrayPayload(),
+			expected: LongArrayType,
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.TypeId()
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }

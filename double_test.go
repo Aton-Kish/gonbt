@@ -18,22 +18,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package tag
+package nbt
 
-type Type byte
+import (
+	"testing"
 
-const (
-	EndType Type = iota
-	ByteType
-	ShortType
-	IntType
-	LongType
-	FloatType
-	DoubleType
-	ByteArrayType
-	StringType
-	ListType
-	CompoundType
-	IntArrayType
-	LongArrayType
+	"github.com/stretchr/testify/assert"
 )
+
+func TestDoubleTag_TypeId(t *testing.T) {
+	cases := []struct {
+		name     string
+		tag      Tag
+		expected TagType
+	}{
+		{
+			name:     "positive case",
+			tag:      NewDoubleTag(),
+			expected: DoubleType,
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.TypeId()
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestDoublePayload_TypeId(t *testing.T) {
+	cases := []struct {
+		name     string
+		payload  Payload
+		expected TagType
+	}{
+		{
+			name:     "positive case",
+			payload:  NewDoublePayload(),
+			expected: DoubleType,
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.TypeId()
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}

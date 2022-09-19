@@ -18,17 +18,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-package payload
+package nbt
 
 import (
-	"github.com/Aton-Kish/gonbt/tag"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-type Payload interface {
-	TypeId() tag.Type
-	// Decode(r io.Reader) error
-	// Encode(w io.Writer) error
-	// Stringify(string, string, int) string
-	// Parse(*SnbtTokenBitmaps) error
-	// Json(string, string, int) string
+func TestIntArrayTag_TypeId(t *testing.T) {
+	cases := []struct {
+		name     string
+		tag      Tag
+		expected TagType
+	}{
+		{
+			name:     "positive case",
+			tag:      NewIntArrayTag(),
+			expected: IntArrayType,
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.TypeId()
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestIntArrayPayload_TypeId(t *testing.T) {
+	cases := []struct {
+		name     string
+		payload  Payload
+		expected TagType
+	}{
+		{
+			name:     "positive case",
+			payload:  NewIntArrayPayload(),
+			expected: IntArrayType,
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.TypeId()
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
