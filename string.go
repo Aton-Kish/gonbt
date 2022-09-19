@@ -20,6 +20,11 @@
 
 package nbt
 
+import (
+	"encoding/binary"
+	"io"
+)
+
 type StringTag struct {
 	TagName
 	StringPayload
@@ -33,6 +38,23 @@ func (t *StringTag) TypeId() TagType {
 	return t.StringPayload.TypeId()
 }
 
+func (t *StringTag) Encode(w io.Writer) error {
+	typ := t.TypeId()
+	if err := binary.Write(w, binary.BigEndian, &typ); err != nil {
+		return err
+	}
+
+	if err := t.TagName.Encode(w); err != nil {
+		return err
+	}
+
+	if err := t.StringPayload.Encode(w); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type StringPayload string
 
 func NewStringPayload() Payload {
@@ -41,4 +63,18 @@ func NewStringPayload() Payload {
 
 func (p *StringPayload) TypeId() TagType {
 	return StringType
+}
+
+func (p *StringPayload) Encode(w io.Writer) error {
+	l := uint16(len(*p))
+	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
+		return err
+	}
+
+	b := []byte(*p)
+	if err := binary.Write(w, binary.BigEndian, b); err != nil {
+		return err
+	}
+
+	return nil
 }

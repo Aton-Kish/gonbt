@@ -20,6 +20,11 @@
 
 package nbt
 
+import (
+	"encoding/binary"
+	"io"
+)
+
 type ListTag struct {
 	TagName
 	ListPayload
@@ -33,6 +38,23 @@ func (t *ListTag) TypeId() TagType {
 	return t.ListPayload.TypeId()
 }
 
+func (t *ListTag) Encode(w io.Writer) error {
+	typ := t.TypeId()
+	if err := binary.Write(w, binary.BigEndian, &typ); err != nil {
+		return err
+	}
+
+	if err := t.TagName.Encode(w); err != nil {
+		return err
+	}
+
+	if err := t.ListPayload.Encode(w); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type ListPayload []Payload
 
 func NewListPayload() Payload {
@@ -41,4 +63,29 @@ func NewListPayload() Payload {
 
 func (p *ListPayload) TypeId() TagType {
 	return ListType
+}
+
+func (p *ListPayload) Encode(w io.Writer) error {
+	l := int32(len(*p))
+
+	typ := EndType
+	if l > 0 {
+		typ = []Payload(*p)[0].TypeId()
+	}
+
+	if err := binary.Write(w, binary.BigEndian, &typ); err != nil {
+		return err
+	}
+
+	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
+		return err
+	}
+
+	for _, payload := range *p {
+		if err := payload.Encode(w); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

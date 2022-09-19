@@ -21,6 +21,7 @@
 package nbt
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -47,6 +48,49 @@ func TestDoubleTag_TypeId(t *testing.T) {
 	}
 }
 
+func TestDoubleTag_Encode(t *testing.T) {
+	cases := []struct {
+		name        string
+		tag         Tag
+		expected    []byte
+		expectedErr error
+	}{
+		{
+			name: "positive case",
+			tag: &DoubleTag{
+				TagName:       TagName("Double"),
+				DoublePayload: DoublePayload(0.123456789),
+			},
+			expected: []byte{
+				// Name Length: 6
+				0x00, 0x06,
+				// Name: "Double"
+				0x44, 0x6F, 0x75, 0x62, 0x6C, 0x65,
+				// Payload: 0.123456789d
+				0x3F, 0xBF, 0x9A, 0xDD, 0x37, 0x39, 0x63, 0x5F,
+			},
+			expectedErr: nil,
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := new(bytes.Buffer)
+			err := tt.tag.Encode(buf)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+
+				raw := buf.Bytes()
+				assert.Equal(t, byte(tt.tag.TypeId()), raw[0])
+				assert.Equal(t, tt.expected, raw[1:])
+			} else {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			}
+		})
+	}
+}
+
 func TestDoublePayload_TypeId(t *testing.T) {
 	cases := []struct {
 		name     string
@@ -64,6 +108,39 @@ func TestDoublePayload_TypeId(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.payload.TypeId()
 			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestDoublePayload_Encode(t *testing.T) {
+	cases := []struct {
+		name        string
+		payload     Payload
+		expected    []byte
+		expectedErr error
+	}{
+		{
+			name:    "positive case",
+			payload: PayloadPointer(DoublePayload(0.123456789)),
+			expected: []byte{
+				// Payload: 0.123456789d
+				0x3F, 0xBF, 0x9A, 0xDD, 0x37, 0x39, 0x63, 0x5F,
+			},
+			expectedErr: nil,
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := new(bytes.Buffer)
+			err := tt.payload.Encode(buf)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expected, buf.Bytes())
+			} else {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			}
 		})
 	}
 }

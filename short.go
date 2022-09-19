@@ -20,6 +20,11 @@
 
 package nbt
 
+import (
+	"encoding/binary"
+	"io"
+)
+
 type ShortTag struct {
 	TagName
 	ShortPayload
@@ -33,6 +38,23 @@ func (t *ShortTag) TypeId() TagType {
 	return t.ShortPayload.TypeId()
 }
 
+func (t *ShortTag) Encode(w io.Writer) error {
+	typ := t.TypeId()
+	if err := binary.Write(w, binary.BigEndian, &typ); err != nil {
+		return err
+	}
+
+	if err := t.TagName.Encode(w); err != nil {
+		return err
+	}
+
+	if err := t.ShortPayload.Encode(w); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type ShortPayload int16
 
 func NewShortPayload() Payload {
@@ -41,4 +63,12 @@ func NewShortPayload() Payload {
 
 func (p *ShortPayload) TypeId() TagType {
 	return ShortType
+}
+
+func (p *ShortPayload) Encode(w io.Writer) error {
+	if err := binary.Write(w, binary.BigEndian, p); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -21,6 +21,7 @@
 package nbt
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -47,6 +48,49 @@ func TestShortTag_TypeId(t *testing.T) {
 	}
 }
 
+func TestShortTag_Encode(t *testing.T) {
+	cases := []struct {
+		name        string
+		tag         Tag
+		expected    []byte
+		expectedErr error
+	}{
+		{
+			name: "positive case",
+			tag: &ShortTag{
+				TagName:      TagName("Short"),
+				ShortPayload: ShortPayload(12345),
+			},
+			expected: []byte{
+				// Name Length: 5
+				0x00, 0x05,
+				// Name: "Short"
+				0x53, 0x68, 0x6f, 0x72, 0x74,
+				// Payload: 12345s
+				0x30, 0x39,
+			},
+			expectedErr: nil,
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := new(bytes.Buffer)
+			err := tt.tag.Encode(buf)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+
+				raw := buf.Bytes()
+				assert.Equal(t, byte(tt.tag.TypeId()), raw[0])
+				assert.Equal(t, tt.expected, raw[1:])
+			} else {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			}
+		})
+	}
+}
+
 func TestShortPayload_TypeId(t *testing.T) {
 	cases := []struct {
 		name     string
@@ -64,6 +108,39 @@ func TestShortPayload_TypeId(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.payload.TypeId()
 			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestShortPayload_Encode(t *testing.T) {
+	cases := []struct {
+		name        string
+		payload     Payload
+		expected    []byte
+		expectedErr error
+	}{
+		{
+			name:    "positive case",
+			payload: PayloadPointer(ShortPayload(12345)),
+			expected: []byte{
+				// Payload: 12345s
+				0x30, 0x39,
+			},
+			expectedErr: nil,
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := new(bytes.Buffer)
+			err := tt.payload.Encode(buf)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expected, buf.Bytes())
+			} else {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			}
 		})
 	}
 }

@@ -21,6 +21,7 @@
 package nbt
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -47,6 +48,49 @@ func TestFloatTag_TypeId(t *testing.T) {
 	}
 }
 
+func TestFloatTag_Encode(t *testing.T) {
+	cases := []struct {
+		name        string
+		tag         Tag
+		expected    []byte
+		expectedErr error
+	}{
+		{
+			name: "positive case",
+			tag: &FloatTag{
+				TagName:      TagName("Float"),
+				FloatPayload: FloatPayload(0.12345678),
+			},
+			expected: []byte{
+				// Name Length: 5
+				0x00, 0x05,
+				// Name: "Float"
+				0x46, 0x6C, 0x6F, 0x61, 0x74,
+				// Payload: 0.12345678f
+				0x3D, 0xFC, 0xD6, 0xE9,
+			},
+			expectedErr: nil,
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := new(bytes.Buffer)
+			err := tt.tag.Encode(buf)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+
+				raw := buf.Bytes()
+				assert.Equal(t, byte(tt.tag.TypeId()), raw[0])
+				assert.Equal(t, tt.expected, raw[1:])
+			} else {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			}
+		})
+	}
+}
+
 func TestFloatPayload_TypeId(t *testing.T) {
 	cases := []struct {
 		name     string
@@ -64,6 +108,39 @@ func TestFloatPayload_TypeId(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.payload.TypeId()
 			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestFloatPayload_Encode(t *testing.T) {
+	cases := []struct {
+		name        string
+		payload     Payload
+		expected    []byte
+		expectedErr error
+	}{
+		{
+			name:    "positive case",
+			payload: PayloadPointer(FloatPayload(0.12345678)),
+			expected: []byte{
+				// Payload: 0.12345678f
+				0x3D, 0xFC, 0xD6, 0xE9,
+			},
+			expectedErr: nil,
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := new(bytes.Buffer)
+			err := tt.payload.Encode(buf)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expected, buf.Bytes())
+			} else {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			}
 		})
 	}
 }

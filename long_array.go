@@ -20,6 +20,11 @@
 
 package nbt
 
+import (
+	"encoding/binary"
+	"io"
+)
+
 type LongArrayTag struct {
 	TagName
 	LongArrayPayload
@@ -33,6 +38,23 @@ func (t *LongArrayTag) TypeId() TagType {
 	return t.LongArrayPayload.TypeId()
 }
 
+func (t *LongArrayTag) Encode(w io.Writer) error {
+	typ := t.TypeId()
+	if err := binary.Write(w, binary.BigEndian, &typ); err != nil {
+		return err
+	}
+
+	if err := t.TagName.Encode(w); err != nil {
+		return err
+	}
+
+	if err := t.LongArrayPayload.Encode(w); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type LongArrayPayload []int64
 
 func NewLongArrayPayload() Payload {
@@ -41,4 +63,17 @@ func NewLongArrayPayload() Payload {
 
 func (p *LongArrayPayload) TypeId() TagType {
 	return LongArrayType
+}
+
+func (p *LongArrayPayload) Encode(w io.Writer) error {
+	l := int32(len(*p))
+	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
+		return err
+	}
+
+	if err := binary.Write(w, binary.BigEndian, p); err != nil {
+		return err
+	}
+
+	return nil
 }

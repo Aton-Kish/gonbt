@@ -20,6 +20,11 @@
 
 package nbt
 
+import (
+	"encoding/binary"
+	"io"
+)
+
 type EndTag struct {
 }
 
@@ -29,4 +34,13 @@ func NewEndTag() Tag {
 
 func (t *EndTag) TypeId() TagType {
 	return EndType
+}
+
+func (t *EndTag) Encode(w io.Writer) error {
+	typ := t.TypeId()
+	if err := binary.Write(w, binary.BigEndian, &typ); err != nil {
+		return err
+	}
+
+	return nil
 }

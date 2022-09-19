@@ -20,6 +20,11 @@
 
 package nbt
 
+import (
+	"encoding/binary"
+	"io"
+)
+
 type DoubleTag struct {
 	TagName
 	DoublePayload
@@ -33,6 +38,23 @@ func (t *DoubleTag) TypeId() TagType {
 	return t.DoublePayload.TypeId()
 }
 
+func (t *DoubleTag) Encode(w io.Writer) error {
+	typ := t.TypeId()
+	if err := binary.Write(w, binary.BigEndian, &typ); err != nil {
+		return err
+	}
+
+	if err := t.TagName.Encode(w); err != nil {
+		return err
+	}
+
+	if err := t.DoublePayload.Encode(w); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type DoublePayload float64
 
 func NewDoublePayload() Payload {
@@ -41,4 +63,12 @@ func NewDoublePayload() Payload {
 
 func (p *DoublePayload) TypeId() TagType {
 	return DoubleType
+}
+
+func (p *DoublePayload) Encode(w io.Writer) error {
+	if err := binary.Write(w, binary.BigEndian, p); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -20,6 +20,11 @@
 
 package nbt
 
+import (
+	"encoding/binary"
+	"io"
+)
+
 type LongTag struct {
 	TagName
 	LongPayload
@@ -33,6 +38,23 @@ func (t *LongTag) TypeId() TagType {
 	return t.LongPayload.TypeId()
 }
 
+func (t *LongTag) Encode(w io.Writer) error {
+	typ := t.TypeId()
+	if err := binary.Write(w, binary.BigEndian, &typ); err != nil {
+		return err
+	}
+
+	if err := t.TagName.Encode(w); err != nil {
+		return err
+	}
+
+	if err := t.LongPayload.Encode(w); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type LongPayload int64
 
 func NewLongPayload() Payload {
@@ -41,4 +63,12 @@ func NewLongPayload() Payload {
 
 func (p *LongPayload) TypeId() TagType {
 	return LongType
+}
+
+func (p *LongPayload) Encode(w io.Writer) error {
+	if err := binary.Write(w, binary.BigEndian, p); err != nil {
+		return err
+	}
+
+	return nil
 }

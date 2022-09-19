@@ -21,6 +21,7 @@
 package nbt
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -43,6 +44,39 @@ func TestEndTag_TypeId(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.tag.TypeId()
 			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestEndTag_Encode(t *testing.T) {
+	cases := []struct {
+		name        string
+		tag         Tag
+		expected    []byte
+		expectedErr error
+	}{
+		{
+			name:        "positive case",
+			tag:         &EndTag{},
+			expected:    []byte{},
+			expectedErr: nil,
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := new(bytes.Buffer)
+			err := tt.tag.Encode(buf)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+
+				raw := buf.Bytes()
+				assert.Equal(t, byte(tt.tag.TypeId()), raw[0])
+				assert.Equal(t, tt.expected, raw[1:])
+			} else {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			}
 		})
 	}
 }

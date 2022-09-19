@@ -20,6 +20,11 @@
 
 package nbt
 
+import (
+	"encoding/binary"
+	"io"
+)
+
 type TagType byte
 
 const (
@@ -40,10 +45,26 @@ const (
 
 type TagName string
 
+func (n *TagName) Encode(w io.Writer) error {
+	l := uint16(len(*n))
+	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
+		return err
+	}
+
+	b := []byte(*n)
+	if err := binary.Write(w, binary.BigEndian, b); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type Tag interface {
 	TypeId() TagType
+	Encode(w io.Writer) error
 }
 
 type Payload interface {
 	TypeId() TagType
+	Encode(w io.Writer) error
 }
