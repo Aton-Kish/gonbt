@@ -30,7 +30,7 @@ func NewStringTag() Tag {
 }
 
 func (t *StringTag) TypeId() TagType {
-	return StringType
+	return t.StringPayload.TypeId()
 }
 
 type StringPayload string

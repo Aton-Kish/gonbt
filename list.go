@@ -30,7 +30,7 @@ func NewListTag() Tag {
 }
 
 func (t *ListTag) TypeId() TagType {
-	return ListType
+	return t.ListPayload.TypeId()
 }
 
 type ListPayload []Payload

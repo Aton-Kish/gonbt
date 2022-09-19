@@ -30,7 +30,7 @@ func NewLongTag() Tag {
 }
 
 func (t *LongTag) TypeId() TagType {
-	return LongType
+	return t.LongPayload.TypeId()
 }
 
 type LongPayload int64

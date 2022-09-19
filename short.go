@@ -30,7 +30,7 @@ func NewShortTag() Tag {
 }
 
 func (t *ShortTag) TypeId() TagType {
-	return ShortType
+	return t.ShortPayload.TypeId()
 }
 
 type ShortPayload int16

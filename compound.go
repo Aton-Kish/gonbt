@@ -30,7 +30,7 @@ func NewCompoundTag() Tag {
 }
 
 func (t *CompoundTag) TypeId() TagType {
-	return CompoundType
+	return t.CompoundPayload.TypeId()
 }
 
 type CompoundPayload []Tag

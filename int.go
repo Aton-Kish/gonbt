@@ -30,7 +30,7 @@ func NewIntTag() Tag {
 }
 
 func (t *IntTag) TypeId() TagType {
-	return IntType
+	return t.IntPayload.TypeId()
 }
 
 type IntPayload int32

@@ -30,7 +30,7 @@ func NewByteArrayTag() Tag {
 }
 
 func (t *ByteArrayTag) TypeId() TagType {
-	return ByteArrayType
+	return t.ByteArrayPayload.TypeId()
 }
 
 type ByteArrayPayload []int8

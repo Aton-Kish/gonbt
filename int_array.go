@@ -30,7 +30,7 @@ func NewIntArrayTag() Tag {
 }
 
 func (t *IntArrayTag) TypeId() TagType {
-	return IntArrayType
+	return t.IntArrayPayload.TypeId()
 }
 
 type IntArrayPayload []int32

@@ -30,7 +30,7 @@ func NewFloatTag() Tag {
 }
 
 func (t *FloatTag) TypeId() TagType {
-	return FloatType
+	return t.FloatPayload.TypeId()
 }
 
 type FloatPayload float32

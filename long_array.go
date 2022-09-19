@@ -30,7 +30,7 @@ func NewLongArrayTag() Tag {
 }
 
 func (t *LongArrayTag) TypeId() TagType {
-	return LongArrayType
+	return t.LongArrayPayload.TypeId()
 }
 
 type LongArrayPayload []int64

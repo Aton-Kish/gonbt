@@ -30,7 +30,7 @@ func NewDoubleTag() Tag {
 }
 
 func (t *DoubleTag) TypeId() TagType {
-	return DoubleType
+	return t.DoublePayload.TypeId()
 }
 
 type DoublePayload float64
