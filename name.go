@@ -40,3 +40,18 @@ func (n *TagName) Encode(w io.Writer) error {
 
 	return nil
 }
+
+func (n *TagName) Decode(r io.Reader) error {
+	var l uint16
+	if err := binary.Read(r, binary.BigEndian, &l); err != nil {
+		return err
+	}
+
+	b := make([]byte, l)
+	if err := binary.Read(r, binary.BigEndian, b); err != nil {
+		return err
+	}
+	*n = TagName(b)
+
+	return nil
+}

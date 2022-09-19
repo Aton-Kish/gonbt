@@ -27,59 +27,72 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var positiveCases = []struct {
+	name    string
+	tagName TagName
+	raw     []byte
+}{
+	{
+		name:    "positive case: \"Test\"",
+		tagName: TagName("Test"),
+		raw: []byte{
+			// Name Length: 4
+			0x00, 0x04,
+			// Name: "Test"
+			0x54, 0x65, 0x73, 0x74,
+		},
+	},
+	{
+		name:    "positive case: \"minecraft:the_end\"",
+		tagName: TagName("minecraft:the_end"),
+		raw: []byte{
+			// Name Length: 17
+			0x00, 0x11,
+			// Name: "minecraft:the_end"
+			0x6D, 0x69, 0x6E, 0x65, 0x63, 0x72, 0x61, 0x66, 0x74, 0x3A,
+			0x74, 0x68, 0x65, 0x5F, 0x65, 0x6E, 0x64,
+		},
+	},
+	{
+		name:    "positive case: \"\"",
+		tagName: TagName(""),
+		raw: []byte{
+			// Name Length: 0
+			0x00, 0x00,
+			// Name: ""
+		},
+	},
+	{
+		name:    "positive case: \"マインクラフト\"",
+		tagName: TagName("マインクラフト"),
+		raw: []byte{
+			// Name Length: 21
+			0x00, 0x15,
+			// Name: "マインクラフト"
+			0xE3, 0x83, 0x9E, 0xE3, 0x82, 0xA4, 0xE3, 0x83, 0xB3,
+			0xE3, 0x82, 0xAF, 0xE3, 0x83, 0xA9, 0xE3, 0x83, 0x95,
+			0xE3, 0x83, 0x88,
+		},
+	},
+}
+
 func TestTagName_Encode(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name        string
 		tagName     TagName
 		expected    []byte
 		expectedErr error
-	}{
-		{
-			name:    "positive case: \"Test\"",
-			tagName: TagName("Test"),
-			expected: []byte{
-				// Name Length: 4
-				0x00, 0x04,
-				// Name: "Test"
-				0x54, 0x65, 0x73, 0x74,
-			},
+	}
+
+	cases := []Case{}
+
+	for _, c := range positiveCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			tagName:     c.tagName,
+			expected:    c.raw,
 			expectedErr: nil,
-		},
-		{
-			name:    "positive case: \"minecraft:the_end\"",
-			tagName: TagName("minecraft:the_end"),
-			expected: []byte{
-				// Name Length: 17
-				0x00, 0x11,
-				// Name: "minecraft:the_end"
-				0x6D, 0x69, 0x6E, 0x65, 0x63, 0x72, 0x61, 0x66, 0x74, 0x3A,
-				0x74, 0x68, 0x65, 0x5F, 0x65, 0x6E, 0x64,
-			},
-			expectedErr: nil,
-		},
-		{
-			name:    "positive case: \"\"",
-			tagName: TagName(""),
-			expected: []byte{
-				// Name Length: 0
-				0x00, 0x00,
-				// Name: ""
-			},
-			expectedErr: nil,
-		},
-		{
-			name:    "positive case: \"マインクラフト\"",
-			tagName: TagName("マインクラフト"),
-			expected: []byte{
-				// Name Length: 21
-				0x00, 0x15,
-				// Name: "マインクラフト"
-				0xE3, 0x83, 0x9E, 0xE3, 0x82, 0xA4, 0xE3, 0x83, 0xB3,
-				0xE3, 0x82, 0xAF, 0xE3, 0x83, 0xA9, 0xE3, 0x83, 0x95,
-				0xE3, 0x83, 0x88,
-			},
-			expectedErr: nil,
-		},
+		})
 	}
 
 	for _, tt := range cases {
@@ -90,6 +103,42 @@ func TestTagName_Encode(t *testing.T) {
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, buf.Bytes())
+			} else {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			}
+		})
+	}
+}
+
+func TestTagName_Decode(t *testing.T) {
+	type Case struct {
+		name        string
+		raw         []byte
+		expected    TagName
+		expectedErr error
+	}
+
+	cases := []Case{}
+
+	for _, c := range positiveCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			raw:         c.raw,
+			expected:    c.tagName,
+			expectedErr: nil,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := bytes.NewBuffer(tt.raw)
+
+			var n TagName
+			err := n.Decode(buf)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expected, n)
 			} else {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			}
