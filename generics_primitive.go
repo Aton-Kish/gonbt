@@ -20,10 +20,10 @@
 
 package nbt
 
-func TagNamePointer(v TagName) *TagName {
-	return &v
+type PrimitivePayload interface {
+	NumericPayload | StringPayload
 }
 
-func PayloadPointer[T BytePayload | ShortPayload | IntPayload | LongPayload | FloatPayload | DoublePayload | StringPayload](v T) *T {
-	return &v
+func PrimitivePayloadPointer[T PrimitivePayload](x T) *T {
+	return &x
 }

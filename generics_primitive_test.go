@@ -26,58 +26,51 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTagName(t *testing.T) {
-	value := TagName("Test")
-	expected := &value
-	actual := TagNamePointer(value)
-	assert.Equal(t, expected, actual)
-}
-
 func TestPayload_BytePayload(t *testing.T) {
 	value := BytePayload(123)
 	expected := &value
-	actual := PayloadPointer(value)
+	actual := PrimitivePayloadPointer(value)
 	assert.Equal(t, expected, actual)
 }
 
 func TestPayload_ShortPayload(t *testing.T) {
 	value := ShortPayload(12345)
 	expected := &value
-	actual := PayloadPointer(value)
+	actual := PrimitivePayloadPointer(value)
 	assert.Equal(t, expected, actual)
 }
 
 func TestPayload_IntPayload(t *testing.T) {
 	value := IntPayload(123456789)
 	expected := &value
-	actual := PayloadPointer(value)
+	actual := PrimitivePayloadPointer(value)
 	assert.Equal(t, expected, actual)
 }
 
 func TestPayload_LongPayload(t *testing.T) {
 	value := LongPayload(123456789123456789)
 	expected := &value
-	actual := PayloadPointer(value)
+	actual := PrimitivePayloadPointer(value)
 	assert.Equal(t, expected, actual)
 }
 
 func TestPayload_FloatPayload(t *testing.T) {
 	value := FloatPayload(0.12345678)
 	expected := &value
-	actual := PayloadPointer(value)
+	actual := PrimitivePayloadPointer(value)
 	assert.Equal(t, expected, actual)
 }
 
 func TestPayload_DoublePayload(t *testing.T) {
 	value := DoublePayload(0.123456789)
 	expected := &value
-	actual := PayloadPointer(value)
+	actual := PrimitivePayloadPointer(value)
 	assert.Equal(t, expected, actual)
 }
 
 func TestPayload_StringPayload(t *testing.T) {
 	value := StringPayload("Test")
 	expected := &value
-	actual := PayloadPointer(value)
+	actual := PrimitivePayloadPointer(value)
 	assert.Equal(t, expected, actual)
 }

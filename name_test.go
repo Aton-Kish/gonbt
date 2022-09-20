@@ -76,6 +76,13 @@ var tagNameCases = []struct {
 	},
 }
 
+func TestTagName(t *testing.T) {
+	value := TagName("Test")
+	expected := &value
+	actual := TagNamePointer(value)
+	assert.Equal(t, expected, actual)
+}
+
 func TestTagName_Encode(t *testing.T) {
 	type Case struct {
 		name        string

@@ -36,7 +36,7 @@ var listTagCases = []struct {
 		name: "positive case",
 		tag: &ListTag{
 			TagName: TagName("List"),
-			Payload: ListPayload{PayloadPointer(ShortPayload(12345)), PayloadPointer(ShortPayload(6789))},
+			Payload: ListPayload{PrimitivePayloadPointer[ShortPayload](12345), PrimitivePayloadPointer[ShortPayload](6789)},
 		},
 		raw: []byte{
 			// Name Length: 4
@@ -107,7 +107,7 @@ var listPayloadCases = []struct {
 }{
 	{
 		name:    "positive case: Short",
-		payload: &ListPayload{PayloadPointer(ShortPayload(12345)), PayloadPointer(ShortPayload(6789))},
+		payload: &ListPayload{PrimitivePayloadPointer[ShortPayload](12345), PrimitivePayloadPointer[ShortPayload](6789)},
 		raw: []byte{
 			// Payload Type: TagShort(=2)
 			0x02,
@@ -139,7 +139,7 @@ var listPayloadCases = []struct {
 	},
 	{
 		name:    "positive case: String",
-		payload: &ListPayload{PayloadPointer(StringPayload("Hello")), PayloadPointer(StringPayload("World"))},
+		payload: &ListPayload{PrimitivePayloadPointer[StringPayload]("Hello"), PrimitivePayloadPointer[StringPayload]("World")},
 		raw: []byte{
 			// Payload Type: TagString(=8)
 			0x08,
@@ -157,8 +157,8 @@ var listPayloadCases = []struct {
 	{
 		name: "positive case: List",
 		payload: &ListPayload{
-			&ListPayload{PayloadPointer(BytePayload(123))},
-			&ListPayload{PayloadPointer(StringPayload("Test"))},
+			&ListPayload{PrimitivePayloadPointer[BytePayload](123)},
+			&ListPayload{PrimitivePayloadPointer[StringPayload]("Test")},
 		},
 		raw: []byte{
 			// Payload Type: TagList(=9)

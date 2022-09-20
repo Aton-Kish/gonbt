@@ -100,7 +100,7 @@ var shortPayloadCases = []struct {
 }{
 	{
 		name:    "positive case",
-		payload: PayloadPointer(ShortPayload(12345)),
+		payload: PrimitivePayloadPointer[ShortPayload](12345),
 		raw: []byte{
 			// Payload: 12345s
 			0x30, 0x39,

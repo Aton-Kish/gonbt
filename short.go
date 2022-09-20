@@ -66,9 +66,5 @@ func (p *ShortPayload) TypeId() TagType {
 }
 
 func (p *ShortPayload) Encode(w io.Writer) error {
-	if err := binary.Write(w, binary.BigEndian, p); err != nil {
-		return err
-	}
-
-	return nil
+	return encodeNumericPayload(w, p)
 }

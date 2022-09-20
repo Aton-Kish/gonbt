@@ -100,7 +100,7 @@ var floatPayloadCases = []struct {
 }{
 	{
 		name:    "positive case",
-		payload: PayloadPointer(FloatPayload(0.12345678)),
+		payload: PrimitivePayloadPointer[FloatPayload](0.12345678),
 		raw: []byte{
 			// Payload: 0.12345678f
 			0x3D, 0xFC, 0xD6, 0xE9,

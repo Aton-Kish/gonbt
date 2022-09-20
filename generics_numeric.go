@@ -25,37 +25,14 @@ import (
 	"io"
 )
 
-type TagName string
-
-func TagNamePointer(x TagName) *TagName {
-	return &x
+type NumericPayload interface {
+	BytePayload | ShortPayload | IntPayload | LongPayload | FloatPayload | DoublePayload
 }
 
-func (n *TagName) Encode(w io.Writer) error {
-	l := uint16(len(*n))
-	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
+func encodeNumericPayload[T NumericPayload](w io.Writer, payload *T) error {
+	if err := binary.Write(w, binary.BigEndian, payload); err != nil {
 		return err
 	}
-
-	b := []byte(*n)
-	if err := binary.Write(w, binary.BigEndian, b); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (n *TagName) Decode(r io.Reader) error {
-	var l uint16
-	if err := binary.Read(r, binary.BigEndian, &l); err != nil {
-		return err
-	}
-
-	b := make([]byte, l)
-	if err := binary.Read(r, binary.BigEndian, b); err != nil {
-		return err
-	}
-	*n = TagName(b)
 
 	return nil
 }

@@ -66,14 +66,5 @@ func (p *IntArrayPayload) TypeId() TagType {
 }
 
 func (p *IntArrayPayload) Encode(w io.Writer) error {
-	l := int32(len(*p))
-	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
-		return err
-	}
-
-	if err := binary.Write(w, binary.BigEndian, p); err != nil {
-		return err
-	}
-
-	return nil
+	return encodeArrayPayload(w, p)
 }

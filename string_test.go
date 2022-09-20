@@ -102,7 +102,7 @@ var stringPayloadCases = []struct {
 }{
 	{
 		name:    "positive case: \"Test\"",
-		payload: PayloadPointer(StringPayload("Test")),
+		payload: PrimitivePayloadPointer[StringPayload]("Test"),
 		raw: []byte{
 			// Payload Length: 4
 			0x00, 0x04,
@@ -112,7 +112,7 @@ var stringPayloadCases = []struct {
 	},
 	{
 		name:    "positive case: \"minecraft:the_end\"",
-		payload: PayloadPointer(StringPayload("minecraft:the_end")),
+		payload: PrimitivePayloadPointer[StringPayload]("minecraft:the_end"),
 		raw: []byte{
 			// Payload Length: 17
 			0x00, 0x11,
@@ -123,7 +123,7 @@ var stringPayloadCases = []struct {
 	},
 	{
 		name:    "positive case: \"\"",
-		payload: PayloadPointer(StringPayload("")),
+		payload: PrimitivePayloadPointer[StringPayload](""),
 		raw: []byte{
 			// Payload Length: 0
 			0x00, 0x00,
@@ -132,7 +132,7 @@ var stringPayloadCases = []struct {
 	},
 	{
 		name:    "positive case: \"マインクラフト\"",
-		payload: PayloadPointer(StringPayload("マインクラフト")),
+		payload: PrimitivePayloadPointer[StringPayload]("マインクラフト"),
 		raw: []byte{
 			// Payload Length: 21
 			0x00, 0x15,

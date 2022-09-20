@@ -100,7 +100,7 @@ var doublePayloadCases = []struct {
 }{
 	{
 		name:    "positive case",
-		payload: PayloadPointer(DoublePayload(0.123456789)),
+		payload: PrimitivePayloadPointer[DoublePayload](0.123456789),
 		raw: []byte{
 			// Payload: 0.123456789d
 			0x3F, 0xBF, 0x9A, 0xDD, 0x37, 0x39, 0x63, 0x5F,
