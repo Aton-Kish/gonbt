@@ -35,8 +35,8 @@ var doubleTagCases = []struct {
 	{
 		name: "positive case",
 		tag: &DoubleTag{
-			TagName:       TagName("Double"),
-			DoublePayload: DoublePayload(0.123456789),
+			TagName: TagName("Double"),
+			Payload: DoublePayload(0.123456789),
 		},
 		raw: []byte{
 			// Name Length: 6

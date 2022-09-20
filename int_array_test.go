@@ -35,8 +35,8 @@ var intArrayTagCases = []struct {
 	{
 		name: "positive case",
 		tag: &IntArrayTag{
-			TagName:         TagName("IntArray"),
-			IntArrayPayload: IntArrayPayload{0, 1, 2, 3},
+			TagName: TagName("IntArray"),
+			Payload: IntArrayPayload{0, 1, 2, 3},
 		},
 		raw: []byte{
 			// Name Length: 8

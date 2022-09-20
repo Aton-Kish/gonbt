@@ -27,7 +27,7 @@ import (
 
 type LongTag struct {
 	TagName
-	LongPayload
+	Payload LongPayload
 }
 
 func NewLongTag() Tag {
@@ -35,7 +35,7 @@ func NewLongTag() Tag {
 }
 
 func (t *LongTag) TypeId() TagType {
-	return t.LongPayload.TypeId()
+	return t.Payload.TypeId()
 }
 
 func (t *LongTag) Encode(w io.Writer) error {
@@ -48,7 +48,7 @@ func (t *LongTag) Encode(w io.Writer) error {
 		return err
 	}
 
-	if err := t.LongPayload.Encode(w); err != nil {
+	if err := t.Payload.Encode(w); err != nil {
 		return err
 	}
 

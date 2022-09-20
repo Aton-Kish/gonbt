@@ -27,7 +27,7 @@ import (
 
 type FloatTag struct {
 	TagName
-	FloatPayload
+	Payload FloatPayload
 }
 
 func NewFloatTag() Tag {
@@ -35,7 +35,7 @@ func NewFloatTag() Tag {
 }
 
 func (t *FloatTag) TypeId() TagType {
-	return t.FloatPayload.TypeId()
+	return t.Payload.TypeId()
 }
 
 func (t *FloatTag) Encode(w io.Writer) error {
@@ -48,7 +48,7 @@ func (t *FloatTag) Encode(w io.Writer) error {
 		return err
 	}
 
-	if err := t.FloatPayload.Encode(w); err != nil {
+	if err := t.Payload.Encode(w); err != nil {
 		return err
 	}
 

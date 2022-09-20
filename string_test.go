@@ -35,8 +35,8 @@ var stringTagCases = []struct {
 	{
 		name: "positive case",
 		tag: &StringTag{
-			TagName:       TagName("String"),
-			StringPayload: StringPayload("Hello World"),
+			TagName: TagName("String"),
+			Payload: StringPayload("Hello World"),
 		},
 		raw: []byte{
 			// Name Length: 6

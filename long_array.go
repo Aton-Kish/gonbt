@@ -27,7 +27,7 @@ import (
 
 type LongArrayTag struct {
 	TagName
-	LongArrayPayload
+	Payload LongArrayPayload
 }
 
 func NewLongArrayTag() Tag {
@@ -35,7 +35,7 @@ func NewLongArrayTag() Tag {
 }
 
 func (t *LongArrayTag) TypeId() TagType {
-	return t.LongArrayPayload.TypeId()
+	return t.Payload.TypeId()
 }
 
 func (t *LongArrayTag) Encode(w io.Writer) error {
@@ -48,7 +48,7 @@ func (t *LongArrayTag) Encode(w io.Writer) error {
 		return err
 	}
 
-	if err := t.LongArrayPayload.Encode(w); err != nil {
+	if err := t.Payload.Encode(w); err != nil {
 		return err
 	}
 

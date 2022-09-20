@@ -27,7 +27,7 @@ import (
 
 type CompoundTag struct {
 	TagName
-	CompoundPayload
+	Payload CompoundPayload
 }
 
 func NewCompoundTag() Tag {
@@ -44,7 +44,7 @@ func (t *CompoundTag) Encode(w io.Writer) error {
 		return err
 	}
 
-	if err := t.CompoundPayload.Encode(w); err != nil {
+	if err := t.Payload.Encode(w); err != nil {
 		return err
 	}
 
@@ -52,7 +52,7 @@ func (t *CompoundTag) Encode(w io.Writer) error {
 }
 
 func (t *CompoundTag) TypeId() TagType {
-	return t.CompoundPayload.TypeId()
+	return t.Payload.TypeId()
 }
 
 type CompoundPayload []Tag

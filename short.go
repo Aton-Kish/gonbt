@@ -27,7 +27,7 @@ import (
 
 type ShortTag struct {
 	TagName
-	ShortPayload
+	Payload ShortPayload
 }
 
 func NewShortTag() Tag {
@@ -35,7 +35,7 @@ func NewShortTag() Tag {
 }
 
 func (t *ShortTag) TypeId() TagType {
-	return t.ShortPayload.TypeId()
+	return t.Payload.TypeId()
 }
 
 func (t *ShortTag) Encode(w io.Writer) error {
@@ -48,7 +48,7 @@ func (t *ShortTag) Encode(w io.Writer) error {
 		return err
 	}
 
-	if err := t.ShortPayload.Encode(w); err != nil {
+	if err := t.Payload.Encode(w); err != nil {
 		return err
 	}
 

@@ -35,8 +35,8 @@ var shortTagCases = []struct {
 	{
 		name: "positive case",
 		tag: &ShortTag{
-			TagName:      TagName("Short"),
-			ShortPayload: ShortPayload(12345),
+			TagName: TagName("Short"),
+			Payload: ShortPayload(12345),
 		},
 		raw: []byte{
 			// Name Length: 5

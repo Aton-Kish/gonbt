@@ -35,8 +35,8 @@ var byteArrayTagCases = []struct {
 	{
 		name: "positive case",
 		tag: &ByteArrayTag{
-			TagName:          TagName("ByteArray"),
-			ByteArrayPayload: ByteArrayPayload{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+			TagName: TagName("ByteArray"),
+			Payload: ByteArrayPayload{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
 		},
 		raw: []byte{
 			// Name Length: 9

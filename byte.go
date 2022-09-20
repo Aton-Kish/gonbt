@@ -27,7 +27,7 @@ import (
 
 type ByteTag struct {
 	TagName
-	BytePayload
+	Payload BytePayload
 }
 
 func NewByteTag() Tag {
@@ -35,7 +35,7 @@ func NewByteTag() Tag {
 }
 
 func (t *ByteTag) TypeId() TagType {
-	return t.BytePayload.TypeId()
+	return t.Payload.TypeId()
 }
 
 func (t *ByteTag) Encode(w io.Writer) error {
@@ -48,7 +48,7 @@ func (t *ByteTag) Encode(w io.Writer) error {
 		return err
 	}
 
-	if err := t.BytePayload.Encode(w); err != nil {
+	if err := t.Payload.Encode(w); err != nil {
 		return err
 	}
 

@@ -27,7 +27,7 @@ import (
 
 type IntTag struct {
 	TagName
-	IntPayload
+	Payload IntPayload
 }
 
 func NewIntTag() Tag {
@@ -35,7 +35,7 @@ func NewIntTag() Tag {
 }
 
 func (t *IntTag) TypeId() TagType {
-	return t.IntPayload.TypeId()
+	return t.Payload.TypeId()
 }
 
 func (t *IntTag) Encode(w io.Writer) error {
@@ -48,7 +48,7 @@ func (t *IntTag) Encode(w io.Writer) error {
 		return err
 	}
 
-	if err := t.IntPayload.Encode(w); err != nil {
+	if err := t.Payload.Encode(w); err != nil {
 		return err
 	}
 

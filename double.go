@@ -27,7 +27,7 @@ import (
 
 type DoubleTag struct {
 	TagName
-	DoublePayload
+	Payload DoublePayload
 }
 
 func NewDoubleTag() Tag {
@@ -35,7 +35,7 @@ func NewDoubleTag() Tag {
 }
 
 func (t *DoubleTag) TypeId() TagType {
-	return t.DoublePayload.TypeId()
+	return t.Payload.TypeId()
 }
 
 func (t *DoubleTag) Encode(w io.Writer) error {
@@ -48,7 +48,7 @@ func (t *DoubleTag) Encode(w io.Writer) error {
 		return err
 	}
 
-	if err := t.DoublePayload.Encode(w); err != nil {
+	if err := t.Payload.Encode(w); err != nil {
 		return err
 	}
 

@@ -35,8 +35,8 @@ var intTagCases = []struct {
 	{
 		name: "positive case",
 		tag: &IntTag{
-			TagName:    TagName("Int"),
-			IntPayload: IntPayload(123456789),
+			TagName: TagName("Int"),
+			Payload: IntPayload(123456789),
 		},
 		raw: []byte{
 			// Name Length: 3

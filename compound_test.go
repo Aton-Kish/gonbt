@@ -36,7 +36,7 @@ var compoundTagCases = []struct {
 		name: "positive case",
 		tag: &CompoundTag{
 			TagName: TagName("Compound"),
-			CompoundPayload: CompoundPayload{
+			Payload: CompoundPayload{
 				&ShortTag{TagName("Short"), ShortPayload(12345)},
 				&ByteArrayTag{TagName("ByteArray"), ByteArrayPayload{0, 1}},
 				&StringTag{TagName("String"), StringPayload("Hello")},
