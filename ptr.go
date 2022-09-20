@@ -24,10 +24,6 @@ func TagNamePointer(v TagName) *TagName {
 	return &v
 }
 
-type PayloadPrimitive interface {
-	BytePayload | ShortPayload | IntPayload | LongPayload | FloatPayload | DoublePayload | StringPayload
-}
-
-func PayloadPointer[T PayloadPrimitive](v T) *T {
+func PayloadPointer[T BytePayload | ShortPayload | IntPayload | LongPayload | FloatPayload | DoublePayload | StringPayload](v T) *T {
 	return &v
 }
