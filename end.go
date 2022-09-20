@@ -36,6 +36,14 @@ func (t *EndTag) TypeId() TagType {
 	return EndType
 }
 
+func (t *EndTag) TagName() *TagName {
+	return nil
+}
+
+func (t *EndTag) Payload() Payload {
+	return nil
+}
+
 func (t *EndTag) Encode(w io.Writer) error {
 	typ := t.TypeId()
 	if err := binary.Write(w, binary.BigEndian, &typ); err != nil {

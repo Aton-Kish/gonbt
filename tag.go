@@ -25,6 +25,28 @@ import (
 	"io"
 )
 
+// Tag Type
+
+type TagType byte
+
+const (
+	EndType TagType = iota
+	ByteType
+	ShortType
+	IntType
+	LongType
+	FloatType
+	DoubleType
+	ByteArrayType
+	StringType
+	ListType
+	CompoundType
+	IntArrayType
+	LongArrayType
+)
+
+// Tag Name
+
 type TagName string
 
 func TagNamePointer(x TagName) *TagName {
@@ -56,6 +78,76 @@ func (n *TagName) Decode(r io.Reader) error {
 		return err
 	}
 	*n = TagName(b)
+
+	return nil
+}
+
+// Tag
+
+type Tag interface {
+	TypeId() TagType
+	TagName() *TagName
+	Payload() Payload
+	Encode(w io.Writer) error
+}
+
+func encodeTagExcludeEndTag(w io.Writer, tag Tag) error {
+	typ := tag.TypeId()
+	if err := binary.Write(w, binary.BigEndian, &typ); err != nil {
+		return err
+	}
+
+	if err := tag.TagName().Encode(w); err != nil {
+		return err
+	}
+
+	if err := tag.Payload().Encode(w); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Payload
+
+type Payload interface {
+	TypeId() TagType
+	Encode(w io.Writer) error
+}
+
+type NumericPayload interface {
+	BytePayload | ShortPayload | IntPayload | LongPayload | FloatPayload | DoublePayload
+}
+
+type PrimitivePayload interface {
+	NumericPayload | StringPayload
+}
+
+type ArrayPayload interface {
+	ByteArrayPayload | IntArrayPayload | LongArrayPayload
+}
+
+func PrimitivePayloadPointer[T PrimitivePayload](x T) *T {
+	return &x
+}
+
+func encodeNumericPayload[T NumericPayload](w io.Writer, payload *T) error {
+	if err := binary.Write(w, binary.BigEndian, payload); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func encodeArrayPayload[T ArrayPayload](w io.Writer, payload *T) error {
+	l := int32(len(*payload))
+	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
+		return err
+	}
+
+	if err := binary.Write(w, binary.BigEndian, payload); err != nil {
+		return err
+	}
 
 	return nil
 }

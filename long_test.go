@@ -35,8 +35,8 @@ var longTagCases = []struct {
 	{
 		name: "positive case",
 		tag: &LongTag{
-			TagName: TagName("Long"),
-			Payload: LongPayload(123456789123456789),
+			tagName: TagName("Long"),
+			payload: LongPayload(123456789123456789),
 		},
 		raw: []byte{
 			// Name Length: 4

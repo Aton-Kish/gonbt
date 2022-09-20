@@ -35,8 +35,8 @@ var byteTagCases = []struct {
 	{
 		name: "positive case",
 		tag: &ByteTag{
-			TagName: TagName("Byte"),
-			Payload: BytePayload(123),
+			tagName: TagName("Byte"),
+			payload: BytePayload(123),
 		},
 		//
 		raw: []byte{

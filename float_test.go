@@ -35,8 +35,8 @@ var floatTagCases = []struct {
 	{
 		name: "positive case",
 		tag: &FloatTag{
-			TagName: TagName("Float"),
-			Payload: FloatPayload(0.12345678),
+			tagName: TagName("Float"),
+			payload: FloatPayload(0.12345678),
 		},
 		raw: []byte{
 			// Name Length: 5

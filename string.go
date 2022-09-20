@@ -26,8 +26,8 @@ import (
 )
 
 type StringTag struct {
-	TagName
-	Payload StringPayload
+	tagName TagName
+	payload StringPayload
 }
 
 func NewStringTag() Tag {
@@ -35,24 +35,19 @@ func NewStringTag() Tag {
 }
 
 func (t *StringTag) TypeId() TagType {
-	return t.Payload.TypeId()
+	return t.Payload().TypeId()
+}
+
+func (t *StringTag) TagName() *TagName {
+	return &t.tagName
+}
+
+func (t *StringTag) Payload() Payload {
+	return &t.payload
 }
 
 func (t *StringTag) Encode(w io.Writer) error {
-	typ := t.TypeId()
-	if err := binary.Write(w, binary.BigEndian, &typ); err != nil {
-		return err
-	}
-
-	if err := t.TagName.Encode(w); err != nil {
-		return err
-	}
-
-	if err := t.Payload.Encode(w); err != nil {
-		return err
-	}
-
-	return nil
+	return encodeTagExcludeEndTag(w, t)
 }
 
 type StringPayload string

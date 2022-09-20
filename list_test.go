@@ -35,8 +35,8 @@ var listTagCases = []struct {
 	{
 		name: "positive case",
 		tag: &ListTag{
-			TagName: TagName("List"),
-			Payload: ListPayload{PrimitivePayloadPointer[ShortPayload](12345), PrimitivePayloadPointer[ShortPayload](6789)},
+			tagName: TagName("List"),
+			payload: ListPayload{PrimitivePayloadPointer[ShortPayload](12345), PrimitivePayloadPointer[ShortPayload](6789)},
 		},
 		raw: []byte{
 			// Name Length: 4

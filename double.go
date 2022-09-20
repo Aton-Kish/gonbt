@@ -21,13 +21,12 @@
 package nbt
 
 import (
-	"encoding/binary"
 	"io"
 )
 
 type DoubleTag struct {
-	TagName
-	Payload DoublePayload
+	tagName TagName
+	payload DoublePayload
 }
 
 func NewDoubleTag() Tag {
@@ -35,24 +34,19 @@ func NewDoubleTag() Tag {
 }
 
 func (t *DoubleTag) TypeId() TagType {
-	return t.Payload.TypeId()
+	return t.Payload().TypeId()
+}
+
+func (t *DoubleTag) TagName() *TagName {
+	return &t.tagName
+}
+
+func (t *DoubleTag) Payload() Payload {
+	return &t.payload
 }
 
 func (t *DoubleTag) Encode(w io.Writer) error {
-	typ := t.TypeId()
-	if err := binary.Write(w, binary.BigEndian, &typ); err != nil {
-		return err
-	}
-
-	if err := t.TagName.Encode(w); err != nil {
-		return err
-	}
-
-	if err := t.Payload.Encode(w); err != nil {
-		return err
-	}
-
-	return nil
+	return encodeTagExcludeEndTag(w, t)
 }
 
 type DoublePayload float64

@@ -21,38 +21,32 @@
 package nbt
 
 import (
-	"encoding/binary"
 	"io"
 )
 
 type CompoundTag struct {
-	TagName
-	Payload CompoundPayload
+	tagName TagName
+	payload CompoundPayload
 }
 
 func NewCompoundTag() Tag {
 	return new(CompoundTag)
 }
 
-func (t *CompoundTag) Encode(w io.Writer) error {
-	typ := t.TypeId()
-	if err := binary.Write(w, binary.BigEndian, &typ); err != nil {
-		return err
-	}
-
-	if err := t.TagName.Encode(w); err != nil {
-		return err
-	}
-
-	if err := t.Payload.Encode(w); err != nil {
-		return err
-	}
-
-	return nil
+func (t *CompoundTag) TypeId() TagType {
+	return t.Payload().TypeId()
 }
 
-func (t *CompoundTag) TypeId() TagType {
-	return t.Payload.TypeId()
+func (t *CompoundTag) TagName() *TagName {
+	return &t.tagName
+}
+
+func (t *CompoundTag) Payload() Payload {
+	return &t.payload
+}
+
+func (t *CompoundTag) Encode(w io.Writer) error {
+	return encodeTagExcludeEndTag(w, t)
 }
 
 type CompoundPayload []Tag

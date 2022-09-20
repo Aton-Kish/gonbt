@@ -21,13 +21,12 @@
 package nbt
 
 import (
-	"encoding/binary"
 	"io"
 )
 
 type IntArrayTag struct {
-	TagName
-	Payload IntArrayPayload
+	tagName TagName
+	payload IntArrayPayload
 }
 
 func NewIntArrayTag() Tag {
@@ -35,24 +34,19 @@ func NewIntArrayTag() Tag {
 }
 
 func (t *IntArrayTag) TypeId() TagType {
-	return t.Payload.TypeId()
+	return t.Payload().TypeId()
+}
+
+func (t *IntArrayTag) TagName() *TagName {
+	return &t.tagName
+}
+
+func (t *IntArrayTag) Payload() Payload {
+	return &t.payload
 }
 
 func (t *IntArrayTag) Encode(w io.Writer) error {
-	typ := t.TypeId()
-	if err := binary.Write(w, binary.BigEndian, &typ); err != nil {
-		return err
-	}
-
-	if err := t.TagName.Encode(w); err != nil {
-		return err
-	}
-
-	if err := t.Payload.Encode(w); err != nil {
-		return err
-	}
-
-	return nil
+	return encodeTagExcludeEndTag(w, t)
 }
 
 type IntArrayPayload []int32
