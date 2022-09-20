@@ -49,10 +49,6 @@ const (
 
 type TagName string
 
-func TagNamePointer(x TagName) *TagName {
-	return &x
-}
-
 func (n *TagName) Encode(w io.Writer) error {
 	l := uint16(len(*n))
 	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
