@@ -27,50 +27,52 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestShortTag_TypeId(t *testing.T) {
-	cases := []struct {
-		name     string
-		tag      Tag
-		expected TagType
-	}{
-		{
-			name:     "positive case",
-			tag:      NewShortTag(),
-			expected: ShortType,
+var shortTagCases = []struct {
+	name string
+	tag  Tag
+	raw  []byte
+}{
+	{
+		name: "positive case",
+		tag: &ShortTag{
+			TagName:      TagName("Short"),
+			ShortPayload: ShortPayload(12345),
 		},
-	}
+		raw: []byte{
+			// Name Length: 5
+			0x00, 0x05,
+			// Name: "Short"
+			0x53, 0x68, 0x6f, 0x72, 0x74,
+			// Payload: 12345s
+			0x30, 0x39,
+		},
+	},
+}
 
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := tt.tag.TypeId()
-			assert.Equal(t, tt.expected, actual)
-		})
-	}
+func TestShortTag_TypeId(t *testing.T) {
+	tag := NewShortTag()
+	expected := ShortType
+	actual := tag.TypeId()
+	assert.Equal(t, expected, actual)
 }
 
 func TestShortTag_Encode(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name        string
 		tag         Tag
 		expected    []byte
 		expectedErr error
-	}{
-		{
-			name: "positive case",
-			tag: &ShortTag{
-				TagName:      TagName("Short"),
-				ShortPayload: ShortPayload(12345),
-			},
-			expected: []byte{
-				// Name Length: 5
-				0x00, 0x05,
-				// Name: "Short"
-				0x53, 0x68, 0x6f, 0x72, 0x74,
-				// Payload: 12345s
-				0x30, 0x39,
-			},
+	}
+
+	cases := []Case{}
+
+	for _, c := range shortTagCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			tag:         c.tag,
+			expected:    c.raw,
 			expectedErr: nil,
-		},
+		})
 	}
 
 	for _, tt := range cases {
@@ -91,43 +93,45 @@ func TestShortTag_Encode(t *testing.T) {
 	}
 }
 
-func TestShortPayload_TypeId(t *testing.T) {
-	cases := []struct {
-		name     string
-		payload  Payload
-		expected TagType
-	}{
-		{
-			name:     "positive case",
-			payload:  NewShortPayload(),
-			expected: ShortType,
+var shortPayloadCases = []struct {
+	name    string
+	payload Payload
+	raw     []byte
+}{
+	{
+		name:    "positive case",
+		payload: PayloadPointer(ShortPayload(12345)),
+		raw: []byte{
+			// Payload: 12345s
+			0x30, 0x39,
 		},
-	}
+	},
+}
 
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := tt.payload.TypeId()
-			assert.Equal(t, tt.expected, actual)
-		})
-	}
+func TestShortPayload_TypeId(t *testing.T) {
+	payload := NewShortPayload()
+	expected := ShortType
+	actual := payload.TypeId()
+	assert.Equal(t, expected, actual)
 }
 
 func TestShortPayload_Encode(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name        string
 		payload     Payload
 		expected    []byte
 		expectedErr error
-	}{
-		{
-			name:    "positive case",
-			payload: PayloadPointer(ShortPayload(12345)),
-			expected: []byte{
-				// Payload: 12345s
-				0x30, 0x39,
-			},
+	}
+
+	cases := []Case{}
+
+	for _, c := range shortPayloadCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			payload:     c.payload,
+			expected:    c.raw,
 			expectedErr: nil,
-		},
+		})
 	}
 
 	for _, tt := range cases {

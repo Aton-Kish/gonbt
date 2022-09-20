@@ -27,50 +27,52 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLongTag_TypeId(t *testing.T) {
-	cases := []struct {
-		name     string
-		tag      Tag
-		expected TagType
-	}{
-		{
-			name:     "positive case",
-			tag:      NewLongTag(),
-			expected: LongType,
+var longTagCases = []struct {
+	name string
+	tag  Tag
+	raw  []byte
+}{
+	{
+		name: "positive case",
+		tag: &LongTag{
+			TagName:     TagName("Long"),
+			LongPayload: LongPayload(123456789123456789),
 		},
-	}
+		raw: []byte{
+			// Name Length: 4
+			0x00, 0x04,
+			// Name: "Long"
+			0x4C, 0x6F, 0x6E, 0x67,
+			// Payload: 123456789123456789L
+			0x01, 0xB6, 0x9B, 0x4B, 0xAC, 0xD0, 0x5F, 0x15,
+		},
+	},
+}
 
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := tt.tag.TypeId()
-			assert.Equal(t, tt.expected, actual)
-		})
-	}
+func TestLongTag_TypeId(t *testing.T) {
+	tag := NewLongTag()
+	expected := LongType
+	actual := tag.TypeId()
+	assert.Equal(t, expected, actual)
 }
 
 func TestLongTag_Encode(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name        string
 		tag         Tag
 		expected    []byte
 		expectedErr error
-	}{
-		{
-			name: "positive case",
-			tag: &LongTag{
-				TagName:     TagName("Long"),
-				LongPayload: LongPayload(123456789123456789),
-			},
-			expected: []byte{
-				// Name Length: 4
-				0x00, 0x04,
-				// Name: "Long"
-				0x4C, 0x6F, 0x6E, 0x67,
-				// Payload: 123456789123456789L
-				0x01, 0xB6, 0x9B, 0x4B, 0xAC, 0xD0, 0x5F, 0x15,
-			},
+	}
+
+	cases := []Case{}
+
+	for _, c := range longTagCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			tag:         c.tag,
+			expected:    c.raw,
 			expectedErr: nil,
-		},
+		})
 	}
 
 	for _, tt := range cases {
@@ -91,43 +93,45 @@ func TestLongTag_Encode(t *testing.T) {
 	}
 }
 
-func TestLongPayload_TypeId(t *testing.T) {
-	cases := []struct {
-		name     string
-		payload  Payload
-		expected TagType
-	}{
-		{
-			name:     "positive case",
-			payload:  NewLongPayload(),
-			expected: LongType,
+var longPayloadCases = []struct {
+	name    string
+	payload Payload
+	raw     []byte
+}{
+	{
+		name:    "positive case",
+		payload: PayloadPointer(LongPayload(123456789123456789)),
+		raw: []byte{
+			// Payload: 123456789123456789L
+			0x01, 0xB6, 0x9B, 0x4B, 0xAC, 0xD0, 0x5F, 0x15,
 		},
-	}
+	},
+}
 
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := tt.payload.TypeId()
-			assert.Equal(t, tt.expected, actual)
-		})
-	}
+func TestLongPayload_TypeId(t *testing.T) {
+	payload := NewLongPayload()
+	expected := LongType
+	actual := payload.TypeId()
+	assert.Equal(t, expected, actual)
 }
 
 func TestLongPayload_Encode(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name        string
 		payload     Payload
 		expected    []byte
 		expectedErr error
-	}{
-		{
-			name:    "positive case",
-			payload: PayloadPointer(LongPayload(123456789123456789)),
-			expected: []byte{
-				// Payload: 123456789123456789L
-				0x01, 0xB6, 0x9B, 0x4B, 0xAC, 0xD0, 0x5F, 0x15,
-			},
+	}
+
+	cases := []Case{}
+
+	for _, c := range longPayloadCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			payload:     c.payload,
+			expected:    c.raw,
 			expectedErr: nil,
-		},
+		})
 	}
 
 	for _, tt := range cases {

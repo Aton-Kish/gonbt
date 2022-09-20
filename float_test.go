@@ -27,50 +27,52 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFloatTag_TypeId(t *testing.T) {
-	cases := []struct {
-		name     string
-		tag      Tag
-		expected TagType
-	}{
-		{
-			name:     "positive case",
-			tag:      NewFloatTag(),
-			expected: FloatType,
+var floatTagCases = []struct {
+	name string
+	tag  Tag
+	raw  []byte
+}{
+	{
+		name: "positive case",
+		tag: &FloatTag{
+			TagName:      TagName("Float"),
+			FloatPayload: FloatPayload(0.12345678),
 		},
-	}
+		raw: []byte{
+			// Name Length: 5
+			0x00, 0x05,
+			// Name: "Float"
+			0x46, 0x6C, 0x6F, 0x61, 0x74,
+			// Payload: 0.12345678f
+			0x3D, 0xFC, 0xD6, 0xE9,
+		},
+	},
+}
 
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := tt.tag.TypeId()
-			assert.Equal(t, tt.expected, actual)
-		})
-	}
+func TestFloatTag_TypeId(t *testing.T) {
+	tag := NewFloatTag()
+	expected := FloatType
+	actual := tag.TypeId()
+	assert.Equal(t, expected, actual)
 }
 
 func TestFloatTag_Encode(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name        string
 		tag         Tag
 		expected    []byte
 		expectedErr error
-	}{
-		{
-			name: "positive case",
-			tag: &FloatTag{
-				TagName:      TagName("Float"),
-				FloatPayload: FloatPayload(0.12345678),
-			},
-			expected: []byte{
-				// Name Length: 5
-				0x00, 0x05,
-				// Name: "Float"
-				0x46, 0x6C, 0x6F, 0x61, 0x74,
-				// Payload: 0.12345678f
-				0x3D, 0xFC, 0xD6, 0xE9,
-			},
+	}
+
+	cases := []Case{}
+
+	for _, c := range floatTagCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			tag:         c.tag,
+			expected:    c.raw,
 			expectedErr: nil,
-		},
+		})
 	}
 
 	for _, tt := range cases {
@@ -91,43 +93,45 @@ func TestFloatTag_Encode(t *testing.T) {
 	}
 }
 
-func TestFloatPayload_TypeId(t *testing.T) {
-	cases := []struct {
-		name     string
-		payload  Payload
-		expected TagType
-	}{
-		{
-			name:     "positive case",
-			payload:  NewFloatPayload(),
-			expected: FloatType,
+var floatPayloadCases = []struct {
+	name    string
+	payload Payload
+	raw     []byte
+}{
+	{
+		name:    "positive case",
+		payload: PayloadPointer(FloatPayload(0.12345678)),
+		raw: []byte{
+			// Payload: 0.12345678f
+			0x3D, 0xFC, 0xD6, 0xE9,
 		},
-	}
+	},
+}
 
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := tt.payload.TypeId()
-			assert.Equal(t, tt.expected, actual)
-		})
-	}
+func TestFloatPayload_TypeId(t *testing.T) {
+	payload := NewFloatPayload()
+	expected := FloatType
+	actual := payload.TypeId()
+	assert.Equal(t, expected, actual)
 }
 
 func TestFloatPayload_Encode(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name        string
 		payload     Payload
 		expected    []byte
 		expectedErr error
-	}{
-		{
-			name:    "positive case",
-			payload: PayloadPointer(FloatPayload(0.12345678)),
-			expected: []byte{
-				// Payload: 0.12345678f
-				0x3D, 0xFC, 0xD6, 0xE9,
-			},
+	}
+
+	cases := []Case{}
+
+	for _, c := range floatPayloadCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			payload:     c.payload,
+			expected:    c.raw,
 			expectedErr: nil,
-		},
+		})
 	}
 
 	for _, tt := range cases {

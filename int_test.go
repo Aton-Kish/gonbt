@@ -27,50 +27,52 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIntTag_TypeId(t *testing.T) {
-	cases := []struct {
-		name     string
-		tag      Tag
-		expected TagType
-	}{
-		{
-			name:     "positive case",
-			tag:      NewIntTag(),
-			expected: IntType,
+var intTagCases = []struct {
+	name string
+	tag  Tag
+	raw  []byte
+}{
+	{
+		name: "positive case",
+		tag: &IntTag{
+			TagName:    TagName("Int"),
+			IntPayload: IntPayload(123456789),
 		},
-	}
+		raw: []byte{
+			// Name Length: 3
+			0x00, 0x03,
+			// Name: "Int"
+			0x49, 0x6E, 0x74,
+			// Payload: 123456789
+			0x07, 0x5B, 0xCD, 0x15,
+		},
+	},
+}
 
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := tt.tag.TypeId()
-			assert.Equal(t, tt.expected, actual)
-		})
-	}
+func TestIntTag_TypeId(t *testing.T) {
+	tag := NewIntTag()
+	expected := IntType
+	actual := tag.TypeId()
+	assert.Equal(t, expected, actual)
 }
 
 func TestIntTag_Encode(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name        string
 		tag         Tag
 		expected    []byte
 		expectedErr error
-	}{
-		{
-			name: "positive case",
-			tag: &IntTag{
-				TagName:    TagName("Int"),
-				IntPayload: IntPayload(123456789),
-			},
-			expected: []byte{
-				// Name Length: 3
-				0x00, 0x03,
-				// Name: "Int"
-				0x49, 0x6E, 0x74,
-				// Payload: 123456789
-				0x07, 0x5B, 0xCD, 0x15,
-			},
+	}
+
+	cases := []Case{}
+
+	for _, c := range intTagCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			tag:         c.tag,
+			expected:    c.raw,
 			expectedErr: nil,
-		},
+		})
 	}
 
 	for _, tt := range cases {
@@ -91,43 +93,45 @@ func TestIntTag_Encode(t *testing.T) {
 	}
 }
 
-func TestIntPayload_TypeId(t *testing.T) {
-	cases := []struct {
-		name     string
-		payload  Payload
-		expected TagType
-	}{
-		{
-			name:     "positive case",
-			payload:  NewIntPayload(),
-			expected: IntType,
+var intPayloadCases = []struct {
+	name    string
+	payload Payload
+	raw     []byte
+}{
+	{
+		name:    "positive case",
+		payload: PayloadPointer(IntPayload(123456789)),
+		raw: []byte{
+			// Payload: 123456789
+			0x07, 0x5B, 0xCD, 0x15,
 		},
-	}
+	},
+}
 
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := tt.payload.TypeId()
-			assert.Equal(t, tt.expected, actual)
-		})
-	}
+func TestIntPayload_TypeId(t *testing.T) {
+	payload := NewIntPayload()
+	expected := IntType
+	actual := payload.TypeId()
+	assert.Equal(t, expected, actual)
 }
 
 func TestIntPayload_Encode(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name        string
 		payload     Payload
 		expected    []byte
 		expectedErr error
-	}{
-		{
-			name:    "positive case",
-			payload: PayloadPointer(IntPayload(123456789)),
-			expected: []byte{
-				// Payload: 123456789
-				0x07, 0x5B, 0xCD, 0x15,
-			},
+	}
+
+	cases := []Case{}
+
+	for _, c := range intPayloadCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			payload:     c.payload,
+			expected:    c.raw,
 			expectedErr: nil,
-		},
+		})
 	}
 
 	for _, tt := range cases {

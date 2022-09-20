@@ -27,7 +27,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var positiveCases = []struct {
+var tagNameCases = []struct {
 	name    string
 	tagName TagName
 	raw     []byte
@@ -86,7 +86,7 @@ func TestTagName_Encode(t *testing.T) {
 
 	cases := []Case{}
 
-	for _, c := range positiveCases {
+	for _, c := range tagNameCases {
 		cases = append(cases, Case{
 			name:        c.name,
 			tagName:     c.tagName,
@@ -120,7 +120,7 @@ func TestTagName_Decode(t *testing.T) {
 
 	cases := []Case{}
 
-	for _, c := range positiveCases {
+	for _, c := range tagNameCases {
 		cases = append(cases, Case{
 			name:        c.name,
 			raw:         c.raw,

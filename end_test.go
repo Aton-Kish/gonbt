@@ -27,40 +27,42 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestEndTag_TypeId(t *testing.T) {
-	cases := []struct {
-		name     string
-		tag      Tag
-		expected TagType
-	}{
-		{
-			name:     "positive case",
-			tag:      NewEndTag(),
-			expected: EndType,
-		},
-	}
+var endTagCases = []struct {
+	name string
+	tag  Tag
+	raw  []byte
+}{
+	{
+		name: "positive case",
+		tag:  &EndTag{},
+		raw:  []byte{},
+	},
+}
 
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := tt.tag.TypeId()
-			assert.Equal(t, tt.expected, actual)
-		})
-	}
+func TestEndTag_TypeId(t *testing.T) {
+	tag := NewEndTag()
+	expected := EndType
+	actual := tag.TypeId()
+	assert.Equal(t, expected, actual)
 }
 
 func TestEndTag_Encode(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name        string
 		tag         Tag
 		expected    []byte
 		expectedErr error
-	}{
-		{
-			name:        "positive case",
-			tag:         &EndTag{},
-			expected:    []byte{},
+	}
+
+	cases := []Case{}
+
+	for _, c := range endTagCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			tag:         c.tag,
+			expected:    c.raw,
 			expectedErr: nil,
-		},
+		})
 	}
 
 	for _, tt := range cases {
