@@ -22,6 +22,7 @@ package nbt
 
 import (
 	"bytes"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -320,6 +321,227 @@ func TestTagName_Decode(t *testing.T) {
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, n)
+			} else {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			}
+		})
+	}
+}
+
+func TestNewTag(t *testing.T) {
+	cases := []struct {
+		name        string
+		tagType     TagType
+		expected    Tag
+		expectedErr error
+	}{
+		{
+			name:        "positive case: EndType",
+			tagType:     EndType,
+			expected:    new(EndTag),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: ByteType",
+			tagType:     ByteType,
+			expected:    new(ByteTag),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: ShortType",
+			tagType:     ShortType,
+			expected:    new(ShortTag),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: IntType",
+			tagType:     IntType,
+			expected:    new(IntTag),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: LongType",
+			tagType:     LongType,
+			expected:    new(LongTag),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: FloatType",
+			tagType:     FloatType,
+			expected:    new(FloatTag),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: DoubleType",
+			tagType:     DoubleType,
+			expected:    new(DoubleTag),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: ByteArrayType",
+			tagType:     ByteArrayType,
+			expected:    new(ByteArrayTag),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: StringType",
+			tagType:     StringType,
+			expected:    new(StringTag),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: ListType",
+			tagType:     ListType,
+			expected:    new(ListTag),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: CompoundType",
+			tagType:     CompoundType,
+			expected:    new(CompoundTag),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: IntArrayType",
+			tagType:     IntArrayType,
+			expected:    new(IntArrayTag),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: LongArrayType",
+			tagType:     LongArrayType,
+			expected:    new(LongArrayTag),
+			expectedErr: nil,
+		},
+		{
+			name:        "negative case: out of range",
+			tagType:     TagType(0x0D),
+			expected:    nil,
+			expectedErr: errors.New("invalid tag type id 13"),
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			tag, err := NewTag(tt.tagType)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expected, tag)
+			} else {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			}
+		})
+	}
+}
+
+func TestNewPayload(t *testing.T) {
+	cases := []struct {
+		name        string
+		tagType     TagType
+		expected    Payload
+		expectedErr error
+	}{
+		{
+			name:        "positive case: ByteType",
+			tagType:     ByteType,
+			expected:    new(BytePayload),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: ShortType",
+			tagType:     ShortType,
+			expected:    new(ShortPayload),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: IntType",
+			tagType:     IntType,
+			expected:    new(IntPayload),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: LongType",
+			tagType:     LongType,
+			expected:    new(LongPayload),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: FloatType",
+			tagType:     FloatType,
+			expected:    new(FloatPayload),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: DoubleType",
+			tagType:     DoubleType,
+			expected:    new(DoublePayload),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: ByteArrayType",
+			tagType:     ByteArrayType,
+			expected:    new(ByteArrayPayload),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: StringType",
+			tagType:     StringType,
+			expected:    new(StringPayload),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: ListType",
+			tagType:     ListType,
+			expected:    new(ListPayload),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: CompoundType",
+			tagType:     CompoundType,
+			expected:    new(CompoundPayload),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: IntArrayType",
+			tagType:     IntArrayType,
+			expected:    new(IntArrayPayload),
+			expectedErr: nil,
+		},
+		{
+			name:        "positive case: LongArrayType",
+			tagType:     LongArrayType,
+			expected:    new(LongArrayPayload),
+			expectedErr: nil,
+		},
+		{
+			name:        "negative case",
+			tagType:     TagType(0x0D),
+			expected:    nil,
+			expectedErr: errors.New("invalid tag type id 13"),
+		},
+		{
+			name:        "negative case: EndType",
+			tagType:     EndType,
+			expected:    nil,
+			expectedErr: errors.New("invalid tag type id 0"),
+		},
+
+		{
+			name:        "negative case: out of range",
+			tagType:     TagType(0x0D),
+			expected:    nil,
+			expectedErr: errors.New("invalid tag type id 13"),
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			payload, err := NewPayload(tt.tagType)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expected, payload)
 			} else {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			}

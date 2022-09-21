@@ -22,6 +22,7 @@ package nbt
 
 import (
 	"encoding/binary"
+	"fmt"
 	"io"
 )
 
@@ -104,6 +105,39 @@ type Tag interface {
 	Decode(r io.Reader) error
 }
 
+func NewTag(typ TagType) (Tag, error) {
+	switch typ {
+	case EndType:
+		return new(EndTag), nil
+	case ByteType:
+		return new(ByteTag), nil
+	case ShortType:
+		return new(ShortTag), nil
+	case IntType:
+		return new(IntTag), nil
+	case LongType:
+		return new(LongTag), nil
+	case FloatType:
+		return new(FloatTag), nil
+	case DoubleType:
+		return new(DoubleTag), nil
+	case ByteArrayType:
+		return new(ByteArrayTag), nil
+	case StringType:
+		return new(StringTag), nil
+	case ListType:
+		return new(ListTag), nil
+	case CompoundType:
+		return new(CompoundTag), nil
+	case IntArrayType:
+		return new(IntArrayTag), nil
+	case LongArrayType:
+		return new(LongArrayTag), nil
+	default:
+		return nil, fmt.Errorf("invalid tag type id %d", typ)
+	}
+}
+
 func encodeTagExcludeEndTag(w io.Writer, tag Tag) error {
 	typ := tag.TypeId()
 	if err := typ.Encode(w); err != nil {
@@ -156,6 +190,37 @@ type PrimitivePayload interface {
 
 type ArrayPayload interface {
 	ByteArrayPayload | IntArrayPayload | LongArrayPayload
+}
+
+func NewPayload(typ TagType) (Payload, error) {
+	switch typ {
+	case ByteType:
+		return new(BytePayload), nil
+	case ShortType:
+		return new(ShortPayload), nil
+	case IntType:
+		return new(IntPayload), nil
+	case LongType:
+		return new(LongPayload), nil
+	case FloatType:
+		return new(FloatPayload), nil
+	case DoubleType:
+		return new(DoublePayload), nil
+	case ByteArrayType:
+		return new(ByteArrayPayload), nil
+	case StringType:
+		return new(StringPayload), nil
+	case ListType:
+		return new(ListPayload), nil
+	case CompoundType:
+		return new(CompoundPayload), nil
+	case IntArrayType:
+		return new(IntArrayPayload), nil
+	case LongArrayType:
+		return new(LongArrayPayload), nil
+	default:
+		return nil, fmt.Errorf("invalid tag type id %d", typ)
+	}
 }
 
 func PrimitivePayloadPointer[T PrimitivePayload](x T) *T {
