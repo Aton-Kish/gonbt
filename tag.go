@@ -45,6 +45,22 @@ const (
 	LongArrayType
 )
 
+func (t *TagType) Encode(w io.Writer) error {
+	if err := binary.Write(w, binary.BigEndian, t); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (t *TagType) Decode(r io.Reader) error {
+	if err := binary.Read(r, binary.BigEndian, t); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Tag Name
 
 type TagName string

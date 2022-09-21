@@ -27,6 +27,187 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var tagTypeCases = []struct {
+	name    string
+	tagType TagType
+	raw     []byte
+}{
+	{
+		name:    "positive case: EndType",
+		tagType: EndType,
+		raw: []byte{
+			// Type: End(=0)
+			0x00,
+		},
+	},
+	{
+		name:    "positive case: ByteType",
+		tagType: ByteType,
+		raw: []byte{
+			// Type: Byte(=1)
+			0x01,
+		},
+	},
+	{
+		name:    "positive case: ShortType",
+		tagType: ShortType,
+		raw: []byte{
+			// Type: Short(=2)
+			0x02,
+		},
+	},
+	{
+		name:    "positive case: IntType",
+		tagType: IntType,
+		raw: []byte{
+			// Type: Int(=3)
+			0x03,
+		},
+	},
+	{
+		name:    "positive case: LongType",
+		tagType: LongType,
+		raw: []byte{
+			// Type: Long(=4)
+			0x04,
+		},
+	},
+	{
+		name:    "positive case: FloatType",
+		tagType: FloatType,
+		raw: []byte{
+			// Type: Float(=5)
+			0x05,
+		},
+	},
+	{
+		name:    "positive case: DoubleType",
+		tagType: DoubleType,
+		raw: []byte{
+			// Type: Double(=6)
+			0x06,
+		},
+	},
+	{
+		name:    "positive case: ByteArrayType",
+		tagType: ByteArrayType,
+		raw: []byte{
+			// Type: ByteArray(=7)
+			0x07,
+		},
+	},
+	{
+		name:    "positive case: StringType",
+		tagType: StringType,
+		raw: []byte{
+			// Type: String(=8)
+			0x08,
+		},
+	},
+	{
+		name:    "positive case: ListType",
+		tagType: ListType,
+		raw: []byte{
+			// Type: List(=9)
+			0x09,
+		},
+	},
+	{
+		name:    "positive case: CompoundType",
+		tagType: CompoundType,
+		raw: []byte{
+			// Type: Compound(=10)
+			0x0A,
+		},
+	},
+	{
+		name:    "positive case: IntArrayType",
+		tagType: IntArrayType,
+		raw: []byte{
+			// Type: IntArray(=11)
+			0x0B,
+		},
+	},
+	{
+		name:    "positive case: LongArrayType",
+		tagType: LongArrayType,
+		raw: []byte{
+			// Type: LongArray(=12)
+			0x0C,
+		},
+	},
+}
+
+func TestTagType_Encode(t *testing.T) {
+	type Case struct {
+		name        string
+		tagType     TagType
+		expected    []byte
+		expectedErr error
+	}
+
+	cases := []Case{}
+
+	for _, c := range tagTypeCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			tagType:     c.tagType,
+			expected:    c.raw,
+			expectedErr: nil,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := new(bytes.Buffer)
+			err := tt.tagType.Encode(buf)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expected, buf.Bytes())
+			} else {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			}
+		})
+	}
+}
+
+func TestTagType_Decode(t *testing.T) {
+	type Case struct {
+		name        string
+		raw         []byte
+		expected    TagType
+		expectedErr error
+	}
+
+	cases := []Case{}
+
+	for _, c := range tagTypeCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			raw:         c.raw,
+			expected:    c.tagType,
+			expectedErr: nil,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := bytes.NewBuffer(tt.raw)
+
+			var typ TagType
+			err := typ.Decode(buf)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expected, typ)
+			} else {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			}
+		})
+	}
+}
+
 var tagNameCases = []struct {
 	name    string
 	tagName TagName
