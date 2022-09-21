@@ -207,12 +207,12 @@ func TestFloatPayload_Decode(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			buf := bytes.NewBuffer(tt.raw)
 
-			p := new(FloatPayload)
-			err := p.Decode(buf)
+			payload := new(FloatPayload)
+			err := payload.Decode(buf)
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
-				assert.Equal(t, tt.expected, p)
+				assert.Equal(t, tt.expected, payload)
 			} else {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			}
