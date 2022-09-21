@@ -109,6 +109,7 @@ func encodeTagExcludeEndTag(w io.Writer, tag Tag) error {
 type Payload interface {
 	TypeId() TagType
 	Encode(w io.Writer) error
+	Decode(r io.Reader) error
 }
 
 type NumericPayload interface {
@@ -142,6 +143,14 @@ func encodeArrayPayload[T ArrayPayload](w io.Writer, payload *T) error {
 	}
 
 	if err := binary.Write(w, binary.BigEndian, payload); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func decodeNumericPayload[T NumericPayload](r io.Reader, payload *T) error {
+	if err := binary.Read(r, binary.BigEndian, payload); err != nil {
 		return err
 	}
 

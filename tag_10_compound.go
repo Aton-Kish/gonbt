@@ -68,3 +68,8 @@ func (p *CompoundPayload) Encode(w io.Writer) error {
 
 	return nil
 }
+
+func (p *CompoundPayload) Decode(r io.Reader) error {
+	// TODO: implement
+	return nil
+}

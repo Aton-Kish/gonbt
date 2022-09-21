@@ -263,3 +263,39 @@ func TestListPayload_Encode(t *testing.T) {
 		})
 	}
 }
+
+func TestListPayload_Decode(t *testing.T) {
+	type Case struct {
+		name        string
+		raw         []byte
+		expected    Payload
+		expectedErr error
+	}
+
+	cases := []Case{}
+
+	// for _, c := range listPayloadCases {
+	// 	cases = append(cases, Case{
+	// 		name:        c.name,
+	// 		raw:         c.raw,
+	// 		expected:    c.payload,
+	// 		expectedErr: nil,
+	// 	})
+	// }
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := bytes.NewBuffer(tt.raw)
+
+			p := new(ListPayload)
+			err := p.Decode(buf)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expected, p)
+			} else {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			}
+		})
+	}
+}

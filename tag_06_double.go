@@ -62,3 +62,7 @@ func (p *DoublePayload) TypeId() TagType {
 func (p *DoublePayload) Encode(w io.Writer) error {
 	return encodeNumericPayload(w, p)
 }
+
+func (p *DoublePayload) Decode(r io.Reader) error {
+	return decodeNumericPayload(r, p)
+}

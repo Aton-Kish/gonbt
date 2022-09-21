@@ -21,6 +21,7 @@
 package nbt
 
 import (
+	"encoding/binary"
 	"io"
 )
 
@@ -61,4 +62,18 @@ func (p *ByteArrayPayload) TypeId() TagType {
 
 func (p *ByteArrayPayload) Encode(w io.Writer) error {
 	return encodeArrayPayload(w, p)
+}
+
+func (p *ByteArrayPayload) Decode(r io.Reader) error {
+	var l int32
+	if err := binary.Read(r, binary.BigEndian, &l); err != nil {
+		return err
+	}
+
+	*p = make(ByteArrayPayload, l)
+	if err := binary.Read(r, binary.BigEndian, p); err != nil {
+		return err
+	}
+
+	return nil
 }

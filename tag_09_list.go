@@ -84,3 +84,8 @@ func (p *ListPayload) Encode(w io.Writer) error {
 
 	return nil
 }
+
+func (p *ListPayload) Decode(r io.Reader) error {
+	// TODO: implement
+	return nil
+}
