@@ -105,7 +105,7 @@ type Tag interface {
 
 func encodeTagExcludeEndTag(w io.Writer, tag Tag) error {
 	typ := tag.TypeId()
-	if err := binary.Write(w, binary.BigEndian, &typ); err != nil {
+	if err := typ.Encode(w); err != nil {
 		return err
 	}
 

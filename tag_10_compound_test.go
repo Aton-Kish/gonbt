@@ -46,6 +46,8 @@ var compoundTagCases = []struct {
 			},
 		},
 		raw: []byte{
+			// Type: Compound(=10)
+			0x0A,
 			// Name Length: 8
 			0x00, 0x08,
 			// Name: "Compound"
@@ -138,10 +140,7 @@ func TestCompoundTag_Encode(t *testing.T) {
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
-
-				raw := buf.Bytes()
-				assert.Equal(t, byte(tt.tag.TypeId()), raw[0])
-				assert.Equal(t, tt.expected, raw[1:])
+				assert.Equal(t, tt.expected, buf.Bytes())
 			} else {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			}

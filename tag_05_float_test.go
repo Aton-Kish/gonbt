@@ -39,6 +39,8 @@ var floatTagCases = []struct {
 			payload: FloatPayload(0.12345678),
 		},
 		raw: []byte{
+			// Type: Float(=5)
+			0x05,
 			// Name Length: 5
 			0x00, 0x05,
 			// Name: "Float"
@@ -82,10 +84,7 @@ func TestFloatTag_Encode(t *testing.T) {
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
-
-				raw := buf.Bytes()
-				assert.Equal(t, byte(tt.tag.TypeId()), raw[0])
-				assert.Equal(t, tt.expected, raw[1:])
+				assert.Equal(t, tt.expected, buf.Bytes())
 			} else {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			}

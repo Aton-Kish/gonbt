@@ -39,6 +39,8 @@ var listTagCases = []struct {
 			payload: ListPayload{PrimitivePayloadPointer[ShortPayload](12345), PrimitivePayloadPointer[ShortPayload](6789)},
 		},
 		raw: []byte{
+			// Type: List(=9)
+			0x09,
 			// Name Length: 4
 			0x00, 0x04,
 			// Name: "List"
@@ -89,10 +91,7 @@ func TestListTag_Encode(t *testing.T) {
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
-
-				raw := buf.Bytes()
-				assert.Equal(t, byte(tt.tag.TypeId()), raw[0])
-				assert.Equal(t, tt.expected, raw[1:])
+				assert.Equal(t, tt.expected, buf.Bytes())
 			} else {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			}

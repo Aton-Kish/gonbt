@@ -39,6 +39,8 @@ var byteArrayTagCases = []struct {
 			payload: ByteArrayPayload{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
 		},
 		raw: []byte{
+			// Type: ByteArray(=7)
+			0x07,
 			// Name Length: 9
 			0x00, 0x09,
 			// Name: "ByteArray"
@@ -84,10 +86,7 @@ func TestByteArrayTag_Encode(t *testing.T) {
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
-
-				raw := buf.Bytes()
-				assert.Equal(t, byte(tt.tag.TypeId()), raw[0])
-				assert.Equal(t, tt.expected, raw[1:])
+				assert.Equal(t, tt.expected, buf.Bytes())
 			} else {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			}

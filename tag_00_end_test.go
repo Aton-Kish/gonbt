@@ -35,7 +35,10 @@ var endTagCases = []struct {
 	{
 		name: "positive case",
 		tag:  &EndTag{},
-		raw:  []byte{},
+		raw: []byte{
+			// Type: End(=0)
+			0x00,
+		},
 	},
 }
 
@@ -72,10 +75,7 @@ func TestEndTag_Encode(t *testing.T) {
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
-
-				raw := buf.Bytes()
-				assert.Equal(t, byte(tt.tag.TypeId()), raw[0])
-				assert.Equal(t, tt.expected, raw[1:])
+				assert.Equal(t, tt.expected, buf.Bytes())
 			} else {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			}

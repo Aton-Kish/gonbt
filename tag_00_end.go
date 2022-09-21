@@ -21,7 +21,6 @@
 package nbt
 
 import (
-	"encoding/binary"
 	"io"
 )
 
@@ -46,7 +45,7 @@ func (t *EndTag) Payload() Payload {
 
 func (t *EndTag) Encode(w io.Writer) error {
 	typ := t.TypeId()
-	if err := binary.Write(w, binary.BigEndian, &typ); err != nil {
+	if err := typ.Encode(w); err != nil {
 		return err
 	}
 

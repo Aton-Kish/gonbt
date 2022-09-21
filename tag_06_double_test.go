@@ -39,6 +39,8 @@ var doubleTagCases = []struct {
 			payload: DoublePayload(0.123456789),
 		},
 		raw: []byte{
+			// Type: Double(=6)
+			0x06,
 			// Name Length: 6
 			0x00, 0x06,
 			// Name: "Double"
@@ -82,10 +84,7 @@ func TestDoubleTag_Encode(t *testing.T) {
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
-
-				raw := buf.Bytes()
-				assert.Equal(t, byte(tt.tag.TypeId()), raw[0])
-				assert.Equal(t, tt.expected, raw[1:])
+				assert.Equal(t, tt.expected, buf.Bytes())
 			} else {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			}

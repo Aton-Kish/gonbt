@@ -39,6 +39,8 @@ var stringTagCases = []struct {
 			payload: StringPayload("Hello World"),
 		},
 		raw: []byte{
+			// Type: String(=8)
+			0x08,
 			// Name Length: 6
 			0x00, 0x06,
 			// Name: "String"
@@ -84,10 +86,7 @@ func TestStringTag_Encode(t *testing.T) {
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
-
-				raw := buf.Bytes()
-				assert.Equal(t, byte(tt.tag.TypeId()), raw[0])
-				assert.Equal(t, tt.expected, raw[1:])
+				assert.Equal(t, tt.expected, buf.Bytes())
 			} else {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			}

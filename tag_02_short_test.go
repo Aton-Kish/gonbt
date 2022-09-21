@@ -39,6 +39,8 @@ var shortTagCases = []struct {
 			payload: ShortPayload(12345),
 		},
 		raw: []byte{
+			// Type: Short(=2)
+			0x02,
 			// Name Length: 5
 			0x00, 0x05,
 			// Name: "Short"
@@ -82,10 +84,7 @@ func TestShortTag_Encode(t *testing.T) {
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
-
-				raw := buf.Bytes()
-				assert.Equal(t, byte(tt.tag.TypeId()), raw[0])
-				assert.Equal(t, tt.expected, raw[1:])
+				assert.Equal(t, tt.expected, buf.Bytes())
 			} else {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			}

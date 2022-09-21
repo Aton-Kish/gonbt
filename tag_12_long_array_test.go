@@ -39,6 +39,8 @@ var longArrayTagCases = []struct {
 			payload: LongArrayPayload{0, 1, 2, 3},
 		},
 		raw: []byte{
+			// Type: LongArray(=12)
+			0x0C,
 			// Name Length: 9
 			0x00, 0x09,
 			// Name: "LongArray"
@@ -87,10 +89,7 @@ func TestLongArrayTag_Encode(t *testing.T) {
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
-
-				raw := buf.Bytes()
-				assert.Equal(t, byte(tt.tag.TypeId()), raw[0])
-				assert.Equal(t, tt.expected, raw[1:])
+				assert.Equal(t, tt.expected, buf.Bytes())
 			} else {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			}
