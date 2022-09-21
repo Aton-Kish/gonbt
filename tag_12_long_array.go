@@ -50,6 +50,10 @@ func (t *LongArrayTag) Encode(w io.Writer) error {
 	return encodeTagExcludeEndTag(w, t)
 }
 
+func (t *LongArrayTag) Decode(r io.Reader) error {
+	return decodeTagExcludeEndTag(r, t)
+}
+
 type LongArrayPayload []int64
 
 func NewLongArrayPayload() Payload {

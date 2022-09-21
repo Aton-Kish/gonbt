@@ -49,6 +49,10 @@ func (t *LongTag) Encode(w io.Writer) error {
 	return encodeTagExcludeEndTag(w, t)
 }
 
+func (t *LongTag) Decode(r io.Reader) error {
+	return decodeTagExcludeEndTag(r, t)
+}
+
 type LongPayload int64
 
 func NewLongPayload() Payload {

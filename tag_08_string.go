@@ -50,6 +50,10 @@ func (t *StringTag) Encode(w io.Writer) error {
 	return encodeTagExcludeEndTag(w, t)
 }
 
+func (t *StringTag) Decode(r io.Reader) error {
+	return decodeTagExcludeEndTag(r, t)
+}
+
 type StringPayload string
 
 func NewStringPayload() Payload {

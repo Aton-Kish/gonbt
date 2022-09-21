@@ -51,3 +51,12 @@ func (t *EndTag) Encode(w io.Writer) error {
 
 	return nil
 }
+
+func (t *EndTag) Decode(r io.Reader) error {
+	typ := t.TypeId()
+	if err := typ.Decode(r); err != nil {
+		return err
+	}
+
+	return nil
+}

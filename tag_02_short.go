@@ -49,6 +49,10 @@ func (t *ShortTag) Encode(w io.Writer) error {
 	return encodeTagExcludeEndTag(w, t)
 }
 
+func (t *ShortTag) Decode(r io.Reader) error {
+	return decodeTagExcludeEndTag(r, t)
+}
+
 type ShortPayload int16
 
 func NewShortPayload() Payload {

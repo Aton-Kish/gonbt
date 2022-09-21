@@ -49,6 +49,10 @@ func (t *ByteTag) Encode(w io.Writer) error {
 	return encodeTagExcludeEndTag(w, t)
 }
 
+func (t *ByteTag) Decode(r io.Reader) error {
+	return decodeTagExcludeEndTag(r, t)
+}
+
 type BytePayload int8
 
 func NewBytePayload() Payload {

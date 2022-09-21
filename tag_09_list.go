@@ -50,6 +50,10 @@ func (t *ListTag) Encode(w io.Writer) error {
 	return encodeTagExcludeEndTag(w, t)
 }
 
+func (t *ListTag) Decode(r io.Reader) error {
+	return decodeTagExcludeEndTag(r, t)
+}
+
 type ListPayload []Payload
 
 func NewListPayload() Payload {

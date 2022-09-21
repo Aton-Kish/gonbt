@@ -49,6 +49,10 @@ func (t *CompoundTag) Encode(w io.Writer) error {
 	return encodeTagExcludeEndTag(w, t)
 }
 
+func (t *CompoundTag) Decode(r io.Reader) error {
+	return decodeTagExcludeEndTag(r, t)
+}
+
 type CompoundPayload []Tag
 
 func NewCompoundPayload() Payload {

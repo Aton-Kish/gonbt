@@ -49,6 +49,10 @@ func (t *IntTag) Encode(w io.Writer) error {
 	return encodeTagExcludeEndTag(w, t)
 }
 
+func (t *IntTag) Decode(r io.Reader) error {
+	return decodeTagExcludeEndTag(r, t)
+}
+
 type IntPayload int32
 
 func NewIntPayload() Payload {

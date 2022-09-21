@@ -50,6 +50,10 @@ func (t *IntArrayTag) Encode(w io.Writer) error {
 	return encodeTagExcludeEndTag(w, t)
 }
 
+func (t *IntArrayTag) Decode(r io.Reader) error {
+	return decodeTagExcludeEndTag(r, t)
+}
+
 type IntArrayPayload []int32
 
 func NewIntArrayPayload() Payload {

@@ -101,6 +101,7 @@ type Tag interface {
 	TagName() *TagName
 	Payload() Payload
 	Encode(w io.Writer) error
+	Decode(r io.Reader) error
 }
 
 func encodeTagExcludeEndTag(w io.Writer, tag Tag) error {
@@ -114,6 +115,23 @@ func encodeTagExcludeEndTag(w io.Writer, tag Tag) error {
 	}
 
 	if err := tag.Payload().Encode(w); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func decodeTagExcludeEndTag(r io.Reader, tag Tag) error {
+	typ := tag.TypeId()
+	if err := typ.Decode(r); err != nil {
+		return err
+	}
+
+	if err := tag.TagName().Decode(r); err != nil {
+		return err
+	}
+
+	if err := tag.Payload().Decode(r); err != nil {
 		return err
 	}
 

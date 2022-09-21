@@ -49,6 +49,10 @@ func (t *DoubleTag) Encode(w io.Writer) error {
 	return encodeTagExcludeEndTag(w, t)
 }
 
+func (t *DoubleTag) Decode(r io.Reader) error {
+	return decodeTagExcludeEndTag(r, t)
+}
+
 type DoublePayload float64
 
 func NewDoublePayload() Payload {

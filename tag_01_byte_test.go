@@ -93,6 +93,42 @@ func TestByteTag_Encode(t *testing.T) {
 	}
 }
 
+func TestByteTag_Decode(t *testing.T) {
+	type Case struct {
+		name        string
+		raw         []byte
+		expected    Tag
+		expectedErr error
+	}
+
+	cases := []Case{}
+
+	for _, c := range byteTagCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			raw:         c.raw,
+			expected:    c.tag,
+			expectedErr: nil,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := bytes.NewBuffer(tt.raw)
+
+			tag := new(ByteTag)
+			err := tag.Decode(buf)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expected, tag)
+			} else {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			}
+		})
+	}
+}
+
 var bytePayloadCases = []struct {
 	name    string
 	payload Payload
