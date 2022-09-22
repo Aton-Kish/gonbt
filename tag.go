@@ -138,10 +138,14 @@ func NewTag(typ TagType) (Tag, error) {
 	}
 }
 
-func encodeTagExcludeEndTag(w io.Writer, tag Tag) error {
+func encodeTag(w io.Writer, tag Tag) error {
 	typ := tag.TypeId()
 	if err := typ.Encode(w); err != nil {
 		return err
+	}
+
+	if typ == EndType {
+		return nil
 	}
 
 	if err := tag.TagName().Encode(w); err != nil {

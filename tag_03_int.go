@@ -46,7 +46,7 @@ func (t *IntTag) Payload() Payload {
 }
 
 func (t *IntTag) Encode(w io.Writer) error {
-	return encodeTagExcludeEndTag(w, t)
+	return encodeTag(w, t)
 }
 
 func (t *IntTag) Decode(r io.Reader) error {

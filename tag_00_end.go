@@ -44,12 +44,7 @@ func (t *EndTag) Payload() Payload {
 }
 
 func (t *EndTag) Encode(w io.Writer) error {
-	typ := t.TypeId()
-	if err := typ.Encode(w); err != nil {
-		return err
-	}
-
-	return nil
+	return encodeTag(w, t)
 }
 
 func (t *EndTag) Decode(r io.Reader) error {

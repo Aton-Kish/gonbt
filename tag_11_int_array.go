@@ -47,7 +47,7 @@ func (t *IntArrayTag) Payload() Payload {
 }
 
 func (t *IntArrayTag) Encode(w io.Writer) error {
-	return encodeTagExcludeEndTag(w, t)
+	return encodeTag(w, t)
 }
 
 func (t *IntArrayTag) Decode(r io.Reader) error {

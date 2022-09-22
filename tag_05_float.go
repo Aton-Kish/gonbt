@@ -46,7 +46,7 @@ func (t *FloatTag) Payload() Payload {
 }
 
 func (t *FloatTag) Encode(w io.Writer) error {
-	return encodeTagExcludeEndTag(w, t)
+	return encodeTag(w, t)
 }
 
 func (t *FloatTag) Decode(r io.Reader) error {
