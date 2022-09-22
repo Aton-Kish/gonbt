@@ -158,14 +158,14 @@ func TestCompoundTag_Decode(t *testing.T) {
 
 	cases := []Case{}
 
-	// for _, c := range compoundTagCases {
-	// 	cases = append(cases, Case{
-	// 		name:        c.name,
-	// 		raw:         c.raw,
-	// 		expected:    c.tag,
-	// 		expectedErr: nil,
-	// 	})
-	// }
+	for _, c := range compoundTagCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			raw:         c.raw,
+			expected:    c.tag,
+			expectedErr: nil,
+		})
+	}
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
@@ -315,14 +315,14 @@ func TestCompoundPayload_Decode(t *testing.T) {
 
 	cases := []Case{}
 
-	// for _, c := range compoundPayloadCases {
-	// 	cases = append(cases, Case{
-	// 		name:        c.name,
-	// 		raw:         c.raw,
-	// 		expected:    c.payload,
-	// 		expectedErr: nil,
-	// 	})
-	// }
+	for _, c := range compoundPayloadCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			raw:         c.raw,
+			expected:    c.payload,
+			expectedErr: nil,
+		})
+	}
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {

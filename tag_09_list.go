@@ -103,6 +103,29 @@ func (p *ListPayload) Encode(w io.Writer) error {
 }
 
 func (p *ListPayload) Decode(r io.Reader) error {
-	// TODO: implement
+	var typ TagType
+	if err := binary.Read(r, binary.BigEndian, &typ); err != nil {
+		return err
+	}
+
+	var l int32
+	if err := binary.Read(r, binary.BigEndian, &l); err != nil {
+		return err
+	}
+
+	*p = make([]Payload, 0, l)
+	for i := 0; i < int(l); i++ {
+		payload, err := NewPayload(typ)
+		if err != nil {
+			return err
+		}
+
+		if err := payload.Decode(r); err != nil {
+			return err
+		}
+
+		*p = append(*p, payload)
+	}
+
 	return nil
 }

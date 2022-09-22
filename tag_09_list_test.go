@@ -109,14 +109,14 @@ func TestListTag_Decode(t *testing.T) {
 
 	cases := []Case{}
 
-	// for _, c := range listTagCases {
-	// 	cases = append(cases, Case{
-	// 		name:        c.name,
-	// 		raw:         c.raw,
-	// 		expected:    c.tag,
-	// 		expectedErr: nil,
-	// 	})
-	// }
+	for _, c := range listTagCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			raw:         c.raw,
+			expected:    c.tag,
+			expectedErr: nil,
+		})
+	}
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
@@ -309,14 +309,14 @@ func TestListPayload_Decode(t *testing.T) {
 
 	cases := []Case{}
 
-	// for _, c := range listPayloadCases {
-	// 	cases = append(cases, Case{
-	// 		name:        c.name,
-	// 		raw:         c.raw,
-	// 		expected:    c.payload,
-	// 		expectedErr: nil,
-	// 	})
-	// }
+	for _, c := range listPayloadCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			raw:         c.raw,
+			expected:    c.payload,
+			expectedErr: nil,
+		})
+	}
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {

@@ -87,6 +87,19 @@ func (p *CompoundPayload) Encode(w io.Writer) error {
 }
 
 func (p *CompoundPayload) Decode(r io.Reader) error {
-	// TODO: implement
+	for {
+		// TODO: publicify encode method
+		tag, err := decodeTag(r)
+		if err != nil {
+			return err
+		}
+
+		*p = append(*p, tag)
+
+		if tag.TypeId() == EndType {
+			break
+		}
+	}
+
 	return nil
 }
