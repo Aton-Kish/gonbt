@@ -53,7 +53,7 @@ var longTagCases = []struct {
 }
 
 func TestLongTag_TypeId(t *testing.T) {
-	tag := NewLongTag()
+	tag := new(LongTag)
 	expected := LongType
 	actual := tag.TypeId()
 	assert.Equal(t, expected, actual)
@@ -145,7 +145,7 @@ var longPayloadCases = []struct {
 }
 
 func TestLongPayload_TypeId(t *testing.T) {
-	payload := NewLongPayload()
+	payload := new(LongPayload)
 	expected := LongType
 	actual := payload.TypeId()
 	assert.Equal(t, expected, actual)

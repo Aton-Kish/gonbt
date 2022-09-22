@@ -60,7 +60,7 @@ var listTagCases = []struct {
 }
 
 func TestListTag_TypeId(t *testing.T) {
-	tag := NewListTag()
+	tag := new(ListTag)
 	expected := ListType
 	actual := tag.TypeId()
 	assert.Equal(t, expected, actual)
@@ -260,7 +260,7 @@ var listPayloadCases = []struct {
 }
 
 func TestListPayload_TypeId(t *testing.T) {
-	payload := NewListPayload()
+	payload := new(ListPayload)
 	expected := ListType
 	actual := payload.TypeId()
 	assert.Equal(t, expected, actual)

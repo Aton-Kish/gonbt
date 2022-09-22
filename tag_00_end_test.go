@@ -43,7 +43,7 @@ var endTagCases = []struct {
 }
 
 func TestEndTag_TypeId(t *testing.T) {
-	tag := NewEndTag()
+	tag := new(EndTag)
 	expected := EndType
 	actual := tag.TypeId()
 	assert.Equal(t, expected, actual)

@@ -109,7 +109,7 @@ var compoundTagCases = []struct {
 }
 
 func TestCompoundTag_TypeId(t *testing.T) {
-	tag := NewCompoundTag()
+	tag := new(CompoundTag)
 	expected := CompoundType
 	actual := tag.TypeId()
 	assert.Equal(t, expected, actual)
@@ -266,7 +266,7 @@ var compoundPayloadCases = []struct {
 }
 
 func TestCompoundPayload_TypeId(t *testing.T) {
-	payload := NewCompoundPayload()
+	payload := new(CompoundPayload)
 	expected := CompoundType
 	actual := payload.TypeId()
 	assert.Equal(t, expected, actual)

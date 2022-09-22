@@ -54,7 +54,7 @@ var byteTagCases = []struct {
 }
 
 func TestByteTag_TypeId(t *testing.T) {
-	tag := NewByteTag()
+	tag := new(ByteTag)
 	expected := ByteType
 	actual := tag.TypeId()
 	assert.Equal(t, expected, actual)
@@ -146,7 +146,7 @@ var bytePayloadCases = []struct {
 }
 
 func TestBytePayload_TypeId(t *testing.T) {
-	payload := NewBytePayload()
+	payload := new(BytePayload)
 	expected := ByteType
 	actual := payload.TypeId()
 	assert.Equal(t, expected, actual)

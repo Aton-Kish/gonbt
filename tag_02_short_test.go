@@ -53,7 +53,7 @@ var shortTagCases = []struct {
 }
 
 func TestShortTag_TypeId(t *testing.T) {
-	tag := NewShortTag()
+	tag := new(ShortTag)
 	expected := ShortType
 	actual := tag.TypeId()
 	assert.Equal(t, expected, actual)
@@ -145,7 +145,7 @@ var shortPayloadCases = []struct {
 }
 
 func TestShortPayload_TypeId(t *testing.T) {
-	payload := NewShortPayload()
+	payload := new(ShortPayload)
 	expected := ShortType
 	actual := payload.TypeId()
 	assert.Equal(t, expected, actual)

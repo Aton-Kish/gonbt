@@ -53,7 +53,7 @@ var floatTagCases = []struct {
 }
 
 func TestFloatTag_TypeId(t *testing.T) {
-	tag := NewFloatTag()
+	tag := new(FloatTag)
 	expected := FloatType
 	actual := tag.TypeId()
 	assert.Equal(t, expected, actual)
@@ -145,7 +145,7 @@ var floatPayloadCases = []struct {
 }
 
 func TestFloatPayload_TypeId(t *testing.T) {
-	payload := NewFloatPayload()
+	payload := new(FloatPayload)
 	expected := FloatType
 	actual := payload.TypeId()
 	assert.Equal(t, expected, actual)

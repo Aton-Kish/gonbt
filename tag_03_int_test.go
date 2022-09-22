@@ -53,7 +53,7 @@ var intTagCases = []struct {
 }
 
 func TestIntTag_TypeId(t *testing.T) {
-	tag := NewIntTag()
+	tag := new(IntTag)
 	expected := IntType
 	actual := tag.TypeId()
 	assert.Equal(t, expected, actual)
@@ -145,7 +145,7 @@ var intPayloadCases = []struct {
 }
 
 func TestIntPayload_TypeId(t *testing.T) {
-	payload := NewIntPayload()
+	payload := new(IntPayload)
 	expected := IntType
 	actual := payload.TypeId()
 	assert.Equal(t, expected, actual)
