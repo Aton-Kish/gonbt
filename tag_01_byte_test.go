@@ -35,11 +35,7 @@ var byteTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag: &ByteTag{
-			tagName: TagName("Byte"),
-			payload: BytePayload(123),
-		},
-		//
+		tag:  NewByteTag("Byte", 123),
 		raw: []byte{
 			// Type: Byte(=1)
 			0x01,
@@ -51,6 +47,32 @@ var byteTagCases = []struct {
 			0x7B,
 		},
 	},
+}
+
+func TestNewByteTag(t *testing.T) {
+	cases := []struct {
+		name     string
+		tagName  TagName
+		payload  BytePayload
+		expected Tag
+	}{
+		{
+			name:    "positive case",
+			tagName: "Byte",
+			payload: 123,
+			expected: &ByteTag{
+				tagName: "Byte",
+				payload: 123,
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewByteTag(tt.tagName, tt.payload)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestByteTag_TypeId(t *testing.T) {
@@ -137,12 +159,33 @@ var bytePayloadCases = []struct {
 }{
 	{
 		name:    "positive case",
-		payload: pointer.Pointer[BytePayload](123),
+		payload: NewBytePayload(123),
 		raw: []byte{
 			// Payload: 123b
 			0x7B,
 		},
 	},
+}
+
+func TestNewBytePayload(t *testing.T) {
+	cases := []struct {
+		name     string
+		value    int8
+		expected Payload
+	}{
+		{
+			name:     "positive case",
+			value:    123,
+			expected: pointer.Pointer[BytePayload](123),
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewBytePayload(tt.value)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestBytePayload_TypeId(t *testing.T) {

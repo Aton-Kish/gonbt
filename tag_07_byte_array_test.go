@@ -34,10 +34,7 @@ var byteArrayTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag: &ByteArrayTag{
-			tagName: TagName("ByteArray"),
-			payload: ByteArrayPayload{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
-		},
+		tag:  NewByteArrayTag("ByteArray", ByteArrayPayload{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}),
 		raw: []byte{
 			// Type: ByteArray(=7)
 			0x07,
@@ -51,6 +48,32 @@ var byteArrayTagCases = []struct {
 			0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
 		},
 	},
+}
+
+func TestNewByteArrayTag(t *testing.T) {
+	cases := []struct {
+		name     string
+		tagName  TagName
+		payload  ByteArrayPayload
+		expected Tag
+	}{
+		{
+			name:    "positive case",
+			tagName: "ByteArray",
+			payload: ByteArrayPayload{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+			expected: &ByteArrayTag{
+				tagName: "ByteArray",
+				payload: ByteArrayPayload{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewByteArrayTag(tt.tagName, tt.payload)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestByteArrayTag_TypeId(t *testing.T) {
@@ -137,7 +160,7 @@ var byteArrayPayloadCases = []struct {
 }{
 	{
 		name:    "positive case: has items",
-		payload: &ByteArrayPayload{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+		payload: NewByteArrayPayload(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
 		raw: []byte{
 			// Payload Length: 10
 			0x00, 0x00, 0x00, 0x0A,
@@ -147,13 +170,39 @@ var byteArrayPayloadCases = []struct {
 	},
 	{
 		name:    "positive case: empty",
-		payload: &ByteArrayPayload{},
+		payload: NewByteArrayPayload(),
 		raw: []byte{
 			// Payload Length: 0
 			0x00, 0x00, 0x00, 0x00,
 			// Payload: [B; ]
 		},
 	},
+}
+
+func TestNewByteArrayPayload(t *testing.T) {
+	cases := []struct {
+		name     string
+		values   []int8
+		expected Payload
+	}{
+		{
+			name:     "positive case: has items",
+			values:   []int8{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+			expected: &ByteArrayPayload{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+		},
+		{
+			name:     "positive case: empty",
+			values:   []int8{},
+			expected: &ByteArrayPayload{},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewByteArrayPayload(tt.values...)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestByteArrayPayload_TypeId(t *testing.T) {

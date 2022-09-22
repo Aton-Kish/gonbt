@@ -24,7 +24,6 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/Aton-Kish/gonbt/pointer"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -35,10 +34,10 @@ var listTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag: &ListTag{
-			tagName: TagName("List"),
-			payload: ListPayload{pointer.Pointer[ShortPayload](12345), pointer.Pointer[ShortPayload](6789)},
-		},
+		tag: NewListTag(
+			"List",
+			ListPayload{NewShortPayload(12345), NewShortPayload(6789)},
+		),
 		raw: []byte{
 			// Type: List(=9)
 			0x09,
@@ -57,6 +56,32 @@ var listTagCases = []struct {
 			0x1A, 0x85,
 		},
 	},
+}
+
+func TestNewListTag(t *testing.T) {
+	cases := []struct {
+		name     string
+		tagName  TagName
+		payload  ListPayload
+		expected Tag
+	}{
+		{
+			name:    "positive case",
+			tagName: "List",
+			payload: ListPayload{NewShortPayload(12345), NewShortPayload(6789)},
+			expected: &ListTag{
+				tagName: "List",
+				payload: ListPayload{NewShortPayload(12345), NewShortPayload(6789)},
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewListTag(tt.tagName, tt.payload)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestListTag_TypeId(t *testing.T) {
@@ -143,7 +168,7 @@ var listPayloadCases = []struct {
 }{
 	{
 		name:    "positive case: Short",
-		payload: &ListPayload{pointer.Pointer[ShortPayload](12345), pointer.Pointer[ShortPayload](6789)},
+		payload: NewListPayload(NewShortPayload(12345), NewShortPayload(6789)),
 		raw: []byte{
 			// Payload Type: TagShort(=2)
 			0x02,
@@ -158,7 +183,7 @@ var listPayloadCases = []struct {
 	},
 	{
 		name:    "positive case: ByteArray",
-		payload: &ListPayload{&ByteArrayPayload{0, 1}, &ByteArrayPayload{2, 3}},
+		payload: NewListPayload(NewByteArrayPayload(0, 1), NewByteArrayPayload(2, 3)),
 		raw: []byte{
 			// Payload Type: TagByteArray(=7)
 			0x07,
@@ -175,7 +200,7 @@ var listPayloadCases = []struct {
 	},
 	{
 		name:    "positive case: String",
-		payload: &ListPayload{pointer.Pointer[StringPayload]("Hello"), pointer.Pointer[StringPayload]("World")},
+		payload: NewListPayload(NewStringPayload("Hello"), NewStringPayload("World")),
 		raw: []byte{
 			// Payload Type: TagString(=8)
 			0x08,
@@ -192,10 +217,10 @@ var listPayloadCases = []struct {
 	},
 	{
 		name: "positive case: List",
-		payload: &ListPayload{
-			&ListPayload{pointer.Pointer[BytePayload](123)},
-			&ListPayload{pointer.Pointer[StringPayload]("Test")},
-		},
+		payload: NewListPayload(
+			NewListPayload(NewBytePayload(123)),
+			NewListPayload(NewStringPayload("Test")),
+		),
 		raw: []byte{
 			// Payload Type: TagList(=9)
 			0x09,
@@ -215,10 +240,10 @@ var listPayloadCases = []struct {
 	},
 	{
 		name: "positive case: Compound",
-		payload: &ListPayload{
-			&CompoundPayload{&ByteTag{TagName("Byte"), BytePayload(123)}, &EndTag{}},
-			&CompoundPayload{&StringTag{TagName("String"), StringPayload("Hello")}, &EndTag{}},
-		},
+		payload: NewListPayload(
+			NewCompoundPayload(NewByteTag("Byte", 123), NewEndTag()),
+			NewCompoundPayload(NewStringTag("String", "Hello"), NewEndTag()),
+		),
 		raw: []byte{
 			// Payload Type: TagCompound(=10)
 			0x0A,
@@ -248,7 +273,7 @@ var listPayloadCases = []struct {
 	},
 	{
 		name:    "positive case: empty",
-		payload: &ListPayload{},
+		payload: NewListPayload(),
 		raw: []byte{
 			// Payload Type: TagEnd(=0)
 			0x00,
@@ -257,6 +282,64 @@ var listPayloadCases = []struct {
 			// Payload: []
 		},
 	},
+}
+
+func TestNewListPayload(t *testing.T) {
+	cases := []struct {
+		name     string
+		values   []Payload
+		expected Payload
+	}{
+		{
+			name:     "positive case: Short",
+			values:   []Payload{NewShortPayload(12345), NewShortPayload(6789)},
+			expected: &ListPayload{NewShortPayload(12345), NewShortPayload(6789)},
+		},
+		{
+			name:     "positive case: ByteArray",
+			values:   []Payload{NewByteArrayPayload(0, 1), NewByteArrayPayload(2, 3)},
+			expected: &ListPayload{NewByteArrayPayload(0, 1), NewByteArrayPayload(2, 3)},
+		},
+		{
+			name:     "positive case: String",
+			values:   []Payload{NewStringPayload("Hello"), NewStringPayload("World")},
+			expected: &ListPayload{NewStringPayload("Hello"), NewStringPayload("World")},
+		},
+		{
+			name: "positive case: List",
+			values: []Payload{
+				&ListPayload{NewBytePayload(123)},
+				&ListPayload{NewStringPayload("Test")},
+			},
+			expected: &ListPayload{
+				&ListPayload{NewBytePayload(123)},
+				&ListPayload{NewStringPayload("Test")},
+			},
+		},
+		{
+			name: "positive case: Compound",
+			values: []Payload{
+				NewCompoundPayload(NewByteTag("Byte", 123), NewEndTag()),
+				NewCompoundPayload(NewStringTag("String", "Hello"), NewEndTag()),
+			},
+			expected: &ListPayload{
+				NewCompoundPayload(NewByteTag("Byte", 123), NewEndTag()),
+				NewCompoundPayload(NewStringTag("String", "Hello"), NewEndTag()),
+			},
+		},
+		{
+			name:     "positive case: empty",
+			values:   []Payload{},
+			expected: &ListPayload{},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewListPayload(tt.values...)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestListPayload_TypeId(t *testing.T) {

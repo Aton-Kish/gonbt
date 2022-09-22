@@ -29,7 +29,7 @@ type EndTag struct {
 }
 
 func NewEndTag() Tag {
-	return new(EndTag)
+	return &EndTag{}
 }
 
 func (t *EndTag) TypeId() TagType {

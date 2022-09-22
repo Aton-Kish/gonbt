@@ -35,10 +35,7 @@ var doubleTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag: &DoubleTag{
-			tagName: TagName("Double"),
-			payload: DoublePayload(0.123456789),
-		},
+		tag:  NewDoubleTag("Double", 0.123456789),
 		raw: []byte{
 			// Type: Double(=6)
 			0x06,
@@ -50,6 +47,32 @@ var doubleTagCases = []struct {
 			0x3F, 0xBF, 0x9A, 0xDD, 0x37, 0x39, 0x63, 0x5F,
 		},
 	},
+}
+
+func TestNewDoubleTag(t *testing.T) {
+	cases := []struct {
+		name     string
+		tagName  TagName
+		payload  DoublePayload
+		expected Tag
+	}{
+		{
+			name:    "positive case",
+			tagName: "Double",
+			payload: 0.123456789,
+			expected: &DoubleTag{
+				tagName: "Double",
+				payload: 0.123456789,
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewDoubleTag(tt.tagName, tt.payload)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestDoubleTag_TypeId(t *testing.T) {
@@ -136,12 +159,33 @@ var doublePayloadCases = []struct {
 }{
 	{
 		name:    "positive case",
-		payload: pointer.Pointer[DoublePayload](0.123456789),
+		payload: NewDoublePayload(0.123456789),
 		raw: []byte{
 			// Payload: 0.123456789d
 			0x3F, 0xBF, 0x9A, 0xDD, 0x37, 0x39, 0x63, 0x5F,
 		},
 	},
+}
+
+func TestNewDoublePayload(t *testing.T) {
+	cases := []struct {
+		name     string
+		value    float64
+		expected Payload
+	}{
+		{
+			name:     "positive case",
+			value:    0.123456789,
+			expected: pointer.Pointer[DoublePayload](0.123456789),
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewDoublePayload(tt.value)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestDoublePayload_TypeId(t *testing.T) {

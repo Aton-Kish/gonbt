@@ -35,10 +35,7 @@ var longTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag: &LongTag{
-			tagName: TagName("Long"),
-			payload: LongPayload(123456789123456789),
-		},
+		tag:  NewLongTag("Long", 123456789123456789),
 		raw: []byte{
 			// Type: Long(=4)
 			0x04,
@@ -50,6 +47,32 @@ var longTagCases = []struct {
 			0x01, 0xB6, 0x9B, 0x4B, 0xAC, 0xD0, 0x5F, 0x15,
 		},
 	},
+}
+
+func TestNewLongTag(t *testing.T) {
+	cases := []struct {
+		name     string
+		tagName  TagName
+		payload  LongPayload
+		expected Tag
+	}{
+		{
+			name:    "positive case",
+			tagName: "Long",
+			payload: 123456789123456789,
+			expected: &LongTag{
+				tagName: "Long",
+				payload: 123456789123456789,
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewLongTag(tt.tagName, tt.payload)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestLongTag_TypeId(t *testing.T) {
@@ -136,12 +159,33 @@ var longPayloadCases = []struct {
 }{
 	{
 		name:    "positive case",
-		payload: pointer.Pointer[LongPayload](123456789123456789),
+		payload: NewLongPayload(123456789123456789),
 		raw: []byte{
 			// Payload: 123456789123456789L
 			0x01, 0xB6, 0x9B, 0x4B, 0xAC, 0xD0, 0x5F, 0x15,
 		},
 	},
+}
+
+func TestNewLongPayload(t *testing.T) {
+	cases := []struct {
+		name     string
+		value    int64
+		expected Payload
+	}{
+		{
+			name:     "positive case",
+			value:    123456789123456789,
+			expected: pointer.Pointer[LongPayload](123456789123456789),
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewLongPayload(tt.value)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestLongPayload_TypeId(t *testing.T) {

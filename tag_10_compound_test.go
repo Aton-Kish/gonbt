@@ -24,7 +24,6 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/Aton-Kish/gonbt/pointer"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -35,17 +34,17 @@ var compoundTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag: &CompoundTag{
-			tagName: TagName("Compound"),
-			payload: CompoundPayload{
-				&ShortTag{TagName("Short"), ShortPayload(12345)},
-				&ByteArrayTag{TagName("ByteArray"), ByteArrayPayload{0, 1}},
-				&StringTag{TagName("String"), StringPayload("Hello")},
-				&ListTag{TagName("List"), ListPayload{pointer.Pointer[BytePayload](123)}},
-				&CompoundTag{TagName("Compound"), CompoundPayload{&StringTag{TagName("String"), StringPayload("World")}, &EndTag{}}},
-				&EndTag{},
+		tag: NewCompoundTag(
+			"Compound",
+			CompoundPayload{
+				NewShortTag("Short", 12345),
+				NewByteArrayTag("ByteArray", ByteArrayPayload{0, 1}),
+				NewStringTag("String", "Hello"),
+				NewListTag("List", ListPayload{NewBytePayload(123)}),
+				NewCompoundTag("Compound", CompoundPayload{NewStringTag("String", "World"), NewEndTag()}),
+				NewEndTag(),
 			},
-		},
+		),
 		raw: []byte{
 			// Type: Compound(=10)
 			0x0A,
@@ -106,6 +105,46 @@ var compoundTagCases = []struct {
 			0x00,
 		},
 	},
+}
+
+func TestNewCompoundTag(t *testing.T) {
+	cases := []struct {
+		name     string
+		tagName  TagName
+		payload  CompoundPayload
+		expected Tag
+	}{
+		{
+			name:    "positive case",
+			tagName: "Compound",
+			payload: CompoundPayload{
+				NewShortTag("Short", 12345),
+				NewByteArrayTag("ByteArray", ByteArrayPayload{0, 1}),
+				NewStringTag("String", "Hello"),
+				NewListTag("List", ListPayload{NewBytePayload(123)}),
+				NewCompoundTag("Compound", CompoundPayload{NewStringTag("String", "World"), NewEndTag()}),
+				NewEndTag(),
+			},
+			expected: &CompoundTag{
+				tagName: "Compound",
+				payload: CompoundPayload{
+					NewShortTag("Short", 12345),
+					NewByteArrayTag("ByteArray", ByteArrayPayload{0, 1}),
+					NewStringTag("String", "Hello"),
+					NewListTag("List", ListPayload{NewBytePayload(123)}),
+					NewCompoundTag("Compound", CompoundPayload{NewStringTag("String", "World"), NewEndTag()}),
+					NewEndTag(),
+				},
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewCompoundTag(tt.tagName, tt.payload)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestCompoundTag_TypeId(t *testing.T) {
@@ -192,14 +231,14 @@ var compoundPayloadCases = []struct {
 }{
 	{
 		name: "positive case: has items",
-		payload: &CompoundPayload{
-			&ShortTag{TagName("Short"), ShortPayload(12345)},
-			&ByteArrayTag{TagName("ByteArray"), ByteArrayPayload{0, 1}},
-			&StringTag{TagName("String"), StringPayload(`Hello`)},
-			&ListTag{TagName("List"), ListPayload{pointer.Pointer[BytePayload](123)}},
-			&CompoundTag{TagName("Compound"), CompoundPayload{&StringTag{TagName("String"), StringPayload("World")}, &EndTag{}}},
-			&EndTag{},
-		},
+		payload: NewCompoundPayload(
+			NewShortTag("Short", 12345),
+			NewByteArrayTag("ByteArray", ByteArrayPayload{0, 1}),
+			NewStringTag("String", "Hello"),
+			NewListTag("List", ListPayload{NewBytePayload(123)}),
+			NewCompoundTag("Compound", CompoundPayload{NewStringTag("String", "World"), NewEndTag()}),
+			NewEndTag(),
+		),
 		raw: []byte{
 			// Payload:
 			//   - Type: Short(=2)
@@ -256,13 +295,53 @@ var compoundPayloadCases = []struct {
 	},
 	{
 		name:    "positive case: empty",
-		payload: &CompoundPayload{&EndTag{}},
+		payload: NewCompoundPayload(NewEndTag()),
 		raw: []byte{
 			// Payload:
 			//   - Type: End(=0)
 			0x00,
 		},
 	},
+}
+
+func TestNewCompoundPayload(t *testing.T) {
+	cases := []struct {
+		name     string
+		values   []Tag
+		expected Payload
+	}{
+		{
+			name: "positive case: has items",
+			values: []Tag{
+				NewShortTag("Short", 12345),
+				NewByteArrayTag("ByteArray", ByteArrayPayload{0, 1}),
+				NewStringTag("String", "Hello"),
+				NewListTag("List", ListPayload{NewBytePayload(123)}),
+				NewCompoundTag("Compound", CompoundPayload{NewStringTag("String", "World"), NewEndTag()}),
+				NewEndTag(),
+			},
+			expected: &CompoundPayload{
+				NewShortTag("Short", 12345),
+				NewByteArrayTag("ByteArray", ByteArrayPayload{0, 1}),
+				NewStringTag("String", "Hello"),
+				NewListTag("List", ListPayload{NewBytePayload(123)}),
+				NewCompoundTag("Compound", CompoundPayload{NewStringTag("String", "World"), NewEndTag()}),
+				NewEndTag(),
+			},
+		},
+		{
+			name:     "positive case: empty",
+			values:   []Tag{NewEndTag()},
+			expected: &CompoundPayload{NewEndTag()},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewCompoundPayload(tt.values...)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestCompoundPayload_TypeId(t *testing.T) {

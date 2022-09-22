@@ -24,6 +24,8 @@ import (
 	"encoding/binary"
 	"errors"
 	"io"
+
+	"github.com/Aton-Kish/gonbt/pointer"
 )
 
 type IntArrayTag struct {
@@ -31,8 +33,11 @@ type IntArrayTag struct {
 	payload IntArrayPayload
 }
 
-func NewIntArrayTag() Tag {
-	return new(IntArrayTag)
+func NewIntArrayTag(tagName TagName, payload IntArrayPayload) Tag {
+	return &IntArrayTag{
+		tagName: tagName,
+		payload: payload,
+	}
 }
 
 func (t *IntArrayTag) TypeId() TagType {
@@ -69,8 +74,12 @@ func (t *IntArrayTag) Decode(r io.Reader) error {
 
 type IntArrayPayload []int32
 
-func NewIntArrayPayload() Payload {
-	return new(IntArrayPayload)
+func NewIntArrayPayload(values ...int32) Payload {
+	if values == nil {
+		values = []int32{}
+	}
+
+	return pointer.Pointer(IntArrayPayload(values))
 }
 
 func (p *IntArrayPayload) TypeId() TagType {

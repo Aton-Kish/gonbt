@@ -24,6 +24,8 @@ import (
 	"encoding/binary"
 	"errors"
 	"io"
+
+	"github.com/Aton-Kish/gonbt/pointer"
 )
 
 type StringTag struct {
@@ -31,8 +33,11 @@ type StringTag struct {
 	payload StringPayload
 }
 
-func NewStringTag() Tag {
-	return new(StringTag)
+func NewStringTag(tagName TagName, payload StringPayload) Tag {
+	return &StringTag{
+		tagName: tagName,
+		payload: payload,
+	}
 }
 
 func (t *StringTag) TypeId() TagType {
@@ -69,8 +74,8 @@ func (t *StringTag) Decode(r io.Reader) error {
 
 type StringPayload string
 
-func NewStringPayload() Payload {
-	return new(StringPayload)
+func NewStringPayload(value string) Payload {
+	return pointer.Pointer(StringPayload(value))
 }
 
 func (p *StringPayload) TypeId() TagType {

@@ -23,6 +23,8 @@ package nbt
 import (
 	"errors"
 	"io"
+
+	"github.com/Aton-Kish/gonbt/pointer"
 )
 
 type FloatTag struct {
@@ -30,10 +32,12 @@ type FloatTag struct {
 	payload FloatPayload
 }
 
-func NewFloatTag() Tag {
-	return new(FloatTag)
+func NewFloatTag(tagName TagName, payload FloatPayload) Tag {
+	return &FloatTag{
+		tagName: tagName,
+		payload: payload,
+	}
 }
-
 func (t *FloatTag) TypeId() TagType {
 	return t.Payload().TypeId()
 }
@@ -68,8 +72,8 @@ func (t *FloatTag) Decode(r io.Reader) error {
 
 type FloatPayload float32
 
-func NewFloatPayload() Payload {
-	return new(FloatPayload)
+func NewFloatPayload(value float32) Payload {
+	return pointer.Pointer(FloatPayload(value))
 }
 
 func (p *FloatPayload) TypeId() TagType {

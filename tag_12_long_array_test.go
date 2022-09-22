@@ -34,10 +34,7 @@ var longArrayTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag: &LongArrayTag{
-			tagName: TagName("LongArray"),
-			payload: LongArrayPayload{0, 1, 2, 3},
-		},
+		tag:  NewLongArrayTag("LongArray", LongArrayPayload{0, 1, 2, 3}),
 		raw: []byte{
 			// Type: LongArray(=12)
 			0x0C,
@@ -54,6 +51,32 @@ var longArrayTagCases = []struct {
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,
 		},
 	},
+}
+
+func TestNewLongArrayTag(t *testing.T) {
+	cases := []struct {
+		name     string
+		tagName  TagName
+		payload  LongArrayPayload
+		expected Tag
+	}{
+		{
+			name:    "positive case",
+			tagName: "LongArray",
+			payload: LongArrayPayload{0, 1, 2, 3},
+			expected: &LongArrayTag{
+				tagName: "LongArray",
+				payload: LongArrayPayload{0, 1, 2, 3},
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewLongArrayTag(tt.tagName, tt.payload)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestLongArrayTag_TypeId(t *testing.T) {
@@ -140,7 +163,7 @@ var longArrayPayloadCases = []struct {
 }{
 	{
 		name:    "positive case: has items",
-		payload: &LongArrayPayload{0, 1, 2, 3},
+		payload: NewLongArrayPayload(0, 1, 2, 3),
 		raw: []byte{
 			// Payload Length: 4
 			0x00, 0x00, 0x00, 0x04,
@@ -153,13 +176,39 @@ var longArrayPayloadCases = []struct {
 	},
 	{
 		name:    "positive case: empty",
-		payload: &LongArrayPayload{},
+		payload: NewLongArrayPayload(),
 		raw: []byte{
 			// Payload Length: 0
 			0x00, 0x00, 0x00, 0x00,
 			// Payload: [L; ]
 		},
 	},
+}
+
+func TestNewLongArrayPayload(t *testing.T) {
+	cases := []struct {
+		name     string
+		values   []int64
+		expected Payload
+	}{
+		{
+			name:     "positive case: has items",
+			values:   []int64{0, 1, 2, 3},
+			expected: &LongArrayPayload{0, 1, 2, 3},
+		},
+		{
+			name:     "positive case: empty",
+			values:   []int64{},
+			expected: &LongArrayPayload{},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewLongArrayPayload(tt.values...)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestLongArrayPayload_TypeId(t *testing.T) {

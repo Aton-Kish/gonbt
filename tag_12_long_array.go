@@ -24,6 +24,8 @@ import (
 	"encoding/binary"
 	"errors"
 	"io"
+
+	"github.com/Aton-Kish/gonbt/pointer"
 )
 
 type LongArrayTag struct {
@@ -31,8 +33,11 @@ type LongArrayTag struct {
 	payload LongArrayPayload
 }
 
-func NewLongArrayTag() Tag {
-	return new(LongArrayTag)
+func NewLongArrayTag(tagName TagName, payload LongArrayPayload) Tag {
+	return &LongArrayTag{
+		tagName: tagName,
+		payload: payload,
+	}
 }
 
 func (t *LongArrayTag) TypeId() TagType {
@@ -69,8 +74,12 @@ func (t *LongArrayTag) Decode(r io.Reader) error {
 
 type LongArrayPayload []int64
 
-func NewLongArrayPayload() Payload {
-	return new(LongArrayPayload)
+func NewLongArrayPayload(values ...int64) Payload {
+	if values == nil {
+		values = []int64{}
+	}
+
+	return pointer.Pointer(LongArrayPayload(values))
 }
 
 func (p *LongArrayPayload) TypeId() TagType {

@@ -35,10 +35,7 @@ var intTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag: &IntTag{
-			tagName: TagName("Int"),
-			payload: IntPayload(123456789),
-		},
+		tag:  NewIntTag("Int", 123456789),
 		raw: []byte{
 			// Type: Int(=3)
 			0x03,
@@ -50,6 +47,32 @@ var intTagCases = []struct {
 			0x07, 0x5B, 0xCD, 0x15,
 		},
 	},
+}
+
+func TestNewIntTag(t *testing.T) {
+	cases := []struct {
+		name     string
+		tagName  TagName
+		payload  IntPayload
+		expected Tag
+	}{
+		{
+			name:    "positive case",
+			tagName: "Int",
+			payload: 123456789,
+			expected: &IntTag{
+				tagName: "Int",
+				payload: 123456789,
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewIntTag(tt.tagName, tt.payload)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestIntTag_TypeId(t *testing.T) {
@@ -136,12 +159,33 @@ var intPayloadCases = []struct {
 }{
 	{
 		name:    "positive case",
-		payload: pointer.Pointer[IntPayload](123456789),
+		payload: NewIntPayload(123456789),
 		raw: []byte{
 			// Payload: 123456789
 			0x07, 0x5B, 0xCD, 0x15,
 		},
 	},
+}
+
+func TestNewIntPayload(t *testing.T) {
+	cases := []struct {
+		name     string
+		value    int32
+		expected Payload
+	}{
+		{
+			name:     "positive case",
+			value:    123456789,
+			expected: pointer.Pointer[IntPayload](123456789),
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewIntPayload(tt.value)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestIntPayload_TypeId(t *testing.T) {

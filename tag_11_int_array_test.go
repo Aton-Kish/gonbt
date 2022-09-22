@@ -34,10 +34,7 @@ var intArrayTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag: &IntArrayTag{
-			tagName: TagName("IntArray"),
-			payload: IntArrayPayload{0, 1, 2, 3},
-		},
+		tag:  NewIntArrayTag("IntArray", IntArrayPayload{0, 1, 2, 3}),
 		raw: []byte{
 			// Type: IntArray(=11)
 			0x0B,
@@ -54,6 +51,32 @@ var intArrayTagCases = []struct {
 			0x00, 0x00, 0x00, 0x03,
 		},
 	},
+}
+
+func TestNewIntArrayTag(t *testing.T) {
+	cases := []struct {
+		name     string
+		tagName  TagName
+		payload  IntArrayPayload
+		expected Tag
+	}{
+		{
+			name:    "positive case",
+			tagName: "IntArray",
+			payload: IntArrayPayload{0, 1, 2, 3},
+			expected: &IntArrayTag{
+				tagName: "IntArray",
+				payload: IntArrayPayload{0, 1, 2, 3},
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewIntArrayTag(tt.tagName, tt.payload)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestIntArrayTag_TypeId(t *testing.T) {
@@ -140,7 +163,7 @@ var intArrayPayloadCases = []struct {
 }{
 	{
 		name:    "positive case: has items",
-		payload: &IntArrayPayload{0, 1, 2, 3},
+		payload: NewIntArrayPayload(0, 1, 2, 3),
 		raw: []byte{
 			// Payload Length: 4
 			0x00, 0x00, 0x00, 0x04,
@@ -153,13 +176,39 @@ var intArrayPayloadCases = []struct {
 	},
 	{
 		name:    "positive case: empty",
-		payload: &IntArrayPayload{},
+		payload: NewIntArrayPayload(),
 		raw: []byte{
 			// Payload Length: 0
 			0x00, 0x00, 0x00, 0x00,
 			// Payload: [I; ]
 		},
 	},
+}
+
+func TestNewIntArrayPayload(t *testing.T) {
+	cases := []struct {
+		name     string
+		values   []int32
+		expected Payload
+	}{
+		{
+			name:     "positive case: has items",
+			values:   []int32{0, 1, 2, 3},
+			expected: &IntArrayPayload{0, 1, 2, 3},
+		},
+		{
+			name:     "positive case: empty",
+			values:   []int32{},
+			expected: &IntArrayPayload{},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewIntArrayPayload(tt.values...)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestIntArrayPayload_TypeId(t *testing.T) {

@@ -35,10 +35,7 @@ var stringTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag: &StringTag{
-			tagName: TagName("String"),
-			payload: StringPayload("Hello World"),
-		},
+		tag:  NewStringTag("String", "Hello World"),
 		raw: []byte{
 			// Type: String(=8)
 			0x08,
@@ -52,6 +49,32 @@ var stringTagCases = []struct {
 			0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64,
 		},
 	},
+}
+
+func TestNewStringTag(t *testing.T) {
+	cases := []struct {
+		name     string
+		tagName  TagName
+		payload  StringPayload
+		expected Tag
+	}{
+		{
+			name:    "positive case",
+			tagName: "String",
+			payload: "Hello World",
+			expected: &StringTag{
+				tagName: "String",
+				payload: "Hello World",
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewStringTag(tt.tagName, tt.payload)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestStringTag_TypeId(t *testing.T) {
@@ -138,7 +161,7 @@ var stringPayloadCases = []struct {
 }{
 	{
 		name:    "positive case: \"Test\"",
-		payload: pointer.Pointer[StringPayload]("Test"),
+		payload: NewStringPayload("Test"),
 		raw: []byte{
 			// Payload Length: 4
 			0x00, 0x04,
@@ -148,7 +171,7 @@ var stringPayloadCases = []struct {
 	},
 	{
 		name:    "positive case: \"minecraft:the_end\"",
-		payload: pointer.Pointer[StringPayload]("minecraft:the_end"),
+		payload: NewStringPayload("minecraft:the_end"),
 		raw: []byte{
 			// Payload Length: 17
 			0x00, 0x11,
@@ -159,7 +182,7 @@ var stringPayloadCases = []struct {
 	},
 	{
 		name:    "positive case: \"\"",
-		payload: pointer.Pointer[StringPayload](""),
+		payload: NewStringPayload(""),
 		raw: []byte{
 			// Payload Length: 0
 			0x00, 0x00,
@@ -168,7 +191,7 @@ var stringPayloadCases = []struct {
 	},
 	{
 		name:    "positive case: \"マインクラフト\"",
-		payload: pointer.Pointer[StringPayload]("マインクラフト"),
+		payload: NewStringPayload("マインクラフト"),
 		raw: []byte{
 			// Payload Length: 21
 			0x00, 0x15,
@@ -178,6 +201,42 @@ var stringPayloadCases = []struct {
 			0xE3, 0x83, 0x88,
 		},
 	},
+}
+
+func TestNewStringPayload(t *testing.T) {
+	cases := []struct {
+		name     string
+		value    string
+		expected Payload
+	}{
+		{
+			name:     "positive case: \"Test\"",
+			value:    "Test",
+			expected: pointer.Pointer[StringPayload]("Test"),
+		},
+		{
+			name:     "positive case: \"minecraft:the_end\"",
+			value:    "minecraft:the_end",
+			expected: pointer.Pointer[StringPayload]("minecraft:the_end"),
+		},
+		{
+			name:     "positive case: \"\"",
+			value:    "",
+			expected: pointer.Pointer[StringPayload](""),
+		},
+		{
+			name:     "positive case: \"マインクラフト\"",
+			value:    "マインクラフト",
+			expected: pointer.Pointer[StringPayload]("マインクラフト"),
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewStringPayload(tt.value)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestStringPayload_TypeId(t *testing.T) {

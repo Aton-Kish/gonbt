@@ -35,10 +35,7 @@ var shortTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag: &ShortTag{
-			tagName: TagName("Short"),
-			payload: ShortPayload(12345),
-		},
+		tag:  NewShortTag("Short", 12345),
 		raw: []byte{
 			// Type: Short(=2)
 			0x02,
@@ -50,6 +47,32 @@ var shortTagCases = []struct {
 			0x30, 0x39,
 		},
 	},
+}
+
+func TestNewShortTag(t *testing.T) {
+	cases := []struct {
+		name     string
+		tagName  TagName
+		payload  ShortPayload
+		expected Tag
+	}{
+		{
+			name:    "positive case",
+			tagName: "Short",
+			payload: 12345,
+			expected: &ShortTag{
+				tagName: "Short",
+				payload: 12345,
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewShortTag(tt.tagName, tt.payload)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestShortTag_TypeId(t *testing.T) {
@@ -136,12 +159,33 @@ var shortPayloadCases = []struct {
 }{
 	{
 		name:    "positive case",
-		payload: pointer.Pointer[ShortPayload](12345),
+		payload: NewShortPayload(12345),
 		raw: []byte{
 			// Payload: 12345s
 			0x30, 0x39,
 		},
 	},
+}
+
+func TestNewShortPayload(t *testing.T) {
+	cases := []struct {
+		name     string
+		value    int16
+		expected Payload
+	}{
+		{
+			name:     "positive case",
+			value:    12345,
+			expected: pointer.Pointer[ShortPayload](12345),
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewShortPayload(tt.value)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestShortPayload_TypeId(t *testing.T) {

@@ -34,12 +34,31 @@ var endTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag:  &EndTag{},
+		tag:  NewEndTag(),
 		raw: []byte{
 			// Type: End(=0)
 			0x00,
 		},
 	},
+}
+
+func TestNewEndTag(t *testing.T) {
+	cases := []struct {
+		name     string
+		expected Tag
+	}{
+		{
+			name:     "positive case",
+			expected: &EndTag{},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewEndTag()
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestEndTag_TypeId(t *testing.T) {

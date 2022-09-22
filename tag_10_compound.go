@@ -23,6 +23,8 @@ package nbt
 import (
 	"errors"
 	"io"
+
+	"github.com/Aton-Kish/gonbt/pointer"
 )
 
 type CompoundTag struct {
@@ -30,8 +32,11 @@ type CompoundTag struct {
 	payload CompoundPayload
 }
 
-func NewCompoundTag() Tag {
-	return new(CompoundTag)
+func NewCompoundTag(tagName TagName, payload CompoundPayload) Tag {
+	return &CompoundTag{
+		tagName: tagName,
+		payload: payload,
+	}
 }
 
 func (t *CompoundTag) TypeId() TagType {
@@ -68,8 +73,12 @@ func (t *CompoundTag) Decode(r io.Reader) error {
 
 type CompoundPayload []Tag
 
-func NewCompoundPayload() Payload {
-	return new(CompoundPayload)
+func NewCompoundPayload(values ...Tag) Payload {
+	if values == nil {
+		values = []Tag{}
+	}
+
+	return pointer.Pointer(CompoundPayload(values))
 }
 
 func (p *CompoundPayload) TypeId() TagType {

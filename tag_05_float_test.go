@@ -35,10 +35,7 @@ var floatTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag: &FloatTag{
-			tagName: TagName("Float"),
-			payload: FloatPayload(0.12345678),
-		},
+		tag:  NewFloatTag("Float", 0.12345678),
 		raw: []byte{
 			// Type: Float(=5)
 			0x05,
@@ -50,6 +47,32 @@ var floatTagCases = []struct {
 			0x3D, 0xFC, 0xD6, 0xE9,
 		},
 	},
+}
+
+func TestNewFloatTag(t *testing.T) {
+	cases := []struct {
+		name     string
+		tagName  TagName
+		payload  FloatPayload
+		expected Tag
+	}{
+		{
+			name:    "positive case",
+			tagName: "Float",
+			payload: 0.12345678,
+			expected: &FloatTag{
+				tagName: "Float",
+				payload: 0.12345678,
+			},
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewFloatTag(tt.tagName, tt.payload)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestFloatTag_TypeId(t *testing.T) {
@@ -136,12 +159,33 @@ var floatPayloadCases = []struct {
 }{
 	{
 		name:    "positive case",
-		payload: pointer.Pointer[FloatPayload](0.12345678),
+		payload: NewFloatPayload(0.12345678),
 		raw: []byte{
 			// Payload: 0.12345678f
 			0x3D, 0xFC, 0xD6, 0xE9,
 		},
 	},
+}
+
+func TestNewFloatPayload(t *testing.T) {
+	cases := []struct {
+		name     string
+		value    float32
+		expected Payload
+	}{
+		{
+			name:     "positive case",
+			value:    0.12345678,
+			expected: pointer.Pointer[FloatPayload](0.12345678),
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewFloatPayload(tt.value)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestFloatPayload_TypeId(t *testing.T) {

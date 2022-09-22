@@ -23,6 +23,8 @@ package nbt
 import (
 	"errors"
 	"io"
+
+	"github.com/Aton-Kish/gonbt/pointer"
 )
 
 type LongTag struct {
@@ -30,8 +32,11 @@ type LongTag struct {
 	payload LongPayload
 }
 
-func NewLongTag() Tag {
-	return new(LongTag)
+func NewLongTag(tagName TagName, payload LongPayload) Tag {
+	return &LongTag{
+		tagName: tagName,
+		payload: payload,
+	}
 }
 
 func (t *LongTag) TypeId() TagType {
@@ -68,8 +73,8 @@ func (t *LongTag) Decode(r io.Reader) error {
 
 type LongPayload int64
 
-func NewLongPayload() Payload {
-	return new(LongPayload)
+func NewLongPayload(value int64) Payload {
+	return pointer.Pointer(LongPayload(value))
 }
 
 func (p *LongPayload) TypeId() TagType {

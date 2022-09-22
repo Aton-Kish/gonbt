@@ -24,6 +24,8 @@ import (
 	"encoding/binary"
 	"errors"
 	"io"
+
+	"github.com/Aton-Kish/gonbt/pointer"
 )
 
 type ListTag struct {
@@ -31,8 +33,11 @@ type ListTag struct {
 	payload ListPayload
 }
 
-func NewListTag() Tag {
-	return new(ListTag)
+func NewListTag(tagName TagName, payload ListPayload) Tag {
+	return &ListTag{
+		tagName: tagName,
+		payload: payload,
+	}
 }
 
 func (t *ListTag) TypeId() TagType {
@@ -69,8 +74,12 @@ func (t *ListTag) Decode(r io.Reader) error {
 
 type ListPayload []Payload
 
-func NewListPayload() Payload {
-	return new(ListPayload)
+func NewListPayload(values ...Payload) Payload {
+	if values == nil {
+		values = []Payload{}
+	}
+
+	return pointer.Pointer(ListPayload(values))
 }
 
 func (p *ListPayload) TypeId() TagType {
