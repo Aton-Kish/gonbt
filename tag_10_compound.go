@@ -21,6 +21,7 @@
 package nbt
 
 import (
+	"errors"
 	"io"
 )
 
@@ -50,7 +51,19 @@ func (t *CompoundTag) Encode(w io.Writer) error {
 }
 
 func (t *CompoundTag) Decode(r io.Reader) error {
-	return decodeTagExcludeEndTag(r, t)
+	tag, err := decodeTagExcludeEndTag(r)
+	if err != nil {
+		return err
+	}
+
+	v, ok := tag.(*CompoundTag)
+	if !ok {
+		return errors.New("decode failed")
+	}
+
+	*t = *v
+
+	return nil
 }
 
 type CompoundPayload []Tag

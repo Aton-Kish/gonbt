@@ -21,6 +21,7 @@
 package nbt
 
 import (
+	"errors"
 	"io"
 )
 
@@ -50,7 +51,19 @@ func (t *ShortTag) Encode(w io.Writer) error {
 }
 
 func (t *ShortTag) Decode(r io.Reader) error {
-	return decodeTagExcludeEndTag(r, t)
+	tag, err := decodeTagExcludeEndTag(r)
+	if err != nil {
+		return err
+	}
+
+	v, ok := tag.(*ShortTag)
+	if !ok {
+		return errors.New("decode failed")
+	}
+
+	*t = *v
+
+	return nil
 }
 
 type ShortPayload int16

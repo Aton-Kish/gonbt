@@ -22,6 +22,7 @@ package nbt
 
 import (
 	"encoding/binary"
+	"errors"
 	"io"
 )
 
@@ -51,7 +52,19 @@ func (t *StringTag) Encode(w io.Writer) error {
 }
 
 func (t *StringTag) Decode(r io.Reader) error {
-	return decodeTagExcludeEndTag(r, t)
+	tag, err := decodeTagExcludeEndTag(r)
+	if err != nil {
+		return err
+	}
+
+	v, ok := tag.(*StringTag)
+	if !ok {
+		return errors.New("decode failed")
+	}
+
+	*t = *v
+
+	return nil
 }
 
 type StringPayload string
