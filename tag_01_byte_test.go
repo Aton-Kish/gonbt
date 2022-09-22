@@ -24,6 +24,7 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/Aton-Kish/gonbt/pointer"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -136,7 +137,7 @@ var bytePayloadCases = []struct {
 }{
 	{
 		name:    "positive case",
-		payload: PrimitivePayloadPointer[BytePayload](123),
+		payload: pointer.Pointer[BytePayload](123),
 		raw: []byte{
 			// Payload: 123b
 			0x7B,

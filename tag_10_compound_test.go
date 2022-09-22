@@ -24,6 +24,7 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/Aton-Kish/gonbt/pointer"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -40,7 +41,7 @@ var compoundTagCases = []struct {
 				&ShortTag{TagName("Short"), ShortPayload(12345)},
 				&ByteArrayTag{TagName("ByteArray"), ByteArrayPayload{0, 1}},
 				&StringTag{TagName("String"), StringPayload("Hello")},
-				&ListTag{TagName("List"), ListPayload{PrimitivePayloadPointer[BytePayload](123)}},
+				&ListTag{TagName("List"), ListPayload{pointer.Pointer[BytePayload](123)}},
 				&CompoundTag{TagName("Compound"), CompoundPayload{&StringTag{TagName("String"), StringPayload("World")}, &EndTag{}}},
 				&EndTag{},
 			},
@@ -195,7 +196,7 @@ var compoundPayloadCases = []struct {
 			&ShortTag{TagName("Short"), ShortPayload(12345)},
 			&ByteArrayTag{TagName("ByteArray"), ByteArrayPayload{0, 1}},
 			&StringTag{TagName("String"), StringPayload(`Hello`)},
-			&ListTag{TagName("List"), ListPayload{PrimitivePayloadPointer[BytePayload](123)}},
+			&ListTag{TagName("List"), ListPayload{pointer.Pointer[BytePayload](123)}},
 			&CompoundTag{TagName("Compound"), CompoundPayload{&StringTag{TagName("String"), StringPayload("World")}, &EndTag{}}},
 			&EndTag{},
 		},

@@ -24,6 +24,7 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/Aton-Kish/gonbt/pointer"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -137,7 +138,7 @@ var stringPayloadCases = []struct {
 }{
 	{
 		name:    "positive case: \"Test\"",
-		payload: PrimitivePayloadPointer[StringPayload]("Test"),
+		payload: pointer.Pointer[StringPayload]("Test"),
 		raw: []byte{
 			// Payload Length: 4
 			0x00, 0x04,
@@ -147,7 +148,7 @@ var stringPayloadCases = []struct {
 	},
 	{
 		name:    "positive case: \"minecraft:the_end\"",
-		payload: PrimitivePayloadPointer[StringPayload]("minecraft:the_end"),
+		payload: pointer.Pointer[StringPayload]("minecraft:the_end"),
 		raw: []byte{
 			// Payload Length: 17
 			0x00, 0x11,
@@ -158,7 +159,7 @@ var stringPayloadCases = []struct {
 	},
 	{
 		name:    "positive case: \"\"",
-		payload: PrimitivePayloadPointer[StringPayload](""),
+		payload: pointer.Pointer[StringPayload](""),
 		raw: []byte{
 			// Payload Length: 0
 			0x00, 0x00,
@@ -167,7 +168,7 @@ var stringPayloadCases = []struct {
 	},
 	{
 		name:    "positive case: \"マインクラフト\"",
-		payload: PrimitivePayloadPointer[StringPayload]("マインクラフト"),
+		payload: pointer.Pointer[StringPayload]("マインクラフト"),
 		raw: []byte{
 			// Payload Length: 21
 			0x00, 0x15,

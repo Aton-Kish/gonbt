@@ -24,6 +24,7 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/Aton-Kish/gonbt/pointer"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -36,7 +37,7 @@ var listTagCases = []struct {
 		name: "positive case",
 		tag: &ListTag{
 			tagName: TagName("List"),
-			payload: ListPayload{PrimitivePayloadPointer[ShortPayload](12345), PrimitivePayloadPointer[ShortPayload](6789)},
+			payload: ListPayload{pointer.Pointer[ShortPayload](12345), pointer.Pointer[ShortPayload](6789)},
 		},
 		raw: []byte{
 			// Type: List(=9)
@@ -142,7 +143,7 @@ var listPayloadCases = []struct {
 }{
 	{
 		name:    "positive case: Short",
-		payload: &ListPayload{PrimitivePayloadPointer[ShortPayload](12345), PrimitivePayloadPointer[ShortPayload](6789)},
+		payload: &ListPayload{pointer.Pointer[ShortPayload](12345), pointer.Pointer[ShortPayload](6789)},
 		raw: []byte{
 			// Payload Type: TagShort(=2)
 			0x02,
@@ -174,7 +175,7 @@ var listPayloadCases = []struct {
 	},
 	{
 		name:    "positive case: String",
-		payload: &ListPayload{PrimitivePayloadPointer[StringPayload]("Hello"), PrimitivePayloadPointer[StringPayload]("World")},
+		payload: &ListPayload{pointer.Pointer[StringPayload]("Hello"), pointer.Pointer[StringPayload]("World")},
 		raw: []byte{
 			// Payload Type: TagString(=8)
 			0x08,
@@ -192,8 +193,8 @@ var listPayloadCases = []struct {
 	{
 		name: "positive case: List",
 		payload: &ListPayload{
-			&ListPayload{PrimitivePayloadPointer[BytePayload](123)},
-			&ListPayload{PrimitivePayloadPointer[StringPayload]("Test")},
+			&ListPayload{pointer.Pointer[BytePayload](123)},
+			&ListPayload{pointer.Pointer[StringPayload]("Test")},
 		},
 		raw: []byte{
 			// Payload Type: TagList(=9)

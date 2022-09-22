@@ -236,10 +236,6 @@ func NewPayload(typ TagType) (Payload, error) {
 	}
 }
 
-func PrimitivePayloadPointer[T PrimitivePayload](x T) *T {
-	return &x
-}
-
 func encodeNumericPayload[T NumericPayload](w io.Writer, payload *T) error {
 	if err := binary.Write(w, binary.BigEndian, payload); err != nil {
 		return err
