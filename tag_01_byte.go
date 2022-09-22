@@ -47,11 +47,11 @@ func (t *ByteTag) Payload() Payload {
 }
 
 func (t *ByteTag) Encode(w io.Writer) error {
-	return encodeTag(w, t)
+	return Encode(w, t)
 }
 
 func (t *ByteTag) Decode(r io.Reader) error {
-	tag, err := decodeTag(r)
+	tag, err := Decode(r)
 	if err != nil {
 		return err
 	}

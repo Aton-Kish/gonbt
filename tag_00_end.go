@@ -45,11 +45,11 @@ func (t *EndTag) Payload() Payload {
 }
 
 func (t *EndTag) Encode(w io.Writer) error {
-	return encodeTag(w, t)
+	return Encode(w, t)
 }
 
 func (t *EndTag) Decode(r io.Reader) error {
-	tag, err := decodeTag(r)
+	tag, err := Decode(r)
 	if err != nil {
 		return err
 	}

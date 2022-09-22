@@ -48,11 +48,11 @@ func (t *LongArrayTag) Payload() Payload {
 }
 
 func (t *LongArrayTag) Encode(w io.Writer) error {
-	return encodeTag(w, t)
+	return Encode(w, t)
 }
 
 func (t *LongArrayTag) Decode(r io.Reader) error {
-	tag, err := decodeTag(r)
+	tag, err := Decode(r)
 	if err != nil {
 		return err
 	}

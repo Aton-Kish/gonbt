@@ -138,7 +138,7 @@ func NewTag(typ TagType) (Tag, error) {
 	}
 }
 
-func encodeTag(w io.Writer, tag Tag) error {
+func Encode(w io.Writer, tag Tag) error {
 	typ := tag.TypeId()
 	if err := typ.Encode(w); err != nil {
 		return err
@@ -159,7 +159,7 @@ func encodeTag(w io.Writer, tag Tag) error {
 	return nil
 }
 
-func decodeTag(r io.Reader) (Tag, error) {
+func Decode(r io.Reader) (Tag, error) {
 	var typ TagType
 	if err := typ.Decode(r); err != nil {
 		return nil, err

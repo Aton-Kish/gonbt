@@ -47,11 +47,11 @@ func (t *CompoundTag) Payload() Payload {
 }
 
 func (t *CompoundTag) Encode(w io.Writer) error {
-	return encodeTag(w, t)
+	return Encode(w, t)
 }
 
 func (t *CompoundTag) Decode(r io.Reader) error {
-	tag, err := decodeTag(r)
+	tag, err := Decode(r)
 	if err != nil {
 		return err
 	}
@@ -88,8 +88,7 @@ func (p *CompoundPayload) Encode(w io.Writer) error {
 
 func (p *CompoundPayload) Decode(r io.Reader) error {
 	for {
-		// TODO: publicify encode method
-		tag, err := decodeTag(r)
+		tag, err := Decode(r)
 		if err != nil {
 			return err
 		}
