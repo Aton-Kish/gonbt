@@ -21,6 +21,7 @@
 package nbt
 
 import (
+	"errors"
 	"io"
 )
 
@@ -48,10 +49,17 @@ func (t *EndTag) Encode(w io.Writer) error {
 }
 
 func (t *EndTag) Decode(r io.Reader) error {
-	typ := t.TypeId()
-	if err := typ.Decode(r); err != nil {
+	tag, err := decodeTag(r)
+	if err != nil {
 		return err
 	}
+
+	v, ok := tag.(*EndTag)
+	if !ok {
+		return errors.New("decode failed")
+	}
+
+	*t = *v
 
 	return nil
 }

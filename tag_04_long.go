@@ -51,7 +51,7 @@ func (t *LongTag) Encode(w io.Writer) error {
 }
 
 func (t *LongTag) Decode(r io.Reader) error {
-	tag, err := decodeTagExcludeEndTag(r)
+	tag, err := decodeTag(r)
 	if err != nil {
 		return err
 	}

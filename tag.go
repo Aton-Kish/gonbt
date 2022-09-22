@@ -159,7 +159,7 @@ func encodeTag(w io.Writer, tag Tag) error {
 	return nil
 }
 
-func decodeTagExcludeEndTag(r io.Reader) (Tag, error) {
+func decodeTag(r io.Reader) (Tag, error) {
 	var typ TagType
 	if err := typ.Decode(r); err != nil {
 		return nil, err
@@ -168,6 +168,10 @@ func decodeTagExcludeEndTag(r io.Reader) (Tag, error) {
 	tag, err := NewTag(typ)
 	if err != nil {
 		return nil, err
+	}
+
+	if typ == EndType {
+		return tag, nil
 	}
 
 	if err := tag.TagName().Decode(r); err != nil {

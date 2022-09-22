@@ -52,7 +52,7 @@ func (t *StringTag) Encode(w io.Writer) error {
 }
 
 func (t *StringTag) Decode(r io.Reader) error {
-	tag, err := decodeTagExcludeEndTag(r)
+	tag, err := decodeTag(r)
 	if err != nil {
 		return err
 	}
