@@ -257,10 +257,11 @@ func encodeArrayPayload[T ArrayPayload](w io.Writer, payload *T) error {
 	return nil
 }
 
-func decodeNumericPayload[T NumericPayload](r io.Reader, payload *T) error {
-	if err := binary.Read(r, binary.BigEndian, payload); err != nil {
-		return err
+func decodeNumericPayload[T NumericPayload](r io.Reader) (*T, error) {
+	var payload T
+	if err := binary.Read(r, binary.BigEndian, &payload); err != nil {
+		return nil, err
 	}
 
-	return nil
+	return &payload, nil
 }

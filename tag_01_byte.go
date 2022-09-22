@@ -81,5 +81,12 @@ func (p *BytePayload) Encode(w io.Writer) error {
 }
 
 func (p *BytePayload) Decode(r io.Reader) error {
-	return decodeNumericPayload(r, p)
+	payload, err := decodeNumericPayload[BytePayload](r)
+	if err != nil {
+		return err
+	}
+
+	*p = *payload
+
+	return nil
 }
