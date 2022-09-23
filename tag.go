@@ -199,18 +199,6 @@ type Payload interface {
 	Decode(r io.Reader) error
 }
 
-type NumericPayload interface {
-	BytePayload | ShortPayload | IntPayload | LongPayload | FloatPayload | DoublePayload
-}
-
-type PrimitivePayload interface {
-	NumericPayload | StringPayload
-}
-
-type ArrayPayload interface {
-	ByteArrayPayload | IntArrayPayload | LongArrayPayload
-}
-
 func NewPayload(typ TagType) (Payload, error) {
 	switch typ {
 	case ByteType:
@@ -240,6 +228,18 @@ func NewPayload(typ TagType) (Payload, error) {
 	default:
 		return nil, fmt.Errorf("invalid tag type id %d", typ)
 	}
+}
+
+type NumericPayload interface {
+	BytePayload | ShortPayload | IntPayload | LongPayload | FloatPayload | DoublePayload
+}
+
+type PrimitivePayload interface {
+	NumericPayload | StringPayload
+}
+
+type ArrayPayload interface {
+	ByteArrayPayload | IntArrayPayload | LongArrayPayload
 }
 
 func encodeNumericPayload[T NumericPayload](w io.Writer, payload *T) error {
