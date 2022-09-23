@@ -23,7 +23,9 @@ package nbt
 import (
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"io"
+	"strings"
 
 	"github.com/Aton-Kish/gonbt/pointer"
 )
@@ -72,6 +74,10 @@ func (t *LongArrayTag) decode(r io.Reader) error {
 	return nil
 }
 
+func (t *LongArrayTag) stringify(space string, indent string, depth int) string {
+	return stringifyTag(t, space, indent, depth)
+}
+
 type LongArrayPayload []int64
 
 func NewLongArrayPayload(values ...int64) *LongArrayPayload {
@@ -102,4 +108,13 @@ func (p *LongArrayPayload) decode(r io.Reader) error {
 	}
 
 	return nil
+}
+
+func (p *LongArrayPayload) stringify(space string, indent string, depth int) string {
+	strs := make([]string, 0, len(*p))
+	for _, v := range *p {
+		strs = append(strs, fmt.Sprintf("%dL", v))
+	}
+
+	return fmt.Sprintf("[L;%s%s]", space, strings.Join(strs, fmt.Sprintf(",%s", space)))
 }

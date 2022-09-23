@@ -23,7 +23,9 @@ package nbt
 import (
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"io"
+	"strings"
 
 	"github.com/Aton-Kish/gonbt/pointer"
 )
@@ -72,6 +74,10 @@ func (t *ByteArrayTag) decode(r io.Reader) error {
 	return nil
 }
 
+func (t *ByteArrayTag) stringify(space string, indent string, depth int) string {
+	return stringifyTag(t, space, indent, depth)
+}
+
 type ByteArrayPayload []int8
 
 func NewByteArrayPayload(values ...int8) *ByteArrayPayload {
@@ -102,4 +108,13 @@ func (p *ByteArrayPayload) decode(r io.Reader) error {
 	}
 
 	return nil
+}
+
+func (p *ByteArrayPayload) stringify(space string, indent string, depth int) string {
+	strs := make([]string, 0, len(*p))
+	for _, v := range *p {
+		strs = append(strs, fmt.Sprintf("%db", v))
+	}
+
+	return fmt.Sprintf("[B;%s%s]", space, strings.Join(strs, fmt.Sprintf(",%s", space)))
 }

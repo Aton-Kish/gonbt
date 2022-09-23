@@ -22,7 +22,10 @@ package nbt
 
 import (
 	"errors"
+	"fmt"
 	"io"
+	"sort"
+	"strings"
 
 	"github.com/Aton-Kish/gonbt/pointer"
 )
@@ -71,6 +74,10 @@ func (t *CompoundTag) decode(r io.Reader) error {
 	return nil
 }
 
+func (t *CompoundTag) stringify(space string, indent string, depth int) string {
+	return stringifyTag(t, space, indent, depth)
+}
+
 type CompoundPayload []Tag
 
 func NewCompoundPayload(values ...Tag) *CompoundPayload {
@@ -110,4 +117,29 @@ func (p *CompoundPayload) decode(r io.Reader) error {
 	}
 
 	return nil
+}
+
+func (p *CompoundPayload) stringify(space string, indent string, depth int) string {
+	strs := make([]string, 0, len(*p))
+	for _, tag := range *p {
+		if tag.TypeId() == EndType {
+			break
+		}
+
+		strs = append(strs, tag.stringify(space, indent, depth+1))
+	}
+
+	l := len(strs)
+	sort.SliceStable(strs, func(i, j int) bool { return strs[i] < strs[j] })
+
+	if indent == "" || l == 0 {
+		return fmt.Sprintf("{%s}", strings.Join(strs, fmt.Sprintf(",%s", space)))
+	}
+
+	indents := ""
+	for i := 0; i < depth; i++ {
+		indents += indent
+	}
+
+	return fmt.Sprintf("{\n%s%s%s\n%s}", indents, indent, strings.Join(strs, fmt.Sprintf(",\n%s%s", indents, indent)), indents)
 }

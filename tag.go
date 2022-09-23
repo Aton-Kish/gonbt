@@ -130,6 +130,7 @@ type Tag interface {
 	Payload() Payload
 	encode(w io.Writer) error
 	decode(r io.Reader) error
+	stringify(space string, indent string, depth int) string
 }
 
 func NewTag(typ TagType) (Tag, error) {
@@ -212,12 +213,22 @@ func Decode(r io.Reader) (Tag, error) {
 	return tag, nil
 }
 
+func stringifyTag(tag Tag, space string, indent string, depth int) string {
+	typ := tag.TypeId()
+	if typ == EndType {
+		return ""
+	}
+
+	return fmt.Sprintf("%s:%s%s", tag.TagName().stringify(), space, tag.Payload().stringify(space, indent, depth))
+}
+
 // Payload
 
 type Payload interface {
 	TypeId() TagType
 	encode(w io.Writer) error
 	decode(r io.Reader) error
+	stringify(space string, indent string, depth int) string
 }
 
 func NewPayload(typ TagType) (Payload, error) {

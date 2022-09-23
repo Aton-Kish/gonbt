@@ -22,6 +22,7 @@ package nbt
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 
 	"github.com/Aton-Kish/gonbt/slices"
@@ -374,6 +375,31 @@ func TestListTag_decode(t *testing.T) {
 	}
 }
 
+func TestListTag_stringify_default(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *ListTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range listTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewListTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
 func TestNewListPayload(t *testing.T) {
 	type Case struct {
 		name     string
@@ -470,6 +496,31 @@ func TestListPayload_decode(t *testing.T) {
 			} else {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			}
+		})
+	}
+}
+
+func TestListPayload_stringify_default(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *ListPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range listTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.snbt.payload,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
 		})
 	}
 }

@@ -22,6 +22,7 @@ package nbt
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 
 	"github.com/Aton-Kish/gonbt/slices"
@@ -200,6 +201,31 @@ func TestLongArrayTag_decode(t *testing.T) {
 	}
 }
 
+func TestLongArrayTag_stringify_default(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *LongArrayTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range longArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewLongArrayTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
 func TestNewLongArrayPayload(t *testing.T) {
 	type Case struct {
 		name     string
@@ -296,6 +322,31 @@ func TestLongArrayPayload_decode(t *testing.T) {
 			} else {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			}
+		})
+	}
+}
+
+func TestLongArrayPayload_stringify_default(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *LongArrayPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range longArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.snbt.payload,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
 		})
 	}
 }

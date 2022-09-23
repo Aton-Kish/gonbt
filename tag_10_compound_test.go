@@ -22,6 +22,7 @@ package nbt
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 
 	"github.com/Aton-Kish/gonbt/slices"
@@ -251,6 +252,31 @@ func TestCompoundTag_decode(t *testing.T) {
 	}
 }
 
+func TestCompoundTag_stringify_default(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *CompoundTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range compoundTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewCompoundTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
 func TestNewCompoundPayload(t *testing.T) {
 	type Case struct {
 		name     string
@@ -347,6 +373,31 @@ func TestCompoundPayload_decode(t *testing.T) {
 			} else {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			}
+		})
+	}
+}
+
+func TestCompoundPayload_stringify_default(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *CompoundPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range compoundTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.snbt.payload,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
 		})
 	}
 }

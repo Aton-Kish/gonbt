@@ -110,7 +110,7 @@ func TestEndTag_decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
-		expected    Tag
+		expected    *EndTag
 		expectedErr error
 	}
 
@@ -138,6 +138,31 @@ func TestEndTag_decode(t *testing.T) {
 			} else {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			}
+		})
+	}
+}
+
+func TestEndTag_stringify_default(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *EndTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range endTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewEndTag(),
+			expected: "",
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
 		})
 	}
 }

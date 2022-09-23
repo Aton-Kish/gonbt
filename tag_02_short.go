@@ -22,6 +22,7 @@ package nbt
 
 import (
 	"errors"
+	"fmt"
 	"io"
 
 	"github.com/Aton-Kish/gonbt/pointer"
@@ -71,6 +72,10 @@ func (t *ShortTag) decode(r io.Reader) error {
 	return nil
 }
 
+func (t *ShortTag) stringify(space string, indent string, depth int) string {
+	return stringifyTag(t, space, indent, depth)
+}
+
 type ShortPayload int16
 
 func NewShortPayload(value int16) *ShortPayload {
@@ -94,4 +99,8 @@ func (p *ShortPayload) decode(r io.Reader) error {
 	*p = *payload
 
 	return nil
+}
+
+func (p *ShortPayload) stringify(space string, indent string, depth int) string {
+	return fmt.Sprintf("%ds", *p)
 }

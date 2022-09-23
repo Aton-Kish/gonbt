@@ -23,7 +23,9 @@ package nbt
 import (
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"io"
+	"strings"
 
 	"github.com/Aton-Kish/gonbt/pointer"
 )
@@ -70,6 +72,10 @@ func (t *ListTag) decode(r io.Reader) error {
 	*t = *v
 
 	return nil
+}
+
+func (t *ListTag) stringify(space string, indent string, depth int) string {
+	return stringifyTag(t, space, indent, depth)
 }
 
 type ListPayload []Payload
@@ -137,4 +143,23 @@ func (p *ListPayload) decode(r io.Reader) error {
 	}
 
 	return nil
+}
+
+func (p *ListPayload) stringify(space string, indent string, depth int) string {
+	l := len(*p)
+	strs := make([]string, 0, l)
+	for _, payload := range *p {
+		strs = append(strs, payload.stringify(space, indent, depth+1))
+	}
+
+	if indent == "" || l == 0 {
+		return fmt.Sprintf("[%s]", strings.Join(strs, fmt.Sprintf(",%s", space)))
+	}
+
+	indents := ""
+	for i := 0; i < depth; i++ {
+		indents += indent
+	}
+
+	return fmt.Sprintf("[\n%s%s%s\n%s]", indents, indent, strings.Join(strs, fmt.Sprintf(",\n%s%s", indents, indent)), indents)
 }

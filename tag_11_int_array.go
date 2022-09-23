@@ -23,7 +23,9 @@ package nbt
 import (
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"io"
+	"strings"
 
 	"github.com/Aton-Kish/gonbt/pointer"
 )
@@ -72,6 +74,10 @@ func (t *IntArrayTag) decode(r io.Reader) error {
 	return nil
 }
 
+func (t *IntArrayTag) stringify(space string, indent string, depth int) string {
+	return stringifyTag(t, space, indent, depth)
+}
+
 type IntArrayPayload []int32
 
 func NewIntArrayPayload(values ...int32) *IntArrayPayload {
@@ -102,4 +108,13 @@ func (p *IntArrayPayload) decode(r io.Reader) error {
 	}
 
 	return nil
+}
+
+func (p *IntArrayPayload) stringify(space string, indent string, depth int) string {
+	strs := make([]string, 0, len(*p))
+	for _, v := range *p {
+		strs = append(strs, fmt.Sprintf("%d", v))
+	}
+
+	return fmt.Sprintf("[I;%s%s]", space, strings.Join(strs, fmt.Sprintf(",%s", space)))
 }

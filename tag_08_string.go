@@ -23,7 +23,10 @@ package nbt
 import (
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"io"
+	"strconv"
+	"strings"
 
 	"github.com/Aton-Kish/gonbt/pointer"
 )
@@ -72,6 +75,10 @@ func (t *StringTag) decode(r io.Reader) error {
 	return nil
 }
 
+func (t *StringTag) stringify(space string, indent string, depth int) string {
+	return stringifyTag(t, space, indent, depth)
+}
+
 type StringPayload string
 
 func NewStringPayload(value string) *StringPayload {
@@ -109,4 +116,16 @@ func (p *StringPayload) decode(r io.Reader) error {
 	*p = StringPayload(b)
 
 	return nil
+}
+
+func (p *StringPayload) stringify(space string, indent string, depth int) string {
+	s := string(*p)
+	qs := strconv.Quote(s)
+	if strings.Contains(s, "\"") && !strings.Contains(s, "'") {
+		qs = fmt.Sprintf("'%s'", qs[1:len(qs)-1])
+		qs = strings.ReplaceAll(qs, "\\\"", "\"")
+		return qs
+	}
+
+	return qs
 }
