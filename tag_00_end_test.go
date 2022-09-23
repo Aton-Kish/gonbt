@@ -72,7 +72,7 @@ func TestEndTag_TypeId(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestEndTag_Encode(t *testing.T) {
+func TestEndTag_encode(t *testing.T) {
 	type Case struct {
 		name        string
 		tag         *EndTag
@@ -94,7 +94,7 @@ func TestEndTag_Encode(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			buf := new(bytes.Buffer)
-			err := tt.tag.Encode(buf)
+			err := tt.tag.encode(buf)
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
@@ -106,7 +106,7 @@ func TestEndTag_Encode(t *testing.T) {
 	}
 }
 
-func TestEndTag_Decode(t *testing.T) {
+func TestEndTag_decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
@@ -130,7 +130,7 @@ func TestEndTag_Decode(t *testing.T) {
 			buf := bytes.NewBuffer(tt.raw)
 
 			tag := new(EndTag)
-			err := tag.Decode(buf)
+			err := tag.decode(buf)
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)

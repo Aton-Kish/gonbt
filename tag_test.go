@@ -46,7 +46,7 @@ type rawTestCase struct {
 	payload []byte
 }
 
-func TestTagType_Encode(t *testing.T) {
+func TestTagType_encode(t *testing.T) {
 	type Case struct {
 		name        string
 		tagType     TagType
@@ -176,7 +176,7 @@ func TestTagType_Encode(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			buf := new(bytes.Buffer)
-			err := tt.tagType.Encode(buf)
+			err := tt.tagType.encode(buf)
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
@@ -188,7 +188,7 @@ func TestTagType_Encode(t *testing.T) {
 	}
 }
 
-func TestTagType_Decode(t *testing.T) {
+func TestTagType_decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
@@ -320,7 +320,7 @@ func TestTagType_Decode(t *testing.T) {
 			buf := bytes.NewBuffer(tt.raw)
 
 			var typ TagType
-			err := typ.Decode(buf)
+			err := typ.decode(buf)
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
@@ -453,7 +453,7 @@ func TestNewTagName(t *testing.T) {
 	}
 }
 
-func TestTagName_Encode(t *testing.T) {
+func TestTagName_encode(t *testing.T) {
 	type Case struct {
 		name        string
 		tagName     TagName
@@ -574,7 +574,7 @@ func TestTagName_Encode(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			buf := new(bytes.Buffer)
-			err := tt.tagName.Encode(buf)
+			err := tt.tagName.encode(buf)
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
@@ -586,7 +586,7 @@ func TestTagName_Encode(t *testing.T) {
 	}
 }
 
-func TestTagName_Decode(t *testing.T) {
+func TestTagName_decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
@@ -709,7 +709,7 @@ func TestTagName_Decode(t *testing.T) {
 			buf := bytes.NewBuffer(tt.raw)
 
 			var n TagName
-			err := n.Decode(buf)
+			err := n.decode(buf)
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)

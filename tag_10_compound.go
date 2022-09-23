@@ -51,11 +51,11 @@ func (t *CompoundTag) Payload() Payload {
 	return t.payload
 }
 
-func (t *CompoundTag) Encode(w io.Writer) error {
+func (t *CompoundTag) encode(w io.Writer) error {
 	return Encode(w, t)
 }
 
-func (t *CompoundTag) Decode(r io.Reader) error {
+func (t *CompoundTag) decode(r io.Reader) error {
 	tag, err := Decode(r)
 	if err != nil {
 		return err
@@ -85,9 +85,9 @@ func (p *CompoundPayload) TypeId() TagType {
 	return CompoundType
 }
 
-func (p *CompoundPayload) Encode(w io.Writer) error {
+func (p *CompoundPayload) encode(w io.Writer) error {
 	for _, tag := range *p {
-		if err := tag.Encode(w); err != nil {
+		if err := tag.encode(w); err != nil {
 			return err
 		}
 	}
@@ -95,7 +95,7 @@ func (p *CompoundPayload) Encode(w io.Writer) error {
 	return nil
 }
 
-func (p *CompoundPayload) Decode(r io.Reader) error {
+func (p *CompoundPayload) decode(r io.Reader) error {
 	for {
 		tag, err := Decode(r)
 		if err != nil {

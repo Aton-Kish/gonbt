@@ -50,11 +50,11 @@ func (t *FloatTag) Payload() Payload {
 	return t.payload
 }
 
-func (t *FloatTag) Encode(w io.Writer) error {
+func (t *FloatTag) encode(w io.Writer) error {
 	return Encode(w, t)
 }
 
-func (t *FloatTag) Decode(r io.Reader) error {
+func (t *FloatTag) decode(r io.Reader) error {
 	tag, err := Decode(r)
 	if err != nil {
 		return err
@@ -80,11 +80,11 @@ func (p *FloatPayload) TypeId() TagType {
 	return FloatType
 }
 
-func (p *FloatPayload) Encode(w io.Writer) error {
+func (p *FloatPayload) encode(w io.Writer) error {
 	return encodeNumericPayload(w, p)
 }
 
-func (p *FloatPayload) Decode(r io.Reader) error {
+func (p *FloatPayload) decode(r io.Reader) error {
 	payload, err := decodeNumericPayload[FloatPayload](r)
 	if err != nil {
 		return err

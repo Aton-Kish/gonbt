@@ -51,11 +51,11 @@ func (t *DoubleTag) Payload() Payload {
 	return t.payload
 }
 
-func (t *DoubleTag) Encode(w io.Writer) error {
+func (t *DoubleTag) encode(w io.Writer) error {
 	return Encode(w, t)
 }
 
-func (t *DoubleTag) Decode(r io.Reader) error {
+func (t *DoubleTag) decode(r io.Reader) error {
 	tag, err := Decode(r)
 	if err != nil {
 		return err
@@ -81,11 +81,11 @@ func (p *DoublePayload) TypeId() TagType {
 	return DoubleType
 }
 
-func (p *DoublePayload) Encode(w io.Writer) error {
+func (p *DoublePayload) encode(w io.Writer) error {
 	return encodeNumericPayload(w, p)
 }
 
-func (p *DoublePayload) Decode(r io.Reader) error {
+func (p *DoublePayload) decode(r io.Reader) error {
 	payload, err := decodeNumericPayload[DoublePayload](r)
 	if err != nil {
 		return err

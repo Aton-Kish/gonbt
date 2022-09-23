@@ -52,11 +52,11 @@ func (t *LongArrayTag) Payload() Payload {
 	return t.payload
 }
 
-func (t *LongArrayTag) Encode(w io.Writer) error {
+func (t *LongArrayTag) encode(w io.Writer) error {
 	return Encode(w, t)
 }
 
-func (t *LongArrayTag) Decode(r io.Reader) error {
+func (t *LongArrayTag) decode(r io.Reader) error {
 	tag, err := Decode(r)
 	if err != nil {
 		return err
@@ -86,11 +86,11 @@ func (p *LongArrayPayload) TypeId() TagType {
 	return LongArrayType
 }
 
-func (p *LongArrayPayload) Encode(w io.Writer) error {
+func (p *LongArrayPayload) encode(w io.Writer) error {
 	return encodeArrayPayload(w, p)
 }
 
-func (p *LongArrayPayload) Decode(r io.Reader) error {
+func (p *LongArrayPayload) decode(r io.Reader) error {
 	var l int32
 	if err := binary.Read(r, binary.BigEndian, &l); err != nil {
 		return err

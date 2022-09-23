@@ -52,11 +52,11 @@ func (t *IntArrayTag) Payload() Payload {
 	return t.payload
 }
 
-func (t *IntArrayTag) Encode(w io.Writer) error {
+func (t *IntArrayTag) encode(w io.Writer) error {
 	return Encode(w, t)
 }
 
-func (t *IntArrayTag) Decode(r io.Reader) error {
+func (t *IntArrayTag) decode(r io.Reader) error {
 	tag, err := Decode(r)
 	if err != nil {
 		return err
@@ -86,11 +86,11 @@ func (p *IntArrayPayload) TypeId() TagType {
 	return IntArrayType
 }
 
-func (p *IntArrayPayload) Encode(w io.Writer) error {
+func (p *IntArrayPayload) encode(w io.Writer) error {
 	return encodeArrayPayload(w, p)
 }
 
-func (p *IntArrayPayload) Decode(r io.Reader) error {
+func (p *IntArrayPayload) decode(r io.Reader) error {
 	var l int32
 	if err := binary.Read(r, binary.BigEndian, &l); err != nil {
 		return err

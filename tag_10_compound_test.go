@@ -173,7 +173,7 @@ func TestCompoundTag_TypeId(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestCompoundTag_Encode(t *testing.T) {
+func TestCompoundTag_encode(t *testing.T) {
 	type Case struct {
 		name        string
 		tag         *CompoundTag
@@ -195,7 +195,7 @@ func TestCompoundTag_Encode(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			buf := new(bytes.Buffer)
-			err := tt.tag.Encode(buf)
+			err := tt.tag.encode(buf)
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
@@ -207,7 +207,7 @@ func TestCompoundTag_Encode(t *testing.T) {
 	}
 }
 
-func TestCompoundTag_Decode(t *testing.T) {
+func TestCompoundTag_decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
@@ -231,7 +231,7 @@ func TestCompoundTag_Decode(t *testing.T) {
 			buf := bytes.NewBuffer(tt.raw)
 
 			tag := new(CompoundTag)
-			err := tag.Decode(buf)
+			err := tag.decode(buf)
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
@@ -273,7 +273,7 @@ func TestCompoundPayload_TypeId(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestCompoundPayload_Encode(t *testing.T) {
+func TestCompoundPayload_encode(t *testing.T) {
 	type Case struct {
 		name        string
 		payload     *CompoundPayload
@@ -295,7 +295,7 @@ func TestCompoundPayload_Encode(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			buf := new(bytes.Buffer)
-			err := tt.payload.Encode(buf)
+			err := tt.payload.encode(buf)
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
@@ -307,7 +307,7 @@ func TestCompoundPayload_Encode(t *testing.T) {
 	}
 }
 
-func TestCompoundPayload_Decode(t *testing.T) {
+func TestCompoundPayload_decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
@@ -331,7 +331,7 @@ func TestCompoundPayload_Decode(t *testing.T) {
 			buf := bytes.NewBuffer(tt.raw)
 
 			payload := new(CompoundPayload)
-			err := payload.Decode(buf)
+			err := payload.decode(buf)
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)

@@ -48,7 +48,7 @@ const (
 	LongArrayType
 )
 
-func (t *TagType) Encode(w io.Writer) error {
+func (t *TagType) encode(w io.Writer) error {
 	if err := binary.Write(w, binary.BigEndian, t); err != nil {
 		return err
 	}
@@ -56,7 +56,7 @@ func (t *TagType) Encode(w io.Writer) error {
 	return nil
 }
 
-func (t *TagType) Decode(r io.Reader) error {
+func (t *TagType) decode(r io.Reader) error {
 	if err := binary.Read(r, binary.BigEndian, t); err != nil {
 		return err
 	}
@@ -72,7 +72,7 @@ func NewTagName(value string) *TagName {
 	return pointer.Pointer(TagName(value))
 }
 
-func (n *TagName) Encode(w io.Writer) error {
+func (n *TagName) encode(w io.Writer) error {
 	l := uint16(len(*n))
 	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
 		return err
@@ -86,7 +86,7 @@ func (n *TagName) Encode(w io.Writer) error {
 	return nil
 }
 
-func (n *TagName) Decode(r io.Reader) error {
+func (n *TagName) decode(r io.Reader) error {
 	var l uint16
 	if err := binary.Read(r, binary.BigEndian, &l); err != nil {
 		return err
@@ -107,8 +107,8 @@ type Tag interface {
 	TypeId() TagType
 	TagName() *TagName
 	Payload() Payload
-	Encode(w io.Writer) error
-	Decode(r io.Reader) error
+	encode(w io.Writer) error
+	decode(r io.Reader) error
 }
 
 func NewTag(typ TagType) (Tag, error) {
@@ -146,7 +146,7 @@ func NewTag(typ TagType) (Tag, error) {
 
 func Encode(w io.Writer, tag Tag) error {
 	typ := tag.TypeId()
-	if err := typ.Encode(w); err != nil {
+	if err := typ.encode(w); err != nil {
 		return err
 	}
 
@@ -154,11 +154,11 @@ func Encode(w io.Writer, tag Tag) error {
 		return nil
 	}
 
-	if err := tag.TagName().Encode(w); err != nil {
+	if err := tag.TagName().encode(w); err != nil {
 		return err
 	}
 
-	if err := tag.Payload().Encode(w); err != nil {
+	if err := tag.Payload().encode(w); err != nil {
 		return err
 	}
 
@@ -167,7 +167,7 @@ func Encode(w io.Writer, tag Tag) error {
 
 func Decode(r io.Reader) (Tag, error) {
 	var typ TagType
-	if err := typ.Decode(r); err != nil {
+	if err := typ.decode(r); err != nil {
 		return nil, err
 	}
 
@@ -180,11 +180,11 @@ func Decode(r io.Reader) (Tag, error) {
 		return tag, nil
 	}
 
-	if err := tag.TagName().Decode(r); err != nil {
+	if err := tag.TagName().decode(r); err != nil {
 		return nil, err
 	}
 
-	if err := tag.Payload().Decode(r); err != nil {
+	if err := tag.Payload().decode(r); err != nil {
 		return nil, err
 	}
 
@@ -195,8 +195,8 @@ func Decode(r io.Reader) (Tag, error) {
 
 type Payload interface {
 	TypeId() TagType
-	Encode(w io.Writer) error
-	Decode(r io.Reader) error
+	encode(w io.Writer) error
+	decode(r io.Reader) error
 }
 
 func NewPayload(typ TagType) (Payload, error) {

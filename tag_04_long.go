@@ -51,11 +51,11 @@ func (t *LongTag) Payload() Payload {
 	return t.payload
 }
 
-func (t *LongTag) Encode(w io.Writer) error {
+func (t *LongTag) encode(w io.Writer) error {
 	return Encode(w, t)
 }
 
-func (t *LongTag) Decode(r io.Reader) error {
+func (t *LongTag) decode(r io.Reader) error {
 	tag, err := Decode(r)
 	if err != nil {
 		return err
@@ -81,11 +81,11 @@ func (p *LongPayload) TypeId() TagType {
 	return LongType
 }
 
-func (p *LongPayload) Encode(w io.Writer) error {
+func (p *LongPayload) encode(w io.Writer) error {
 	return encodeNumericPayload(w, p)
 }
 
-func (p *LongPayload) Decode(r io.Reader) error {
+func (p *LongPayload) decode(r io.Reader) error {
 	payload, err := decodeNumericPayload[LongPayload](r)
 	if err != nil {
 		return err

@@ -92,7 +92,7 @@ func TestIntTag_TypeId(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestIntTag_Encode(t *testing.T) {
+func TestIntTag_encode(t *testing.T) {
 	type Case struct {
 		name        string
 		tag         *IntTag
@@ -114,7 +114,7 @@ func TestIntTag_Encode(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			buf := new(bytes.Buffer)
-			err := tt.tag.Encode(buf)
+			err := tt.tag.encode(buf)
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
@@ -126,7 +126,7 @@ func TestIntTag_Encode(t *testing.T) {
 	}
 }
 
-func TestIntTag_Decode(t *testing.T) {
+func TestIntTag_decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
@@ -150,7 +150,7 @@ func TestIntTag_Decode(t *testing.T) {
 			buf := bytes.NewBuffer(tt.raw)
 
 			tag := new(IntTag)
-			err := tag.Decode(buf)
+			err := tag.decode(buf)
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
@@ -192,7 +192,7 @@ func TestIntPayload_TypeId(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-func TestIntPayload_Encode(t *testing.T) {
+func TestIntPayload_encode(t *testing.T) {
 	type Case struct {
 		name        string
 		payload     *IntPayload
@@ -214,7 +214,7 @@ func TestIntPayload_Encode(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			buf := new(bytes.Buffer)
-			err := tt.payload.Encode(buf)
+			err := tt.payload.encode(buf)
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)
@@ -226,7 +226,7 @@ func TestIntPayload_Encode(t *testing.T) {
 	}
 }
 
-func TestIntPayload_Decode(t *testing.T) {
+func TestIntPayload_decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
@@ -250,7 +250,7 @@ func TestIntPayload_Decode(t *testing.T) {
 			buf := bytes.NewBuffer(tt.raw)
 
 			payload := new(IntPayload)
-			err := payload.Decode(buf)
+			err := payload.decode(buf)
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)

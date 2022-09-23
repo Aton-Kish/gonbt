@@ -51,11 +51,11 @@ func (t *ByteTag) Payload() Payload {
 	return t.payload
 }
 
-func (t *ByteTag) Encode(w io.Writer) error {
+func (t *ByteTag) encode(w io.Writer) error {
 	return Encode(w, t)
 }
 
-func (t *ByteTag) Decode(r io.Reader) error {
+func (t *ByteTag) decode(r io.Reader) error {
 	tag, err := Decode(r)
 	if err != nil {
 		return err
@@ -81,11 +81,11 @@ func (p *BytePayload) TypeId() TagType {
 	return ByteType
 }
 
-func (p *BytePayload) Encode(w io.Writer) error {
+func (p *BytePayload) encode(w io.Writer) error {
 	return encodeNumericPayload(w, p)
 }
 
-func (p *BytePayload) Decode(r io.Reader) error {
+func (p *BytePayload) decode(r io.Reader) error {
 	payload, err := decodeNumericPayload[BytePayload](r)
 	if err != nil {
 		return err

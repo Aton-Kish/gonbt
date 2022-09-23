@@ -52,11 +52,11 @@ func (t *ListTag) Payload() Payload {
 	return t.payload
 }
 
-func (t *ListTag) Encode(w io.Writer) error {
+func (t *ListTag) encode(w io.Writer) error {
 	return Encode(w, t)
 }
 
-func (t *ListTag) Decode(r io.Reader) error {
+func (t *ListTag) decode(r io.Reader) error {
 	tag, err := Decode(r)
 	if err != nil {
 		return err
@@ -86,7 +86,7 @@ func (p *ListPayload) TypeId() TagType {
 	return ListType
 }
 
-func (p *ListPayload) Encode(w io.Writer) error {
+func (p *ListPayload) encode(w io.Writer) error {
 	l := int32(len(*p))
 
 	typ := EndType
@@ -103,7 +103,7 @@ func (p *ListPayload) Encode(w io.Writer) error {
 	}
 
 	for _, payload := range *p {
-		if err := payload.Encode(w); err != nil {
+		if err := payload.encode(w); err != nil {
 			return err
 		}
 	}
@@ -111,7 +111,7 @@ func (p *ListPayload) Encode(w io.Writer) error {
 	return nil
 }
 
-func (p *ListPayload) Decode(r io.Reader) error {
+func (p *ListPayload) decode(r io.Reader) error {
 	var typ TagType
 	if err := binary.Read(r, binary.BigEndian, &typ); err != nil {
 		return err
@@ -129,7 +129,7 @@ func (p *ListPayload) Decode(r io.Reader) error {
 			return err
 		}
 
-		if err := payload.Decode(r); err != nil {
+		if err := payload.decode(r); err != nil {
 			return err
 		}
 

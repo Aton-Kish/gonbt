@@ -52,11 +52,11 @@ func (t *StringTag) Payload() Payload {
 	return t.payload
 }
 
-func (t *StringTag) Encode(w io.Writer) error {
+func (t *StringTag) encode(w io.Writer) error {
 	return Encode(w, t)
 }
 
-func (t *StringTag) Decode(r io.Reader) error {
+func (t *StringTag) decode(r io.Reader) error {
 	tag, err := Decode(r)
 	if err != nil {
 		return err
@@ -82,7 +82,7 @@ func (p *StringPayload) TypeId() TagType {
 	return StringType
 }
 
-func (p *StringPayload) Encode(w io.Writer) error {
+func (p *StringPayload) encode(w io.Writer) error {
 	l := uint16(len(*p))
 	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
 		return err
@@ -96,7 +96,7 @@ func (p *StringPayload) Encode(w io.Writer) error {
 	return nil
 }
 
-func (p *StringPayload) Decode(r io.Reader) error {
+func (p *StringPayload) decode(r io.Reader) error {
 	var l uint16
 	if err := binary.Read(r, binary.BigEndian, &l); err != nil {
 		return err
