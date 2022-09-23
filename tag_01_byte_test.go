@@ -28,10 +28,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var byteTagCases = []tagTestCase[int8, *BytePayload]{
+var byteTagCases = []tagTestCase[*BytePayload]{
 	{
 		name: "positive case: ByteTag",
-		data: 123,
 		nbt: nbtTestCase[*BytePayload]{
 			tagType: ByteType,
 			tagName: "Byte",
@@ -175,7 +174,7 @@ func TestNewBytePayload(t *testing.T) {
 	for _, c := range byteTagCases {
 		cases = append(cases, Case{
 			name:     c.name,
-			value:    c.data,
+			value:    int8(*c.nbt.payload),
 			expected: c.nbt.payload,
 		})
 	}

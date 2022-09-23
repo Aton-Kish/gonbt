@@ -28,10 +28,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var shortTagCases = []tagTestCase[int16, *ShortPayload]{
+var shortTagCases = []tagTestCase[*ShortPayload]{
 	{
 		name: "positive case: ShortTag",
-		data: 12345,
 		nbt: nbtTestCase[*ShortPayload]{
 			tagType: ShortType,
 			tagName: "Short",
@@ -175,7 +174,7 @@ func TestNewShortPayload(t *testing.T) {
 	for _, c := range shortTagCases {
 		cases = append(cases, Case{
 			name:     c.name,
-			value:    c.data,
+			value:    int16(*c.nbt.payload),
 			expected: c.nbt.payload,
 		})
 	}

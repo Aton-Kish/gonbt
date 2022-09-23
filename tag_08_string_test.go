@@ -28,10 +28,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var stringTagCases = []tagTestCase[string, *StringPayload]{
+var stringTagCases = []tagTestCase[*StringPayload]{
 	{
 		name: "positive case: StringTag - \"Hello World\"",
-		data: "Hello World",
 		nbt: nbtTestCase[*StringPayload]{
 			tagType: StringType,
 			tagName: "String",
@@ -58,7 +57,6 @@ var stringTagCases = []tagTestCase[string, *StringPayload]{
 	},
 	{
 		name: "positive case: StringTag - \"Test\"",
-		data: "Test",
 		nbt: nbtTestCase[*StringPayload]{
 			tagType: StringType,
 			tagName: "String",
@@ -85,7 +83,6 @@ var stringTagCases = []tagTestCase[string, *StringPayload]{
 	},
 	{
 		name: "positive case: StringTag - \"minecraft:the_end\"",
-		data: "minecraft:the_end",
 		nbt: nbtTestCase[*StringPayload]{
 			tagType: StringType,
 			tagName: "String",
@@ -113,7 +110,6 @@ var stringTagCases = []tagTestCase[string, *StringPayload]{
 	},
 	{
 		name: "positive case: StringTag - \"\"",
-		data: "",
 		nbt: nbtTestCase[*StringPayload]{
 			tagType: StringType,
 			tagName: "String",
@@ -139,7 +135,6 @@ var stringTagCases = []tagTestCase[string, *StringPayload]{
 	},
 	{
 		name: "positive case: StringTag - \"マインクラフト\"",
-		data: "マインクラフト",
 		nbt: nbtTestCase[*StringPayload]{
 			tagType: StringType,
 			tagName: "String",
@@ -287,7 +282,7 @@ func TestNewStringPayload(t *testing.T) {
 	for _, c := range stringTagCases {
 		cases = append(cases, Case{
 			name:     c.name,
-			value:    c.data,
+			value:    string(*c.nbt.payload),
 			expected: c.nbt.payload,
 		})
 	}

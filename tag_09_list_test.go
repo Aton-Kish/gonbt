@@ -28,10 +28,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var listTagCases = []tagTestCase[[]Payload, *ListPayload]{
+var listTagCases = []tagTestCase[*ListPayload]{
 	{
 		name: "positive case: ListTag - Short",
-		data: []Payload{NewShortPayload(12345), NewShortPayload(6789)},
 		nbt: nbtTestCase[*ListPayload]{
 			tagType: ListType,
 			tagName: "List",
@@ -63,7 +62,6 @@ var listTagCases = []tagTestCase[[]Payload, *ListPayload]{
 	},
 	{
 		name: "positive case: ListTag - ByteArray",
-		data: []Payload{NewByteArrayPayload(0, 1), NewByteArrayPayload(2, 3)},
 		nbt: nbtTestCase[*ListPayload]{
 			tagType: ListType,
 			tagName: "List",
@@ -97,7 +95,6 @@ var listTagCases = []tagTestCase[[]Payload, *ListPayload]{
 	},
 	{
 		name: "positive case: ListTag - String",
-		data: []Payload{NewStringPayload("Hello"), NewStringPayload("World")},
 		nbt: nbtTestCase[*ListPayload]{
 			tagType: ListType,
 			tagName: "List",
@@ -131,10 +128,6 @@ var listTagCases = []tagTestCase[[]Payload, *ListPayload]{
 	},
 	{
 		name: "positive case: ListTag - List",
-		data: []Payload{
-			NewListPayload(NewBytePayload(123)),
-			NewListPayload(NewStringPayload("Test")),
-		},
 		nbt: nbtTestCase[*ListPayload]{
 			tagType: ListType,
 			tagName: "List",
@@ -174,10 +167,6 @@ var listTagCases = []tagTestCase[[]Payload, *ListPayload]{
 	},
 	{
 		name: "positive case: ListTag - Compound",
-		data: []Payload{
-			NewCompoundPayload(NewByteTag(NewTagName("Byte"), NewBytePayload(123)), NewEndTag()),
-			NewCompoundPayload(NewStringTag(NewTagName("String"), NewStringPayload("Hello")), NewEndTag()),
-		},
 		nbt: nbtTestCase[*ListPayload]{
 			tagType: ListType,
 			tagName: "List",
@@ -227,7 +216,6 @@ var listTagCases = []tagTestCase[[]Payload, *ListPayload]{
 	},
 	{
 		name: "positive case: ListTag - empty",
-		data: []Payload{},
 		nbt: nbtTestCase[*ListPayload]{
 			tagType: ListType,
 			tagName: "List",
@@ -374,7 +362,7 @@ func TestNewListPayload(t *testing.T) {
 	for _, c := range listTagCases {
 		cases = append(cases, Case{
 			name:     c.name,
-			values:   c.data,
+			values:   []Payload(*c.nbt.payload),
 			expected: c.nbt.payload,
 		})
 	}

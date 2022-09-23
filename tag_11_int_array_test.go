@@ -28,10 +28,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var intArrayTagCases = []tagTestCase[[]int32, *IntArrayPayload]{
+var intArrayTagCases = []tagTestCase[*IntArrayPayload]{
 	{
 		name: "positive case: IntArrayTag - has items",
-		data: []int32{0, 1, 2, 3},
 		nbt: nbtTestCase[*IntArrayPayload]{
 			tagType: IntArrayType,
 			tagName: "IntArray",
@@ -61,7 +60,6 @@ var intArrayTagCases = []tagTestCase[[]int32, *IntArrayPayload]{
 	},
 	{
 		name: "positive case: IntArrayTag - empty",
-		data: []int32{},
 		nbt: nbtTestCase[*IntArrayPayload]{
 			tagType: IntArrayType,
 			tagName: "IntArray",
@@ -206,7 +204,7 @@ func TestNewIntArrayPayload(t *testing.T) {
 	for _, c := range intArrayTagCases {
 		cases = append(cases, Case{
 			name:     c.name,
-			values:   c.data,
+			values:   []int32(*c.nbt.payload),
 			expected: c.nbt.payload,
 		})
 	}

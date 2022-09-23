@@ -28,10 +28,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var floatTagCases = []tagTestCase[float32, *FloatPayload]{
+var floatTagCases = []tagTestCase[*FloatPayload]{
 	{
 		name: "positive case: FloatTag",
-		data: 0.12345678,
 		nbt: nbtTestCase[*FloatPayload]{
 			tagType: FloatType,
 			tagName: "Float",
@@ -175,7 +174,7 @@ func TestNewFloatPayload(t *testing.T) {
 	for _, c := range floatTagCases {
 		cases = append(cases, Case{
 			name:     c.name,
-			value:    c.data,
+			value:    float32(*c.nbt.payload),
 			expected: c.nbt.payload,
 		})
 	}

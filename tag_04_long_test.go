@@ -28,10 +28,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var longTagCases = []tagTestCase[int64, *LongPayload]{
+var longTagCases = []tagTestCase[*LongPayload]{
 	{
 		name: "positive case: LongTag",
-		data: 123456789123456789,
 		nbt: nbtTestCase[*LongPayload]{
 			tagType: LongType,
 			tagName: "Long",
@@ -175,7 +174,7 @@ func TestNewLongPayload(t *testing.T) {
 	for _, c := range longTagCases {
 		cases = append(cases, Case{
 			name:     c.name,
-			value:    c.data,
+			value:    int64(*c.nbt.payload),
 			expected: c.nbt.payload,
 		})
 	}

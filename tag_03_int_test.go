@@ -28,10 +28,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var intTagCases = []tagTestCase[int32, *IntPayload]{
+var intTagCases = []tagTestCase[*IntPayload]{
 	{
 		name: "positive case: IntTag",
-		data: 123456789,
 		nbt: nbtTestCase[*IntPayload]{
 			tagType: IntType,
 			tagName: "Int",
@@ -175,7 +174,7 @@ func TestNewIntPayload(t *testing.T) {
 	for _, c := range intTagCases {
 		cases = append(cases, Case{
 			name:     c.name,
-			value:    c.data,
+			value:    int32(*c.nbt.payload),
 			expected: c.nbt.payload,
 		})
 	}

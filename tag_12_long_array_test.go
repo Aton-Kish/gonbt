@@ -28,10 +28,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var longArrayTagCases = []tagTestCase[[]int64, *LongArrayPayload]{
+var longArrayTagCases = []tagTestCase[*LongArrayPayload]{
 	{
 		name: "positive case: LongArrayTag - has items",
-		data: []int64{0, 1, 2, 3},
 		nbt: nbtTestCase[*LongArrayPayload]{
 			tagType: LongArrayType,
 			tagName: "LongArray",
@@ -61,7 +60,6 @@ var longArrayTagCases = []tagTestCase[[]int64, *LongArrayPayload]{
 	},
 	{
 		name: "positive case: LongArrayTag - empty",
-		data: []int64{},
 		nbt: nbtTestCase[*LongArrayPayload]{
 			tagType: LongArrayType,
 			tagName: "LongArray",
@@ -206,7 +204,7 @@ func TestNewLongArrayPayload(t *testing.T) {
 	for _, c := range longArrayTagCases {
 		cases = append(cases, Case{
 			name:     c.name,
-			values:   c.data,
+			values:   []int64(*c.nbt.payload),
 			expected: c.nbt.payload,
 		})
 	}

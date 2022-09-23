@@ -28,10 +28,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type tagTestCase[T any, U Payload] struct {
+type tagTestCase[T Payload] struct {
 	name string
-	data T
-	nbt  nbtTestCase[U]
+	nbt  nbtTestCase[T]
 	raw  rawTestCase
 }
 

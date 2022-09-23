@@ -28,17 +28,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var compoundTagCases = []tagTestCase[[]Tag, *CompoundPayload]{
+var compoundTagCases = []tagTestCase[*CompoundPayload]{
 	{
 		name: "positive case: CompoundTag - has items",
-		data: []Tag{
-			NewShortTag(NewTagName("Short"), NewShortPayload(12345)),
-			NewByteArrayTag(NewTagName("ByteArray"), NewByteArrayPayload(0, 1)),
-			NewStringTag(NewTagName("String"), NewStringPayload("Hello")),
-			NewListTag(NewTagName("List"), NewListPayload(NewBytePayload(123))),
-			NewCompoundTag(NewTagName("Compound"), NewCompoundPayload(NewStringTag(NewTagName("String"), NewStringPayload("World")), NewEndTag())),
-			NewEndTag(),
-		},
 		nbt: nbtTestCase[*CompoundPayload]{
 			tagType: CompoundType,
 			tagName: "Compound",
@@ -119,7 +111,6 @@ var compoundTagCases = []tagTestCase[[]Tag, *CompoundPayload]{
 	},
 	{
 		name: "positive case: CompoundTag - empty",
-		data: []Tag{NewEndTag()},
 		nbt: nbtTestCase[*CompoundPayload]{
 			tagType: CompoundType,
 			tagName: "Compound",
@@ -264,7 +255,7 @@ func TestNewCompoundPayload(t *testing.T) {
 	for _, c := range compoundTagCases {
 		cases = append(cases, Case{
 			name:     c.name,
-			values:   c.data,
+			values:   []Tag(*c.nbt.payload),
 			expected: c.nbt.payload,
 		})
 	}

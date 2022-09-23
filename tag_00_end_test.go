@@ -27,7 +27,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var endTagCases = []tagTestCase[any, Payload]{
+var endTagCases = []tagTestCase[Payload]{
 	{
 		name: "positive case: EndTag",
 		nbt: nbtTestCase[Payload]{
