@@ -828,6 +828,170 @@ func TestNewTag(t *testing.T) {
 	}
 }
 
+var nbtCases = []struct {
+	name string
+	nbt  Tag
+	raw  []byte
+}{
+	{
+		name: "positive case: Simple",
+		nbt: NewCompoundTag(NewTagName(""), NewCompoundPayload(
+			NewCompoundTag(NewTagName("Hello World"), NewCompoundPayload(
+				NewStringTag(NewTagName("Name"), NewStringPayload("Steve")),
+				NewEndTag(),
+			)),
+			NewEndTag(),
+		),
+		),
+		raw: []byte{
+			// CompoundTag(""):
+			0x0A,
+			0x00, 0x00,
+			//   - CompoundTag("Hello World"):
+			0x0A,
+			0x00, 0x0B,
+			0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64,
+			//       - StringTag("Name"): "Steve"
+			0x08,
+			0x00, 0x04,
+			0x4E, 0x61, 0x6D, 0x65,
+			0x00, 0x05,
+			0x53, 0x74, 0x65, 0x76, 0x65,
+			//       - EndTag
+			0x00,
+			//   - EndTag
+			0x00,
+		},
+	},
+	{
+		name: "positive case: Tag Check",
+		nbt: NewCompoundTag(NewTagName("Compound"), NewCompoundPayload(
+			NewShortTag(NewTagName("Short"), NewShortPayload(12345)),
+			NewByteArrayTag(NewTagName("ByteArray"), NewByteArrayPayload(0, 1)),
+			NewStringTag(NewTagName("String"), NewStringPayload("Hello")),
+			NewListTag(NewTagName("List"), NewListPayload(NewBytePayload(123))),
+			NewCompoundTag(NewTagName("Compound"), NewCompoundPayload(
+				NewStringTag(NewTagName("String"), NewStringPayload("World")),
+				NewEndTag(),
+			)),
+			NewEndTag(),
+		),
+		),
+		raw: []byte{
+			// CompoundTag("Compound"):
+			0x0A,
+			0x00, 0x08,
+			0x43, 0x6F, 0x6D, 0x70, 0x6F, 0x75, 0x6E, 0x64,
+			//   - ShortTag("Short"): 12345
+			0x02,
+			0x00, 0x05,
+			0x53, 0x68, 0x6f, 0x72, 0x74,
+			0x30, 0x39,
+			//   - ByteArrayTag("ByteArray"): [B; 0b, 1b]
+			0x07,
+			0x00, 0x09,
+			0x42, 0x79, 0x74, 0x65, 0x41, 0x72, 0x72, 0x61, 0x79,
+			0x00, 0x00, 0x00, 0x02,
+			0x00, 0x01,
+			//   - StringTag("String"): "Hello"
+			0x08,
+			0x00, 0x06,
+			0x53, 0x74, 0x72, 0x69, 0x6E, 0x67,
+			0x00, 0x05,
+			0x48, 0x65, 0x6C, 0x6C, 0x6F,
+			//   - ListTag("List"): <Byte>[123]
+			0x09,
+			0x00, 0x04,
+			0x4C, 0x69, 0x73, 0x74,
+			0x01,
+			0x00, 0x00, 0x00, 0x01,
+			0x7B,
+			//   - CompoundTag("Compound"):
+			0x0A,
+			0x00, 0x08,
+			0x43, 0x6F, 0x6D, 0x70, 0x6F, 0x75, 0x6E, 0x64,
+			//       - StringTag("String"): "World"
+			0x08,
+			0x00, 0x06,
+			0x53, 0x74, 0x72, 0x69, 0x6E, 0x67,
+			0x00, 0x05,
+			0x57, 0x6F, 0x72, 0x6C, 0x64,
+			//       - EndTag
+			0x00,
+			//   - EndTag
+			0x00,
+		},
+	},
+}
+
+func TestEncode(t *testing.T) {
+	type Case struct {
+		name        string
+		nbt         Tag
+		expected    []byte
+		expectedErr error
+	}
+
+	cases := []Case{}
+
+	for _, c := range nbtCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			nbt:         c.nbt,
+			expected:    c.raw,
+			expectedErr: nil,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := new(bytes.Buffer)
+			err := Encode(buf, tt.nbt)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expected, buf.Bytes())
+			} else {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			}
+		})
+	}
+}
+
+func TestDecode(t *testing.T) {
+	type Case struct {
+		name        string
+		raw         []byte
+		expected    Tag
+		expectedErr error
+	}
+
+	cases := []Case{}
+
+	for _, c := range nbtCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			raw:         c.raw,
+			expected:    c.nbt,
+			expectedErr: nil,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			buf := bytes.NewBuffer(tt.raw)
+			actual, err := Decode(buf)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expected, actual)
+			} else {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			}
+		})
+	}
+}
+
 func TestNewPayload(t *testing.T) {
 	cases := []struct {
 		name        string
