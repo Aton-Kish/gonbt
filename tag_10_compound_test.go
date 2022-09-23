@@ -24,6 +24,7 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/Aton-Kish/gonbt/slices"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -195,7 +196,7 @@ func TestCompoundTag_Encode(t *testing.T) {
 		cases = append(cases, Case{
 			name:        c.name,
 			tag:         NewCompoundTag(&c.nbt.tagName, c.nbt.payload),
-			expected:    append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
+			expected:    slices.Concat(c.raw.tagType, c.raw.tagName, c.raw.payload),
 			expectedErr: nil,
 		})
 	}
@@ -228,7 +229,7 @@ func TestCompoundTag_Decode(t *testing.T) {
 	for _, c := range compoundTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			raw:         append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
+			raw:         slices.Concat(c.raw.tagType, c.raw.tagName, c.raw.payload),
 			expected:    NewCompoundTag(&c.nbt.tagName, c.nbt.payload),
 			expectedErr: nil,
 		})

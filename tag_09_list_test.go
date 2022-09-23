@@ -24,6 +24,7 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/Aton-Kish/gonbt/slices"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -305,7 +306,7 @@ func TestListTag_Encode(t *testing.T) {
 		cases = append(cases, Case{
 			name:        c.name,
 			tag:         NewListTag(&c.nbt.tagName, c.nbt.payload),
-			expected:    append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
+			expected:    slices.Concat(c.raw.tagType, c.raw.tagName, c.raw.payload),
 			expectedErr: nil,
 		})
 	}
@@ -338,7 +339,7 @@ func TestListTag_Decode(t *testing.T) {
 	for _, c := range listTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			raw:         append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
+			raw:         slices.Concat(c.raw.tagType, c.raw.tagName, c.raw.payload),
 			expected:    NewListTag(&c.nbt.tagName, c.nbt.payload),
 			expectedErr: nil,
 		})

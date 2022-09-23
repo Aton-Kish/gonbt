@@ -24,6 +24,7 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/Aton-Kish/gonbt/slices"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -106,7 +107,7 @@ func TestLongTag_Encode(t *testing.T) {
 		cases = append(cases, Case{
 			name:        c.name,
 			tag:         NewLongTag(&c.nbt.tagName, c.nbt.payload),
-			expected:    append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
+			expected:    slices.Concat(c.raw.tagType, c.raw.tagName, c.raw.payload),
 			expectedErr: nil,
 		})
 	}
@@ -139,7 +140,7 @@ func TestLongTag_Decode(t *testing.T) {
 	for _, c := range longTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			raw:         append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
+			raw:         slices.Concat(c.raw.tagType, c.raw.tagName, c.raw.payload),
 			expected:    NewLongTag(&c.nbt.tagName, c.nbt.payload),
 			expectedErr: nil,
 		})

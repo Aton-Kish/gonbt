@@ -24,6 +24,7 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/Aton-Kish/gonbt/slices"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -134,7 +135,7 @@ func TestByteArrayTag_Encode(t *testing.T) {
 		cases = append(cases, Case{
 			name:        c.name,
 			tag:         NewByteArrayTag(&c.nbt.tagName, c.nbt.payload),
-			expected:    append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
+			expected:    slices.Concat(c.raw.tagType, c.raw.tagName, c.raw.payload),
 			expectedErr: nil,
 		})
 	}
@@ -167,7 +168,7 @@ func TestByteArrayTag_Decode(t *testing.T) {
 	for _, c := range byteArrayTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			raw:         append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
+			raw:         slices.Concat(c.raw.tagType, c.raw.tagName, c.raw.payload),
 			expected:    NewByteArrayTag(&c.nbt.tagName, c.nbt.payload),
 			expectedErr: nil,
 		})
