@@ -36,6 +36,10 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 			tagName: "String",
 			payload: NewStringPayload("Hello World"),
 		},
+		snbt: snbtTestCase{
+			tagName: "String",
+			payload: "\"Hello World\"",
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: String(=8)
@@ -62,6 +66,10 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 			tagName: "String",
 			payload: NewStringPayload("Test"),
 		},
+		snbt: snbtTestCase{
+			tagName: "String",
+			payload: "\"Test\"",
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: String(=8)
@@ -82,11 +90,105 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 		},
 	},
 	{
+		name: "positive case: StringTag - '\"Test'",
+		nbt: nbtTestCase[*StringPayload]{
+			tagType: StringType,
+			tagName: "String",
+			payload: NewStringPayload("\"Test"),
+		},
+		snbt: snbtTestCase{
+			tagName: "String",
+			payload: "'\"Test'",
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: String(=8)
+				0x08,
+			},
+			tagName: []byte{
+				// Name Length: 6
+				0x00, 0x06,
+				// Name: "String"
+				0x53, 0x74, 0x72, 0x69, 0x6E, 0x67,
+			},
+			payload: []byte{
+				// Payload Length: 5
+				0x00, 0x05,
+				// Payload: '"Test'
+				0x22, 0x54, 0x65, 0x73, 0x74,
+			},
+		},
+	},
+	{
+		name: "positive case: StringTag - \"'Test\"",
+		nbt: nbtTestCase[*StringPayload]{
+			tagType: StringType,
+			tagName: "String",
+			payload: NewStringPayload("'Test"),
+		},
+		snbt: snbtTestCase{
+			tagName: "String",
+			payload: "\"'Test\"",
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: String(=8)
+				0x08,
+			},
+			tagName: []byte{
+				// Name Length: 6
+				0x00, 0x06,
+				// Name: "String"
+				0x53, 0x74, 0x72, 0x69, 0x6E, 0x67,
+			},
+			payload: []byte{
+				// Payload Length: 5
+				0x00, 0x05,
+				// Payload: "'Test"
+				0x27, 0x54, 0x65, 0x73, 0x74,
+			},
+		},
+	},
+	{
+		name: "positive case: StringTag - \"\\\"'Test\"",
+		nbt: nbtTestCase[*StringPayload]{
+			tagType: StringType,
+			tagName: "String",
+			payload: NewStringPayload("\"'Test"),
+		},
+		snbt: snbtTestCase{
+			tagName: "String",
+			payload: "\"\\\"'Test\"",
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: String(=8)
+				0x08,
+			},
+			tagName: []byte{
+				// Name Length: 6
+				0x00, 0x06,
+				// Name: "String"
+				0x53, 0x74, 0x72, 0x69, 0x6E, 0x67,
+			},
+			payload: []byte{
+				// Payload Length: 6
+				0x00, 0x06,
+				// Payload: "\"'Test"
+				0x22, 0x27, 0x54, 0x65, 0x73, 0x74,
+			},
+		},
+	},
+	{
 		name: "positive case: StringTag - \"minecraft:the_end\"",
 		nbt: nbtTestCase[*StringPayload]{
 			tagType: StringType,
 			tagName: "String",
 			payload: NewStringPayload("minecraft:the_end"),
+		},
+		snbt: snbtTestCase{
+			tagName: "String",
+			payload: "\"minecraft:the_end\"",
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -115,6 +217,10 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 			tagName: "String",
 			payload: NewStringPayload(""),
 		},
+		snbt: snbtTestCase{
+			tagName: "String",
+			payload: "\"\"",
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: String(=8)
@@ -139,6 +245,10 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 			tagType: StringType,
 			tagName: "String",
 			payload: NewStringPayload("マインクラフト"),
+		},
+		snbt: snbtTestCase{
+			tagName: "String",
+			payload: "\"マインクラフト\"",
 		},
 		raw: rawTestCase{
 			tagType: []byte{

@@ -36,6 +36,10 @@ var longArrayTagCases = []tagTestCase[*LongArrayPayload]{
 			tagName: "LongArray",
 			payload: NewLongArrayPayload(0, 1, 2, 3),
 		},
+		snbt: snbtTestCase{
+			tagName: "LongArray",
+			payload: "[L; 0L, 1L, 2L, 3L]",
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: LongArray(=12)
@@ -64,6 +68,10 @@ var longArrayTagCases = []tagTestCase[*LongArrayPayload]{
 			tagType: LongArrayType,
 			tagName: "LongArray",
 			payload: NewLongArrayPayload(),
+		},
+		snbt: snbtTestCase{
+			tagName: "LongArray",
+			payload: "[L; ]",
 		},
 		raw: rawTestCase{
 			tagType: []byte{

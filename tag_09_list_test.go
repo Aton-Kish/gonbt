@@ -36,6 +36,10 @@ var listTagCases = []tagTestCase[*ListPayload]{
 			tagName: "List",
 			payload: NewListPayload(NewShortPayload(12345), NewShortPayload(6789)),
 		},
+		snbt: snbtTestCase{
+			tagName: "List",
+			payload: "[12345s, 6789s]",
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: List(=9)
@@ -66,6 +70,10 @@ var listTagCases = []tagTestCase[*ListPayload]{
 			tagType: ListType,
 			tagName: "List",
 			payload: NewListPayload(NewByteArrayPayload(0, 1), NewByteArrayPayload(2, 3)),
+		},
+		snbt: snbtTestCase{
+			tagName: "List",
+			payload: "[[B; 0b, 1b], [B; 2b, 3b]]",
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -99,6 +107,10 @@ var listTagCases = []tagTestCase[*ListPayload]{
 			tagType: ListType,
 			tagName: "List",
 			payload: NewListPayload(NewStringPayload("Hello"), NewStringPayload("World")),
+		},
+		snbt: snbtTestCase{
+			tagName: "List",
+			payload: "[\"Hello\", \"World\"]",
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -135,6 +147,10 @@ var listTagCases = []tagTestCase[*ListPayload]{
 				NewListPayload(NewBytePayload(123)),
 				NewListPayload(NewStringPayload("Test")),
 			),
+		},
+		snbt: snbtTestCase{
+			tagName: "List",
+			payload: "[[123b], [\"Test\"]]",
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -174,6 +190,10 @@ var listTagCases = []tagTestCase[*ListPayload]{
 				NewCompoundPayload(NewByteTag(NewTagName("Byte"), NewBytePayload(123)), NewEndTag()),
 				NewCompoundPayload(NewStringTag(NewTagName("String"), NewStringPayload("Hello")), NewEndTag()),
 			),
+		},
+		snbt: snbtTestCase{
+			tagName: "List",
+			payload: "[{Byte: 123b}, {String: \"Hello\"}]",
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -220,6 +240,10 @@ var listTagCases = []tagTestCase[*ListPayload]{
 			tagType: ListType,
 			tagName: "List",
 			payload: NewListPayload(),
+		},
+		snbt: snbtTestCase{
+			tagName: "List",
+			payload: "[]",
 		},
 		raw: rawTestCase{
 			tagType: []byte{

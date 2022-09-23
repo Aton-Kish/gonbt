@@ -36,6 +36,10 @@ var byteArrayTagCases = []tagTestCase[*ByteArrayPayload]{
 			tagName: "ByteArray",
 			payload: NewByteArrayPayload(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
 		},
+		snbt: snbtTestCase{
+			tagName: "ByteArray",
+			payload: "[B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]",
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: ByteArray(=7)
@@ -61,6 +65,10 @@ var byteArrayTagCases = []tagTestCase[*ByteArrayPayload]{
 			tagType: ByteArrayType,
 			tagName: "ByteArray",
 			payload: NewByteArrayPayload(),
+		},
+		snbt: snbtTestCase{
+			tagName: "ByteArray",
+			payload: "[B; ]",
 		},
 		raw: rawTestCase{
 			tagType: []byte{

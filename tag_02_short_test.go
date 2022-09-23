@@ -36,6 +36,10 @@ var shortTagCases = []tagTestCase[*ShortPayload]{
 			tagName: "Short",
 			payload: NewShortPayload(12345),
 		},
+		snbt: snbtTestCase{
+			tagName: "Short",
+			payload: "12345s",
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: Short(=2)

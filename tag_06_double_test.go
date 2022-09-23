@@ -36,6 +36,10 @@ var doubleTagCases = []tagTestCase[*DoublePayload]{
 			tagName: "Double",
 			payload: NewDoublePayload(0.123456789),
 		},
+		snbt: snbtTestCase{
+			tagName: "Double",
+			payload: "0.123456789d",
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: Double(=6)

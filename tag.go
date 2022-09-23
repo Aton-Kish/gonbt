@@ -24,6 +24,9 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+	"regexp"
+	"strconv"
+	"strings"
 
 	"github.com/Aton-Kish/gonbt/pointer"
 )
@@ -66,6 +69,8 @@ func (t *TagType) decode(r io.Reader) error {
 
 // Tag Name
 
+var quotationRequiredCharacters = regexp.MustCompile(`[ !"#$%&'()*,/:;<=>?@[\\\]^\x60{|}~]`)
+
 type TagName string
 
 func NewTagName(value string) *TagName {
@@ -99,6 +104,22 @@ func (n *TagName) decode(r io.Reader) error {
 	*n = TagName(b)
 
 	return nil
+}
+
+func (n *TagName) stringify() string {
+	s := string(*n)
+	if !quotationRequiredCharacters.MatchString(s) {
+		return s
+	}
+
+	qs := strconv.Quote(s)
+	if strings.Contains(s, "\"") && !strings.Contains(s, "'") {
+		qs = fmt.Sprintf("'%s'", qs[1:len(qs)-1])
+		qs = strings.ReplaceAll(qs, "\\\"", "\"")
+		return qs
+	}
+
+	return qs
 }
 
 // Tag

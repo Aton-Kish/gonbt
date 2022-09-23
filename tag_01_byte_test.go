@@ -36,6 +36,10 @@ var byteTagCases = []tagTestCase[*BytePayload]{
 			tagName: "Byte",
 			payload: NewBytePayload(123),
 		},
+		snbt: snbtTestCase{
+			tagName: "Byte",
+			payload: "123b",
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: Byte(=1)

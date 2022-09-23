@@ -43,6 +43,10 @@ var compoundTagCases = []tagTestCase[*CompoundPayload]{
 				NewEndTag(),
 			),
 		},
+		snbt: snbtTestCase{
+			tagName: "Compound",
+			payload: "{ByteArray: [B; 0b, 1b], Compound: {String: \"World\"}, List: [123b], Short: 12345s, String: \"Hello\"}",
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: Compound(=10)
@@ -115,6 +119,10 @@ var compoundTagCases = []tagTestCase[*CompoundPayload]{
 			tagType: CompoundType,
 			tagName: "Compound",
 			payload: NewCompoundPayload(NewEndTag()),
+		},
+		snbt: snbtTestCase{
+			tagName: "Compound",
+			payload: "{}",
 		},
 		raw: rawTestCase{
 			tagType: []byte{

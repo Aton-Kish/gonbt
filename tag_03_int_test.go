@@ -36,6 +36,10 @@ var intTagCases = []tagTestCase[*IntPayload]{
 			tagName: "Int",
 			payload: NewIntPayload(123456789),
 		},
+		snbt: snbtTestCase{
+			tagName: "Int",
+			payload: "123456789",
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: Int(=3)

@@ -36,6 +36,10 @@ var floatTagCases = []tagTestCase[*FloatPayload]{
 			tagName: "Float",
 			payload: NewFloatPayload(0.12345678),
 		},
+		snbt: snbtTestCase{
+			tagName: "Float",
+			payload: "0.12345678f",
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: Float(=5)

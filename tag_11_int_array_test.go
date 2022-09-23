@@ -36,6 +36,10 @@ var intArrayTagCases = []tagTestCase[*IntArrayPayload]{
 			tagName: "IntArray",
 			payload: NewIntArrayPayload(0, 1, 2, 3),
 		},
+		snbt: snbtTestCase{
+			tagName: "IntArray",
+			payload: "[I; 0, 1, 2, 3]",
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: IntArray(=11)
@@ -64,6 +68,10 @@ var intArrayTagCases = []tagTestCase[*IntArrayPayload]{
 			tagType: IntArrayType,
 			tagName: "IntArray",
 			payload: NewIntArrayPayload(),
+		},
+		snbt: snbtTestCase{
+			tagName: "IntArray",
+			payload: "[I; ]",
 		},
 		raw: rawTestCase{
 			tagType: []byte{

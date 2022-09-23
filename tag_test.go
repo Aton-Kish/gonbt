@@ -31,6 +31,7 @@ import (
 type tagTestCase[T Payload] struct {
 	name string
 	nbt  nbtTestCase[T]
+	snbt snbtTestCase
 	raw  rawTestCase
 }
 
@@ -38,6 +39,11 @@ type nbtTestCase[T Payload] struct {
 	tagType TagType
 	tagName TagName
 	payload T
+}
+
+type snbtTestCase struct {
+	tagName string
+	payload string
 }
 
 type rawTestCase struct {
@@ -717,6 +723,140 @@ func TestTagName_decode(t *testing.T) {
 			} else {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			}
+		})
+	}
+}
+
+func TestTagName_stringify(t *testing.T) {
+	type Case struct {
+		name     string
+		tagName  TagName
+		expected string
+	}
+
+	cases := []Case{
+		{
+			name:     "positive case: quotation - Test",
+			tagName:  TagName("Test"),
+			expected: "Test",
+		},
+		{
+			name:     "positive case: quotation - '\"Test'",
+			tagName:  TagName("\"Test"),
+			expected: "'\"Test'",
+		},
+		{
+			name:     "positive case: quotation - \"'Test\"",
+			tagName:  TagName("'Test"),
+			expected: "\"'Test\"",
+		},
+		{
+			name:     "positive case: quotation - \"\\\"'Test\"",
+			tagName:  TagName("\"'Test"),
+			expected: "\"\\\"'Test\"",
+		},
+	}
+
+	for _, c := range byteTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tagName:  c.nbt.tagName,
+			expected: c.snbt.tagName,
+		})
+	}
+
+	for _, c := range shortTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tagName:  c.nbt.tagName,
+			expected: c.snbt.tagName,
+		})
+	}
+
+	for _, c := range intTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tagName:  c.nbt.tagName,
+			expected: c.snbt.tagName,
+		})
+	}
+
+	for _, c := range longTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tagName:  c.nbt.tagName,
+			expected: c.snbt.tagName,
+		})
+	}
+
+	for _, c := range floatTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tagName:  c.nbt.tagName,
+			expected: c.snbt.tagName,
+		})
+	}
+
+	for _, c := range doubleTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tagName:  c.nbt.tagName,
+			expected: c.snbt.tagName,
+		})
+	}
+
+	for _, c := range byteArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tagName:  c.nbt.tagName,
+			expected: c.snbt.tagName,
+		})
+	}
+
+	for _, c := range stringTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tagName:  c.nbt.tagName,
+			expected: c.snbt.tagName,
+		})
+	}
+
+	for _, c := range listTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tagName:  c.nbt.tagName,
+			expected: c.snbt.tagName,
+		})
+	}
+
+	for _, c := range compoundTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tagName:  c.nbt.tagName,
+			expected: c.snbt.tagName,
+		})
+	}
+
+	for _, c := range intArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tagName:  c.nbt.tagName,
+			expected: c.snbt.tagName,
+		})
+	}
+
+	for _, c := range longArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tagName:  c.nbt.tagName,
+			expected: c.snbt.tagName,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tagName.stringify()
+			assert.Equal(t, tt.expected, actual)
 		})
 	}
 }

@@ -36,6 +36,10 @@ var longTagCases = []tagTestCase[*LongPayload]{
 			tagName: "Long",
 			payload: NewLongPayload(123456789123456789),
 		},
+		snbt: snbtTestCase{
+			tagName: "Long",
+			payload: "123456789123456789L",
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: Long(=4)
