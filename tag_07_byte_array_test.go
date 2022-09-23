@@ -39,7 +39,11 @@ var byteArrayTagCases = []tagTestCase[*ByteArrayPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: "ByteArray",
-			payload: "[B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]",
+			payload: stringifyType{
+				typeDefault: "[B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]",
+				typeCompact: "[B;0b,1b,2b,3b,4b,5b,6b,7b,8b,9b]",
+				typePretty:  "[B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]",
+			},
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -69,7 +73,11 @@ var byteArrayTagCases = []tagTestCase[*ByteArrayPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: "ByteArray",
-			payload: "[B; ]",
+			payload: stringifyType{
+				typeDefault: "[B; ]",
+				typeCompact: "[B;]",
+				typePretty:  "[B; ]",
+			},
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -211,13 +219,63 @@ func TestByteArrayTag_stringify_default(t *testing.T) {
 		cases = append(cases, Case{
 			name:     c.name,
 			tag:      NewByteArrayTag(&c.nbt.tagName, c.nbt.payload),
-			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload.typeDefault),
 		})
 	}
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.tag.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestByteArrayTag_stringify_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *ByteArrayTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range byteArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewByteArrayTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s:%s", c.snbt.tagName, c.snbt.payload.typeCompact),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.stringify("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestByteArrayTag_stringify_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *ByteArrayTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range byteArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewByteArrayTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload.typePretty),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.stringify(" ", "  ", 0)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
@@ -336,13 +394,63 @@ func TestByteArrayPayload_stringify_default(t *testing.T) {
 		cases = append(cases, Case{
 			name:     c.name,
 			payload:  c.nbt.payload,
-			expected: c.snbt.payload,
+			expected: c.snbt.payload.typeDefault,
 		})
 	}
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.payload.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestByteArrayPayload_stringify_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *ByteArrayPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range byteArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.snbt.payload.typeCompact,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.stringify("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestByteArrayPayload_stringify_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *ByteArrayPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range byteArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.snbt.payload.typePretty,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.stringify(" ", "  ", 0)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}

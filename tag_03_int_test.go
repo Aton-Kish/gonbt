@@ -39,7 +39,11 @@ var intTagCases = []tagTestCase[*IntPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: "Int",
-			payload: "123456789",
+			payload: stringifyType{
+				typeDefault: "123456789",
+				typeCompact: "123456789",
+				typePretty:  "123456789",
+			},
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -180,13 +184,63 @@ func TestIntTag_stringify_default(t *testing.T) {
 		cases = append(cases, Case{
 			name:     c.name,
 			tag:      NewIntTag(&c.nbt.tagName, c.nbt.payload),
-			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload.typeDefault),
 		})
 	}
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.tag.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestIntTag_stringify_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *IntTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range intTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewIntTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s:%s", c.snbt.tagName, c.snbt.payload.typeCompact),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.stringify("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestIntTag_stringify_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *IntTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range intTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewIntTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload.typePretty),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.stringify(" ", "  ", 0)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
@@ -305,13 +359,63 @@ func TestIntPayload_stringify_default(t *testing.T) {
 		cases = append(cases, Case{
 			name:     c.name,
 			payload:  c.nbt.payload,
-			expected: c.snbt.payload,
+			expected: c.snbt.payload.typeDefault,
 		})
 	}
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.payload.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestIntPayload_stringify_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *IntPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range intTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.snbt.payload.typeCompact,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.stringify("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestIntPayload_stringify_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *IntPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range intTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.snbt.payload.typePretty,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.stringify(" ", "  ", 0)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}

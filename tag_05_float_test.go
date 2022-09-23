@@ -39,7 +39,11 @@ var floatTagCases = []tagTestCase[*FloatPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: "Float",
-			payload: "0.12345678f",
+			payload: stringifyType{
+				typeDefault: "0.12345678f",
+				typeCompact: "0.12345678f",
+				typePretty:  "0.12345678f",
+			},
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -180,13 +184,63 @@ func TestFloatTag_stringify_default(t *testing.T) {
 		cases = append(cases, Case{
 			name:     c.name,
 			tag:      NewFloatTag(&c.nbt.tagName, c.nbt.payload),
-			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload.typeDefault),
 		})
 	}
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.tag.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestFloatTag_stringify_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *FloatTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range floatTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewFloatTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s:%s", c.snbt.tagName, c.snbt.payload.typeCompact),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.stringify("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestFloatTag_stringify_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *FloatTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range floatTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewFloatTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload.typePretty),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.stringify(" ", "  ", 0)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
@@ -305,13 +359,63 @@ func TestFloatPayload_stringify_default(t *testing.T) {
 		cases = append(cases, Case{
 			name:     c.name,
 			payload:  c.nbt.payload,
-			expected: c.snbt.payload,
+			expected: c.snbt.payload.typeDefault,
 		})
 	}
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.payload.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestFloatPayload_stringify_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *FloatPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range floatTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.snbt.payload.typeCompact,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.stringify("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestFloatPayload_stringify_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *FloatPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range floatTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.snbt.payload.typePretty,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.stringify(" ", "  ", 0)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}

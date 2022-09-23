@@ -39,7 +39,11 @@ var intArrayTagCases = []tagTestCase[*IntArrayPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: "IntArray",
-			payload: "[I; 0, 1, 2, 3]",
+			payload: stringifyType{
+				typeDefault: "[I; 0, 1, 2, 3]",
+				typeCompact: "[I;0,1,2,3]",
+				typePretty:  "[I; 0, 1, 2, 3]",
+			},
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -72,7 +76,11 @@ var intArrayTagCases = []tagTestCase[*IntArrayPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: "IntArray",
-			payload: "[I; ]",
+			payload: stringifyType{
+				typeDefault: "[I; ]",
+				typeCompact: "[I;]",
+				typePretty:  "[I; ]",
+			},
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -214,13 +222,63 @@ func TestIntArrayTag_stringify_default(t *testing.T) {
 		cases = append(cases, Case{
 			name:     c.name,
 			tag:      NewIntArrayTag(&c.nbt.tagName, c.nbt.payload),
-			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload.typeDefault),
 		})
 	}
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.tag.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestIntArrayTag_stringify_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *IntArrayTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range intArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewIntArrayTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s:%s", c.snbt.tagName, c.snbt.payload.typeCompact),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.stringify("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestIntArrayTag_stringify_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *IntArrayTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range intArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewIntArrayTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload.typePretty),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.stringify(" ", "  ", 0)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
@@ -339,13 +397,63 @@ func TestIntArrayPayload_stringify_default(t *testing.T) {
 		cases = append(cases, Case{
 			name:     c.name,
 			payload:  c.nbt.payload,
-			expected: c.snbt.payload,
+			expected: c.snbt.payload.typeDefault,
 		})
 	}
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.payload.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestIntArrayPayload_stringify_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *IntArrayPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range intArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.snbt.payload.typeCompact,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.stringify("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestIntArrayPayload_stringify_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *IntArrayPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range intArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.snbt.payload.typePretty,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.stringify(" ", "  ", 0)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}

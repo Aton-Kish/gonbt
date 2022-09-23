@@ -43,7 +43,13 @@ type nbtTestCase[T Payload] struct {
 
 type snbtTestCase struct {
 	tagName string
-	payload string
+	payload stringifyType
+}
+
+type stringifyType struct {
+	typeDefault string
+	typeCompact string
+	typePretty  string
 }
 
 type rawTestCase struct {

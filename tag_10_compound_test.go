@@ -46,7 +46,11 @@ var compoundTagCases = []tagTestCase[*CompoundPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: "Compound",
-			payload: "{ByteArray: [B; 0b, 1b], Compound: {String: \"World\"}, List: [123b], Short: 12345s, String: \"Hello\"}",
+			payload: stringifyType{
+				typeDefault: "{ByteArray: [B; 0b, 1b], Compound: {String: \"World\"}, List: [123b], Short: 12345s, String: \"Hello\"}",
+				typeCompact: "{ByteArray:[B;0b,1b],Compound:{String:\"World\"},List:[123b],Short:12345s,String:\"Hello\"}",
+				typePretty:  "{\n  ByteArray: [B; 0b, 1b],\n  Compound: {\n    String: \"World\"\n  },\n  List: [\n    123b\n  ],\n  Short: 12345s,\n  String: \"Hello\"\n}",
+			},
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -123,7 +127,11 @@ var compoundTagCases = []tagTestCase[*CompoundPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: "Compound",
-			payload: "{}",
+			payload: stringifyType{
+				typeDefault: "{}",
+				typeCompact: "{}",
+				typePretty:  "{}",
+			},
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -265,13 +273,63 @@ func TestCompoundTag_stringify_default(t *testing.T) {
 		cases = append(cases, Case{
 			name:     c.name,
 			tag:      NewCompoundTag(&c.nbt.tagName, c.nbt.payload),
-			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload.typeDefault),
 		})
 	}
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.tag.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestCompoundTag_stringify_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *CompoundTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range compoundTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewCompoundTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s:%s", c.snbt.tagName, c.snbt.payload.typeCompact),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.stringify("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestCompoundTag_stringify_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *CompoundTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range compoundTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewCompoundTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload.typePretty),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.stringify(" ", "  ", 0)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
@@ -390,13 +448,63 @@ func TestCompoundPayload_stringify_default(t *testing.T) {
 		cases = append(cases, Case{
 			name:     c.name,
 			payload:  c.nbt.payload,
-			expected: c.snbt.payload,
+			expected: c.snbt.payload.typeDefault,
 		})
 	}
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.payload.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestCompoundPayload_stringify_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *CompoundPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range compoundTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.snbt.payload.typeCompact,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.stringify("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestCompoundPayload_stringify_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *CompoundPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range compoundTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.snbt.payload.typePretty,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.stringify(" ", "  ", 0)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}

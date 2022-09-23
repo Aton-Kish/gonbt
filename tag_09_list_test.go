@@ -39,7 +39,11 @@ var listTagCases = []tagTestCase[*ListPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: "List",
-			payload: "[12345s, 6789s]",
+			payload: stringifyType{
+				typeDefault: "[12345s, 6789s]",
+				typeCompact: "[12345s,6789s]",
+				typePretty:  "[\n  12345s,\n  6789s\n]",
+			},
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -74,7 +78,11 @@ var listTagCases = []tagTestCase[*ListPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: "List",
-			payload: "[[B; 0b, 1b], [B; 2b, 3b]]",
+			payload: stringifyType{
+				typeDefault: "[[B; 0b, 1b], [B; 2b, 3b]]",
+				typeCompact: "[[B;0b,1b],[B;2b,3b]]",
+				typePretty:  "[\n  [B; 0b, 1b],\n  [B; 2b, 3b]\n]",
+			},
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -111,7 +119,11 @@ var listTagCases = []tagTestCase[*ListPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: "List",
-			payload: "[\"Hello\", \"World\"]",
+			payload: stringifyType{
+				typeDefault: "[\"Hello\", \"World\"]",
+				typeCompact: "[\"Hello\",\"World\"]",
+				typePretty:  "[\n  \"Hello\",\n  \"World\"\n]",
+			},
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -151,7 +163,11 @@ var listTagCases = []tagTestCase[*ListPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: "List",
-			payload: "[[123b], [\"Test\"]]",
+			payload: stringifyType{
+				typeDefault: "[[123b], [\"Test\"]]",
+				typeCompact: "[[123b],[\"Test\"]]",
+				typePretty:  "[\n  [\n    123b\n  ],\n  [\n    \"Test\"\n  ]\n]",
+			},
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -194,7 +210,11 @@ var listTagCases = []tagTestCase[*ListPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: "List",
-			payload: "[{Byte: 123b}, {String: \"Hello\"}]",
+			payload: stringifyType{
+				typeDefault: "[{Byte: 123b}, {String: \"Hello\"}]",
+				typeCompact: "[{Byte:123b},{String:\"Hello\"}]",
+				typePretty:  "[\n  {\n    Byte: 123b\n  },\n  {\n    String: \"Hello\"\n  }\n]",
+			},
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -244,7 +264,11 @@ var listTagCases = []tagTestCase[*ListPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: "List",
-			payload: "[]",
+			payload: stringifyType{
+				typeDefault: "[]",
+				typeCompact: "[]",
+				typePretty:  "[]",
+			},
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -388,13 +412,63 @@ func TestListTag_stringify_default(t *testing.T) {
 		cases = append(cases, Case{
 			name:     c.name,
 			tag:      NewListTag(&c.nbt.tagName, c.nbt.payload),
-			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload.typeDefault),
 		})
 	}
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.tag.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestListTag_stringify_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *ListTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range listTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewListTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s:%s", c.snbt.tagName, c.snbt.payload.typeCompact),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.stringify("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestListTag_stringify_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *ListTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range listTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewListTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload.typePretty),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.stringify(" ", "  ", 0)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
@@ -513,13 +587,63 @@ func TestListPayload_stringify_default(t *testing.T) {
 		cases = append(cases, Case{
 			name:     c.name,
 			payload:  c.nbt.payload,
-			expected: c.snbt.payload,
+			expected: c.snbt.payload.typeDefault,
 		})
 	}
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.payload.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestListPayload_stringify_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *ListPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range listTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.snbt.payload.typeCompact,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.stringify("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestListPayload_stringify_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *ListPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range listTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.snbt.payload.typePretty,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.stringify(" ", "  ", 0)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
