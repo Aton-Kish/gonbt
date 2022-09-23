@@ -35,7 +35,7 @@ var shortTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag:  NewShortTag("Short", 12345),
+		tag:  NewShortTag(NewTagName("Short"), NewShortPayload(12345)),
 		raw: []byte{
 			// Type: Short(=2)
 			0x02,
@@ -52,17 +52,17 @@ var shortTagCases = []struct {
 func TestNewShortTag(t *testing.T) {
 	cases := []struct {
 		name     string
-		tagName  TagName
-		payload  ShortPayload
+		tagName  *TagName
+		payload  *ShortPayload
 		expected Tag
 	}{
 		{
 			name:    "positive case",
-			tagName: "Short",
-			payload: 12345,
+			tagName: NewTagName("Short"),
+			payload: NewShortPayload(12345),
 			expected: &ShortTag{
-				tagName: "Short",
-				payload: 12345,
+				tagName: NewTagName("Short"),
+				payload: NewShortPayload(12345),
 			},
 		},
 	}

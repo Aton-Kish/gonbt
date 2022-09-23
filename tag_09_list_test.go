@@ -35,8 +35,8 @@ var listTagCases = []struct {
 	{
 		name: "positive case",
 		tag: NewListTag(
-			"List",
-			ListPayload{NewShortPayload(12345), NewShortPayload(6789)},
+			NewTagName("List"),
+			NewListPayload(NewShortPayload(12345), NewShortPayload(6789)),
 		),
 		raw: []byte{
 			// Type: List(=9)
@@ -61,17 +61,17 @@ var listTagCases = []struct {
 func TestNewListTag(t *testing.T) {
 	cases := []struct {
 		name     string
-		tagName  TagName
-		payload  ListPayload
+		tagName  *TagName
+		payload  *ListPayload
 		expected Tag
 	}{
 		{
 			name:    "positive case",
-			tagName: "List",
-			payload: ListPayload{NewShortPayload(12345), NewShortPayload(6789)},
+			tagName: NewTagName("List"),
+			payload: NewListPayload(NewShortPayload(12345), NewShortPayload(6789)),
 			expected: &ListTag{
-				tagName: "List",
-				payload: ListPayload{NewShortPayload(12345), NewShortPayload(6789)},
+				tagName: NewTagName("List"),
+				payload: NewListPayload(NewShortPayload(12345), NewShortPayload(6789)),
 			},
 		},
 	}
@@ -241,8 +241,8 @@ var listPayloadCases = []struct {
 	{
 		name: "positive case: Compound",
 		payload: NewListPayload(
-			NewCompoundPayload(NewByteTag("Byte", 123), NewEndTag()),
-			NewCompoundPayload(NewStringTag("String", "Hello"), NewEndTag()),
+			NewCompoundPayload(NewByteTag(NewTagName("Byte"), NewBytePayload(123)), NewEndTag()),
+			NewCompoundPayload(NewStringTag(NewTagName("String"), NewStringPayload("Hello")), NewEndTag()),
 		),
 		raw: []byte{
 			// Payload Type: TagCompound(=10)
@@ -319,12 +319,12 @@ func TestNewListPayload(t *testing.T) {
 		{
 			name: "positive case: Compound",
 			values: []Payload{
-				NewCompoundPayload(NewByteTag("Byte", 123), NewEndTag()),
-				NewCompoundPayload(NewStringTag("String", "Hello"), NewEndTag()),
+				NewCompoundPayload(NewByteTag(NewTagName("Byte"), NewBytePayload(123)), NewEndTag()),
+				NewCompoundPayload(NewStringTag(NewTagName("String"), NewStringPayload("Hello")), NewEndTag()),
 			},
 			expected: &ListPayload{
-				NewCompoundPayload(NewByteTag("Byte", 123), NewEndTag()),
-				NewCompoundPayload(NewStringTag("String", "Hello"), NewEndTag()),
+				NewCompoundPayload(NewByteTag(NewTagName("Byte"), NewBytePayload(123)), NewEndTag()),
+				NewCompoundPayload(NewStringTag(NewTagName("String"), NewStringPayload("Hello")), NewEndTag()),
 			},
 		},
 		{

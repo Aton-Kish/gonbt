@@ -35,7 +35,7 @@ var longTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag:  NewLongTag("Long", 123456789123456789),
+		tag:  NewLongTag(NewTagName("Long"), NewLongPayload(123456789123456789)),
 		raw: []byte{
 			// Type: Long(=4)
 			0x04,
@@ -52,17 +52,17 @@ var longTagCases = []struct {
 func TestNewLongTag(t *testing.T) {
 	cases := []struct {
 		name     string
-		tagName  TagName
-		payload  LongPayload
+		tagName  *TagName
+		payload  *LongPayload
 		expected Tag
 	}{
 		{
 			name:    "positive case",
-			tagName: "Long",
-			payload: 123456789123456789,
+			tagName: NewTagName("Long"),
+			payload: NewLongPayload(123456789123456789),
 			expected: &LongTag{
-				tagName: "Long",
-				payload: 123456789123456789,
+				tagName: NewTagName("Long"),
+				payload: NewLongPayload(123456789123456789),
 			},
 		},
 	}

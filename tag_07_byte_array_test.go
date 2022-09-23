@@ -34,7 +34,7 @@ var byteArrayTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag:  NewByteArrayTag("ByteArray", ByteArrayPayload{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}),
+		tag:  NewByteArrayTag(NewTagName("ByteArray"), NewByteArrayPayload(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)),
 		raw: []byte{
 			// Type: ByteArray(=7)
 			0x07,
@@ -53,17 +53,17 @@ var byteArrayTagCases = []struct {
 func TestNewByteArrayTag(t *testing.T) {
 	cases := []struct {
 		name     string
-		tagName  TagName
-		payload  ByteArrayPayload
+		tagName  *TagName
+		payload  *ByteArrayPayload
 		expected Tag
 	}{
 		{
 			name:    "positive case",
-			tagName: "ByteArray",
-			payload: ByteArrayPayload{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+			tagName: NewTagName("ByteArray"),
+			payload: NewByteArrayPayload(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
 			expected: &ByteArrayTag{
-				tagName: "ByteArray",
-				payload: ByteArrayPayload{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+				tagName: NewTagName("ByteArray"),
+				payload: NewByteArrayPayload(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
 			},
 		},
 	}

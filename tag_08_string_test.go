@@ -35,7 +35,7 @@ var stringTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag:  NewStringTag("String", "Hello World"),
+		tag:  NewStringTag(NewTagName("String"), NewStringPayload("Hello World")),
 		raw: []byte{
 			// Type: String(=8)
 			0x08,
@@ -54,17 +54,17 @@ var stringTagCases = []struct {
 func TestNewStringTag(t *testing.T) {
 	cases := []struct {
 		name     string
-		tagName  TagName
-		payload  StringPayload
+		tagName  *TagName
+		payload  *StringPayload
 		expected Tag
 	}{
 		{
 			name:    "positive case",
-			tagName: "String",
-			payload: "Hello World",
+			tagName: NewTagName("String"),
+			payload: NewStringPayload("Hello World"),
 			expected: &StringTag{
-				tagName: "String",
-				payload: "Hello World",
+				tagName: NewTagName("String"),
+				payload: NewStringPayload("Hello World"),
 			},
 		},
 	}

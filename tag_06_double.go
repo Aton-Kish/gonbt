@@ -28,11 +28,11 @@ import (
 )
 
 type DoubleTag struct {
-	tagName TagName
-	payload DoublePayload
+	tagName *TagName
+	payload *DoublePayload
 }
 
-func NewDoubleTag(tagName TagName, payload DoublePayload) *DoubleTag {
+func NewDoubleTag(tagName *TagName, payload *DoublePayload) *DoubleTag {
 	return &DoubleTag{
 		tagName: tagName,
 		payload: payload,
@@ -44,11 +44,11 @@ func (t *DoubleTag) TypeId() TagType {
 }
 
 func (t *DoubleTag) TagName() *TagName {
-	return &t.tagName
+	return t.tagName
 }
 
 func (t *DoubleTag) Payload() Payload {
-	return &t.payload
+	return t.payload
 }
 
 func (t *DoubleTag) Encode(w io.Writer) error {

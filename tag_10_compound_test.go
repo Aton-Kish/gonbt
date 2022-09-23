@@ -35,15 +35,15 @@ var compoundTagCases = []struct {
 	{
 		name: "positive case",
 		tag: NewCompoundTag(
-			"Compound",
-			CompoundPayload{
-				NewShortTag("Short", 12345),
-				NewByteArrayTag("ByteArray", ByteArrayPayload{0, 1}),
-				NewStringTag("String", "Hello"),
-				NewListTag("List", ListPayload{NewBytePayload(123)}),
-				NewCompoundTag("Compound", CompoundPayload{NewStringTag("String", "World"), NewEndTag()}),
+			NewTagName("Compound"),
+			NewCompoundPayload(
+				NewShortTag(NewTagName("Short"), NewShortPayload(12345)),
+				NewByteArrayTag(NewTagName("ByteArray"), NewByteArrayPayload(0, 1)),
+				NewStringTag(NewTagName("String"), NewStringPayload("Hello")),
+				NewListTag(NewTagName("List"), NewListPayload(NewBytePayload(123))),
+				NewCompoundTag(NewTagName("Compound"), NewCompoundPayload(NewStringTag(NewTagName("String"), NewStringPayload("World")), NewEndTag())),
 				NewEndTag(),
-			},
+			),
 		),
 		raw: []byte{
 			// Type: Compound(=10)
@@ -110,31 +110,31 @@ var compoundTagCases = []struct {
 func TestNewCompoundTag(t *testing.T) {
 	cases := []struct {
 		name     string
-		tagName  TagName
-		payload  CompoundPayload
+		tagName  *TagName
+		payload  *CompoundPayload
 		expected Tag
 	}{
 		{
 			name:    "positive case",
-			tagName: "Compound",
-			payload: CompoundPayload{
-				NewShortTag("Short", 12345),
-				NewByteArrayTag("ByteArray", ByteArrayPayload{0, 1}),
-				NewStringTag("String", "Hello"),
-				NewListTag("List", ListPayload{NewBytePayload(123)}),
-				NewCompoundTag("Compound", CompoundPayload{NewStringTag("String", "World"), NewEndTag()}),
+			tagName: NewTagName("Compound"),
+			payload: NewCompoundPayload(
+				NewShortTag(NewTagName("Short"), NewShortPayload(12345)),
+				NewByteArrayTag(NewTagName("ByteArray"), NewByteArrayPayload(0, 1)),
+				NewStringTag(NewTagName("String"), NewStringPayload("Hello")),
+				NewListTag(NewTagName("List"), NewListPayload(NewBytePayload(123))),
+				NewCompoundTag(NewTagName("Compound"), NewCompoundPayload(NewStringTag(NewTagName("String"), NewStringPayload("World")), NewEndTag())),
 				NewEndTag(),
-			},
+			),
 			expected: &CompoundTag{
-				tagName: "Compound",
-				payload: CompoundPayload{
-					NewShortTag("Short", 12345),
-					NewByteArrayTag("ByteArray", ByteArrayPayload{0, 1}),
-					NewStringTag("String", "Hello"),
-					NewListTag("List", ListPayload{NewBytePayload(123)}),
-					NewCompoundTag("Compound", CompoundPayload{NewStringTag("String", "World"), NewEndTag()}),
+				tagName: NewTagName("Compound"),
+				payload: NewCompoundPayload(
+					NewShortTag(NewTagName("Short"), NewShortPayload(12345)),
+					NewByteArrayTag(NewTagName("ByteArray"), NewByteArrayPayload(0, 1)),
+					NewStringTag(NewTagName("String"), NewStringPayload("Hello")),
+					NewListTag(NewTagName("List"), NewListPayload(NewBytePayload(123))),
+					NewCompoundTag(NewTagName("Compound"), NewCompoundPayload(NewStringTag(NewTagName("String"), NewStringPayload("World")), NewEndTag())),
 					NewEndTag(),
-				},
+				),
 			},
 		},
 	}
@@ -232,11 +232,11 @@ var compoundPayloadCases = []struct {
 	{
 		name: "positive case: has items",
 		payload: NewCompoundPayload(
-			NewShortTag("Short", 12345),
-			NewByteArrayTag("ByteArray", ByteArrayPayload{0, 1}),
-			NewStringTag("String", "Hello"),
-			NewListTag("List", ListPayload{NewBytePayload(123)}),
-			NewCompoundTag("Compound", CompoundPayload{NewStringTag("String", "World"), NewEndTag()}),
+			NewShortTag(NewTagName("Short"), NewShortPayload(12345)),
+			NewByteArrayTag(NewTagName("ByteArray"), NewByteArrayPayload(0, 1)),
+			NewStringTag(NewTagName("String"), NewStringPayload("Hello")),
+			NewListTag(NewTagName("List"), NewListPayload(NewBytePayload(123))),
+			NewCompoundTag(NewTagName("Compound"), NewCompoundPayload(NewStringTag(NewTagName("String"), NewStringPayload("World")), NewEndTag())),
 			NewEndTag(),
 		),
 		raw: []byte{
@@ -313,19 +313,19 @@ func TestNewCompoundPayload(t *testing.T) {
 		{
 			name: "positive case: has items",
 			values: []Tag{
-				NewShortTag("Short", 12345),
-				NewByteArrayTag("ByteArray", ByteArrayPayload{0, 1}),
-				NewStringTag("String", "Hello"),
-				NewListTag("List", ListPayload{NewBytePayload(123)}),
-				NewCompoundTag("Compound", CompoundPayload{NewStringTag("String", "World"), NewEndTag()}),
+				NewShortTag(NewTagName("Short"), NewShortPayload(12345)),
+				NewByteArrayTag(NewTagName("ByteArray"), NewByteArrayPayload(0, 1)),
+				NewStringTag(NewTagName("String"), NewStringPayload("Hello")),
+				NewListTag(NewTagName("List"), NewListPayload(NewBytePayload(123))),
+				NewCompoundTag(NewTagName("Compound"), &CompoundPayload{NewStringTag(NewTagName("String"), NewStringPayload("World")), NewEndTag()}),
 				NewEndTag(),
 			},
 			expected: &CompoundPayload{
-				NewShortTag("Short", 12345),
-				NewByteArrayTag("ByteArray", ByteArrayPayload{0, 1}),
-				NewStringTag("String", "Hello"),
-				NewListTag("List", ListPayload{NewBytePayload(123)}),
-				NewCompoundTag("Compound", CompoundPayload{NewStringTag("String", "World"), NewEndTag()}),
+				NewShortTag(NewTagName("Short"), NewShortPayload(12345)),
+				NewByteArrayTag(NewTagName("ByteArray"), NewByteArrayPayload(0, 1)),
+				NewStringTag(NewTagName("String"), NewStringPayload("Hello")),
+				NewListTag(NewTagName("List"), NewListPayload(NewBytePayload(123))),
+				NewCompoundTag(NewTagName("Compound"), &CompoundPayload{NewStringTag(NewTagName("String"), NewStringPayload("World")), NewEndTag()}),
 				NewEndTag(),
 			},
 		},

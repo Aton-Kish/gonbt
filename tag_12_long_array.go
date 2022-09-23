@@ -29,11 +29,11 @@ import (
 )
 
 type LongArrayTag struct {
-	tagName TagName
-	payload LongArrayPayload
+	tagName *TagName
+	payload *LongArrayPayload
 }
 
-func NewLongArrayTag(tagName TagName, payload LongArrayPayload) *LongArrayTag {
+func NewLongArrayTag(tagName *TagName, payload *LongArrayPayload) *LongArrayTag {
 	return &LongArrayTag{
 		tagName: tagName,
 		payload: payload,
@@ -45,11 +45,11 @@ func (t *LongArrayTag) TypeId() TagType {
 }
 
 func (t *LongArrayTag) TagName() *TagName {
-	return &t.tagName
+	return t.tagName
 }
 
 func (t *LongArrayTag) Payload() Payload {
-	return &t.payload
+	return t.payload
 }
 
 func (t *LongArrayTag) Encode(w io.Writer) error {

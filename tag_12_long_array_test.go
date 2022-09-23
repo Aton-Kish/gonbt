@@ -34,7 +34,7 @@ var longArrayTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag:  NewLongArrayTag("LongArray", LongArrayPayload{0, 1, 2, 3}),
+		tag:  NewLongArrayTag(NewTagName("LongArray"), NewLongArrayPayload(0, 1, 2, 3)),
 		raw: []byte{
 			// Type: LongArray(=12)
 			0x0C,
@@ -56,17 +56,17 @@ var longArrayTagCases = []struct {
 func TestNewLongArrayTag(t *testing.T) {
 	cases := []struct {
 		name     string
-		tagName  TagName
-		payload  LongArrayPayload
+		tagName  *TagName
+		payload  *LongArrayPayload
 		expected Tag
 	}{
 		{
 			name:    "positive case",
-			tagName: "LongArray",
-			payload: LongArrayPayload{0, 1, 2, 3},
+			tagName: NewTagName("LongArray"),
+			payload: NewLongArrayPayload(0, 1, 2, 3),
 			expected: &LongArrayTag{
-				tagName: "LongArray",
-				payload: LongArrayPayload{0, 1, 2, 3},
+				tagName: NewTagName("LongArray"),
+				payload: NewLongArrayPayload(0, 1, 2, 3),
 			},
 		},
 	}

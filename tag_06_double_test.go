@@ -35,7 +35,7 @@ var doubleTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag:  NewDoubleTag("Double", 0.123456789),
+		tag:  NewDoubleTag(NewTagName("Double"), NewDoublePayload(0.123456789)),
 		raw: []byte{
 			// Type: Double(=6)
 			0x06,
@@ -52,17 +52,17 @@ var doubleTagCases = []struct {
 func TestNewDoubleTag(t *testing.T) {
 	cases := []struct {
 		name     string
-		tagName  TagName
-		payload  DoublePayload
+		tagName  *TagName
+		payload  *DoublePayload
 		expected Tag
 	}{
 		{
 			name:    "positive case",
-			tagName: "Double",
-			payload: 0.123456789,
+			tagName: NewTagName("Double"),
+			payload: NewDoublePayload(0.123456789),
 			expected: &DoubleTag{
-				tagName: "Double",
-				payload: 0.123456789,
+				tagName: NewTagName("Double"),
+				payload: NewDoublePayload(0.123456789),
 			},
 		},
 	}

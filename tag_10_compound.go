@@ -28,11 +28,11 @@ import (
 )
 
 type CompoundTag struct {
-	tagName TagName
-	payload CompoundPayload
+	tagName *TagName
+	payload *CompoundPayload
 }
 
-func NewCompoundTag(tagName TagName, payload CompoundPayload) *CompoundTag {
+func NewCompoundTag(tagName *TagName, payload *CompoundPayload) *CompoundTag {
 	return &CompoundTag{
 		tagName: tagName,
 		payload: payload,
@@ -44,11 +44,11 @@ func (t *CompoundTag) TypeId() TagType {
 }
 
 func (t *CompoundTag) TagName() *TagName {
-	return &t.tagName
+	return t.tagName
 }
 
 func (t *CompoundTag) Payload() Payload {
-	return &t.payload
+	return t.payload
 }
 
 func (t *CompoundTag) Encode(w io.Writer) error {

@@ -114,31 +114,31 @@ type Tag interface {
 func NewTag(typ TagType) (Tag, error) {
 	switch typ {
 	case EndType:
-		return new(EndTag), nil
+		return NewEndTag(), nil
 	case ByteType:
-		return new(ByteTag), nil
+		return NewByteTag(new(TagName), new(BytePayload)), nil
 	case ShortType:
-		return new(ShortTag), nil
+		return NewShortTag(new(TagName), new(ShortPayload)), nil
 	case IntType:
-		return new(IntTag), nil
+		return NewIntTag(new(TagName), new(IntPayload)), nil
 	case LongType:
-		return new(LongTag), nil
+		return NewLongTag(new(TagName), new(LongPayload)), nil
 	case FloatType:
-		return new(FloatTag), nil
+		return NewFloatTag(new(TagName), new(FloatPayload)), nil
 	case DoubleType:
-		return new(DoubleTag), nil
+		return NewDoubleTag(new(TagName), new(DoublePayload)), nil
 	case ByteArrayType:
-		return new(ByteArrayTag), nil
+		return NewByteArrayTag(new(TagName), new(ByteArrayPayload)), nil
 	case StringType:
-		return new(StringTag), nil
+		return NewStringTag(new(TagName), new(StringPayload)), nil
 	case ListType:
-		return new(ListTag), nil
+		return NewListTag(new(TagName), new(ListPayload)), nil
 	case CompoundType:
-		return new(CompoundTag), nil
+		return NewCompoundTag(new(TagName), new(CompoundPayload)), nil
 	case IntArrayType:
-		return new(IntArrayTag), nil
+		return NewIntArrayTag(new(TagName), new(IntArrayPayload)), nil
 	case LongArrayType:
-		return new(LongArrayTag), nil
+		return NewLongArrayTag(new(TagName), new(LongArrayPayload)), nil
 	default:
 		return nil, fmt.Errorf("invalid tag type id %d", typ)
 	}

@@ -28,11 +28,11 @@ import (
 )
 
 type LongTag struct {
-	tagName TagName
-	payload LongPayload
+	tagName *TagName
+	payload *LongPayload
 }
 
-func NewLongTag(tagName TagName, payload LongPayload) *LongTag {
+func NewLongTag(tagName *TagName, payload *LongPayload) *LongTag {
 	return &LongTag{
 		tagName: tagName,
 		payload: payload,
@@ -44,11 +44,11 @@ func (t *LongTag) TypeId() TagType {
 }
 
 func (t *LongTag) TagName() *TagName {
-	return &t.tagName
+	return t.tagName
 }
 
 func (t *LongTag) Payload() Payload {
-	return &t.payload
+	return t.payload
 }
 
 func (t *LongTag) Encode(w io.Writer) error {

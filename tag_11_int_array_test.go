@@ -34,7 +34,7 @@ var intArrayTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag:  NewIntArrayTag("IntArray", IntArrayPayload{0, 1, 2, 3}),
+		tag:  NewIntArrayTag(NewTagName("IntArray"), NewIntArrayPayload(0, 1, 2, 3)),
 		raw: []byte{
 			// Type: IntArray(=11)
 			0x0B,
@@ -56,17 +56,17 @@ var intArrayTagCases = []struct {
 func TestNewIntArrayTag(t *testing.T) {
 	cases := []struct {
 		name     string
-		tagName  TagName
-		payload  IntArrayPayload
+		tagName  *TagName
+		payload  *IntArrayPayload
 		expected Tag
 	}{
 		{
 			name:    "positive case",
-			tagName: "IntArray",
-			payload: IntArrayPayload{0, 1, 2, 3},
+			tagName: NewTagName("IntArray"),
+			payload: NewIntArrayPayload(0, 1, 2, 3),
 			expected: &IntArrayTag{
-				tagName: "IntArray",
-				payload: IntArrayPayload{0, 1, 2, 3},
+				tagName: NewTagName("IntArray"),
+				payload: NewIntArrayPayload(0, 1, 2, 3),
 			},
 		},
 	}

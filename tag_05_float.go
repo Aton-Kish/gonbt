@@ -28,11 +28,11 @@ import (
 )
 
 type FloatTag struct {
-	tagName TagName
-	payload FloatPayload
+	tagName *TagName
+	payload *FloatPayload
 }
 
-func NewFloatTag(tagName TagName, payload FloatPayload) *FloatTag {
+func NewFloatTag(tagName *TagName, payload *FloatPayload) *FloatTag {
 	return &FloatTag{
 		tagName: tagName,
 		payload: payload,
@@ -43,11 +43,11 @@ func (t *FloatTag) TypeId() TagType {
 }
 
 func (t *FloatTag) TagName() *TagName {
-	return &t.tagName
+	return t.tagName
 }
 
 func (t *FloatTag) Payload() Payload {
-	return &t.payload
+	return t.payload
 }
 
 func (t *FloatTag) Encode(w io.Writer) error {

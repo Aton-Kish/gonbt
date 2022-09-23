@@ -35,7 +35,7 @@ var floatTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag:  NewFloatTag("Float", 0.12345678),
+		tag:  NewFloatTag(NewTagName("Float"), NewFloatPayload(0.12345678)),
 		raw: []byte{
 			// Type: Float(=5)
 			0x05,
@@ -52,17 +52,17 @@ var floatTagCases = []struct {
 func TestNewFloatTag(t *testing.T) {
 	cases := []struct {
 		name     string
-		tagName  TagName
-		payload  FloatPayload
+		tagName  *TagName
+		payload  *FloatPayload
 		expected Tag
 	}{
 		{
 			name:    "positive case",
-			tagName: "Float",
-			payload: 0.12345678,
+			tagName: NewTagName("Float"),
+			payload: NewFloatPayload(0.12345678),
 			expected: &FloatTag{
-				tagName: "Float",
-				payload: 0.12345678,
+				tagName: NewTagName("Float"),
+				payload: NewFloatPayload(0.12345678),
 			},
 		},
 	}

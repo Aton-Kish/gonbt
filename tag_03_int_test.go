@@ -35,7 +35,7 @@ var intTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag:  NewIntTag("Int", 123456789),
+		tag:  NewIntTag(NewTagName("Int"), NewIntPayload(123456789)),
 		raw: []byte{
 			// Type: Int(=3)
 			0x03,
@@ -52,17 +52,17 @@ var intTagCases = []struct {
 func TestNewIntTag(t *testing.T) {
 	cases := []struct {
 		name     string
-		tagName  TagName
-		payload  IntPayload
+		tagName  *TagName
+		payload  *IntPayload
 		expected Tag
 	}{
 		{
 			name:    "positive case",
-			tagName: "Int",
-			payload: 123456789,
+			tagName: NewTagName("Int"),
+			payload: NewIntPayload(123456789),
 			expected: &IntTag{
-				tagName: "Int",
-				payload: 123456789,
+				tagName: NewTagName("Int"),
+				payload: NewIntPayload(123456789),
 			},
 		},
 	}

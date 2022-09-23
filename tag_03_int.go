@@ -28,11 +28,11 @@ import (
 )
 
 type IntTag struct {
-	tagName TagName
-	payload IntPayload
+	tagName *TagName
+	payload *IntPayload
 }
 
-func NewIntTag(tagName TagName, payload IntPayload) *IntTag {
+func NewIntTag(tagName *TagName, payload *IntPayload) *IntTag {
 	return &IntTag{
 		tagName: tagName,
 		payload: payload,
@@ -44,11 +44,11 @@ func (t *IntTag) TypeId() TagType {
 }
 
 func (t *IntTag) TagName() *TagName {
-	return &t.tagName
+	return t.tagName
 }
 
 func (t *IntTag) Payload() Payload {
-	return &t.payload
+	return t.payload
 }
 
 func (t *IntTag) Encode(w io.Writer) error {

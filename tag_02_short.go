@@ -28,11 +28,11 @@ import (
 )
 
 type ShortTag struct {
-	tagName TagName
-	payload ShortPayload
+	tagName *TagName
+	payload *ShortPayload
 }
 
-func NewShortTag(tagName TagName, payload ShortPayload) *ShortTag {
+func NewShortTag(tagName *TagName, payload *ShortPayload) *ShortTag {
 	return &ShortTag{
 		tagName: tagName,
 		payload: payload,
@@ -44,11 +44,11 @@ func (t *ShortTag) TypeId() TagType {
 }
 
 func (t *ShortTag) TagName() *TagName {
-	return &t.tagName
+	return t.tagName
 }
 
 func (t *ShortTag) Payload() Payload {
-	return &t.payload
+	return t.payload
 }
 
 func (t *ShortTag) Encode(w io.Writer) error {

@@ -35,7 +35,7 @@ var byteTagCases = []struct {
 }{
 	{
 		name: "positive case",
-		tag:  NewByteTag("Byte", 123),
+		tag:  NewByteTag(NewTagName("Byte"), NewBytePayload(123)),
 		raw: []byte{
 			// Type: Byte(=1)
 			0x01,
@@ -52,17 +52,17 @@ var byteTagCases = []struct {
 func TestNewByteTag(t *testing.T) {
 	cases := []struct {
 		name     string
-		tagName  TagName
-		payload  BytePayload
+		tagName  *TagName
+		payload  *BytePayload
 		expected Tag
 	}{
 		{
 			name:    "positive case",
-			tagName: "Byte",
-			payload: 123,
+			tagName: NewTagName("Byte"),
+			payload: NewBytePayload(123),
 			expected: &ByteTag{
-				tagName: "Byte",
-				payload: 123,
+				tagName: NewTagName("Byte"),
+				payload: NewBytePayload(123),
 			},
 		},
 	}
