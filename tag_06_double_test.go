@@ -24,47 +24,57 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/Aton-Kish/gonbt/pointer"
 	"github.com/stretchr/testify/assert"
 )
 
-var doubleTagCases = []struct {
-	name string
-	tag  Tag
-	raw  []byte
-}{
+var doubleTagCases = []tagTestCase[float64, *DoublePayload]{
 	{
-		name: "positive case",
-		tag:  NewDoubleTag(NewTagName("Double"), NewDoublePayload(0.123456789)),
-		raw: []byte{
-			// Type: Double(=6)
-			0x06,
-			// Name Length: 6
-			0x00, 0x06,
-			// Name: "Double"
-			0x44, 0x6F, 0x75, 0x62, 0x6C, 0x65,
-			// Payload: 0.123456789d
-			0x3F, 0xBF, 0x9A, 0xDD, 0x37, 0x39, 0x63, 0x5F,
+		name: "positive case: DoubleTag",
+		data: 0.123456789,
+		nbt: nbtTestCase[*DoublePayload]{
+			tagType: DoubleType,
+			tagName: "Double",
+			payload: NewDoublePayload(0.123456789),
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: Double(=6)
+				0x06,
+			},
+			tagName: []byte{
+				// Name Length: 6
+				0x00, 0x06,
+				// Name: "Double"
+				0x44, 0x6F, 0x75, 0x62, 0x6C, 0x65,
+			},
+			payload: []byte{
+				// Payload: 0.123456789d
+				0x3F, 0xBF, 0x9A, 0xDD, 0x37, 0x39, 0x63, 0x5F,
+			},
 		},
 	},
 }
 
 func TestNewDoubleTag(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name     string
 		tagName  *TagName
 		payload  *DoublePayload
-		expected Tag
-	}{
-		{
-			name:    "positive case",
-			tagName: NewTagName("Double"),
-			payload: NewDoublePayload(0.123456789),
+		expected *DoubleTag
+	}
+
+	cases := []Case{}
+
+	for _, c := range doubleTagCases {
+		cases = append(cases, Case{
+			name:    c.name,
+			tagName: &c.nbt.tagName,
+			payload: c.nbt.payload,
 			expected: &DoubleTag{
-				tagName: NewTagName("Double"),
-				payload: NewDoublePayload(0.123456789),
+				tagName: &c.nbt.tagName,
+				payload: c.nbt.payload,
 			},
-		},
+		})
 	}
 
 	for _, tt := range cases {
@@ -85,7 +95,7 @@ func TestDoubleTag_TypeId(t *testing.T) {
 func TestDoubleTag_Encode(t *testing.T) {
 	type Case struct {
 		name        string
-		tag         Tag
+		tag         *DoubleTag
 		expected    []byte
 		expectedErr error
 	}
@@ -95,8 +105,8 @@ func TestDoubleTag_Encode(t *testing.T) {
 	for _, c := range doubleTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			tag:         c.tag,
-			expected:    c.raw,
+			tag:         NewDoubleTag(&c.nbt.tagName, c.nbt.payload),
+			expected:    append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
 			expectedErr: nil,
 		})
 	}
@@ -120,7 +130,7 @@ func TestDoubleTag_Decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
-		expected    Tag
+		expected    *DoubleTag
 		expectedErr error
 	}
 
@@ -129,8 +139,8 @@ func TestDoubleTag_Decode(t *testing.T) {
 	for _, c := range doubleTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			raw:         c.raw,
-			expected:    c.tag,
+			raw:         append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
+			expected:    NewDoubleTag(&c.nbt.tagName, c.nbt.payload),
 			expectedErr: nil,
 		})
 	}
@@ -152,39 +162,26 @@ func TestDoubleTag_Decode(t *testing.T) {
 	}
 }
 
-var doublePayloadCases = []struct {
-	name    string
-	payload Payload
-	raw     []byte
-}{
-	{
-		name:    "positive case",
-		payload: NewDoublePayload(0.123456789),
-		raw: []byte{
-			// Payload: 0.123456789d
-			0x3F, 0xBF, 0x9A, 0xDD, 0x37, 0x39, 0x63, 0x5F,
-		},
-	},
-}
-
 func TestNewDoublePayload(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name     string
 		value    float64
-		expected Payload
-	}{
-		{
-			name:     "positive case",
-			value:    0.123456789,
-			expected: pointer.Pointer(DoublePayload(0.123456789)),
-		},
+		expected *DoublePayload
+	}
+
+	cases := []Case{}
+
+	for _, c := range doubleTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			value:    c.data,
+			expected: c.nbt.payload,
+		})
 	}
 
 	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := NewDoublePayload(tt.value)
-			assert.Equal(t, tt.expected, actual)
-		})
+		actual := NewDoublePayload(tt.value)
+		assert.Equal(t, tt.expected, actual)
 	}
 }
 
@@ -198,18 +195,18 @@ func TestDoublePayload_TypeId(t *testing.T) {
 func TestDoublePayload_Encode(t *testing.T) {
 	type Case struct {
 		name        string
-		payload     Payload
+		payload     *DoublePayload
 		expected    []byte
 		expectedErr error
 	}
 
 	cases := []Case{}
 
-	for _, c := range doublePayloadCases {
+	for _, c := range doubleTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			payload:     c.payload,
-			expected:    c.raw,
+			payload:     c.nbt.payload,
+			expected:    c.raw.payload,
 			expectedErr: nil,
 		})
 	}
@@ -233,17 +230,17 @@ func TestDoublePayload_Decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
-		expected    Payload
+		expected    *DoublePayload
 		expectedErr error
 	}
 
 	cases := []Case{}
 
-	for _, c := range doublePayloadCases {
+	for _, c := range doubleTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			raw:         c.raw,
-			expected:    c.payload,
+			raw:         c.raw.payload,
+			expected:    c.nbt.payload,
 			expectedErr: nil,
 		})
 	}

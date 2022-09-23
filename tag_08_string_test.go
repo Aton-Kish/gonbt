@@ -24,49 +24,169 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/Aton-Kish/gonbt/pointer"
 	"github.com/stretchr/testify/assert"
 )
 
-var stringTagCases = []struct {
-	name string
-	tag  Tag
-	raw  []byte
-}{
+var stringTagCases = []tagTestCase[string, *StringPayload]{
 	{
-		name: "positive case",
-		tag:  NewStringTag(NewTagName("String"), NewStringPayload("Hello World")),
-		raw: []byte{
-			// Type: String(=8)
-			0x08,
-			// Name Length: 6
-			0x00, 0x06,
-			// Name: "String"
-			0x53, 0x74, 0x72, 0x69, 0x6E, 0x67,
-			// Payload Length: 11
-			0x00, 0x0B,
-			// Payload: "Hello World"
-			0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64,
+		name: "positive case: StringTag - \"Hello World\"",
+		data: "Hello World",
+		nbt: nbtTestCase[*StringPayload]{
+			tagType: StringType,
+			tagName: "String",
+			payload: NewStringPayload("Hello World"),
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: String(=8)
+				0x08,
+			},
+			tagName: []byte{
+				// Name Length: 6
+				0x00, 0x06,
+				// Name: "String"
+				0x53, 0x74, 0x72, 0x69, 0x6E, 0x67,
+			},
+			payload: []byte{
+				// Payload Length: 11
+				0x00, 0x0B,
+				// Payload: "Hello World"
+				0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64,
+			},
+		},
+	},
+	{
+		name: "positive case: StringTag - \"Test\"",
+		data: "Test",
+		nbt: nbtTestCase[*StringPayload]{
+			tagType: StringType,
+			tagName: "String",
+			payload: NewStringPayload("Test"),
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: String(=8)
+				0x08,
+			},
+			tagName: []byte{
+				// Name Length: 6
+				0x00, 0x06,
+				// Name: "String"
+				0x53, 0x74, 0x72, 0x69, 0x6E, 0x67,
+			},
+			payload: []byte{
+				// Payload Length: 4
+				0x00, 0x04,
+				// Payload: "Test"
+				0x54, 0x65, 0x73, 0x74,
+			},
+		},
+	},
+	{
+		name: "positive case: StringTag - \"minecraft:the_end\"",
+		data: "minecraft:the_end",
+		nbt: nbtTestCase[*StringPayload]{
+			tagType: StringType,
+			tagName: "String",
+			payload: NewStringPayload("minecraft:the_end"),
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: String(=8)
+				0x08,
+			},
+			tagName: []byte{
+				// Name Length: 6
+				0x00, 0x06,
+				// Name: "String"
+				0x53, 0x74, 0x72, 0x69, 0x6E, 0x67,
+			},
+			payload: []byte{
+				// Payload Length: 17
+				0x00, 0x11,
+				// Payload: "minecraft:the_end"
+				0x6D, 0x69, 0x6E, 0x65, 0x63, 0x72, 0x61, 0x66, 0x74, 0x3A,
+				0x74, 0x68, 0x65, 0x5F, 0x65, 0x6E, 0x64,
+			},
+		},
+	},
+	{
+		name: "positive case: StringTag - \"\"",
+		data: "",
+		nbt: nbtTestCase[*StringPayload]{
+			tagType: StringType,
+			tagName: "String",
+			payload: NewStringPayload(""),
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: String(=8)
+				0x08,
+			},
+			tagName: []byte{
+				// Name Length: 6
+				0x00, 0x06,
+				// Name: "String"
+				0x53, 0x74, 0x72, 0x69, 0x6E, 0x67,
+			},
+			payload: []byte{
+				// Payload Length: 0
+				0x00, 0x00,
+				// Payload: ""
+			},
+		},
+	},
+	{
+		name: "positive case: StringTag - \"マインクラフト\"",
+		data: "マインクラフト",
+		nbt: nbtTestCase[*StringPayload]{
+			tagType: StringType,
+			tagName: "String",
+			payload: NewStringPayload("マインクラフト"),
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: String(=8)
+				0x08,
+			},
+			tagName: []byte{
+				// Name Length: 6
+				0x00, 0x06,
+				// Name: "String"
+				0x53, 0x74, 0x72, 0x69, 0x6E, 0x67,
+			},
+			payload: []byte{
+				// Payload Length: 21
+				0x00, 0x15,
+				// Payload: "マインクラフト"
+				0xE3, 0x83, 0x9E, 0xE3, 0x82, 0xA4, 0xE3, 0x83, 0xB3,
+				0xE3, 0x82, 0xAF, 0xE3, 0x83, 0xA9, 0xE3, 0x83, 0x95,
+				0xE3, 0x83, 0x88,
+			},
 		},
 	},
 }
 
 func TestNewStringTag(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name     string
 		tagName  *TagName
 		payload  *StringPayload
-		expected Tag
-	}{
-		{
-			name:    "positive case",
-			tagName: NewTagName("String"),
-			payload: NewStringPayload("Hello World"),
+		expected *StringTag
+	}
+
+	cases := []Case{}
+
+	for _, c := range stringTagCases {
+		cases = append(cases, Case{
+			name:    c.name,
+			tagName: &c.nbt.tagName,
+			payload: c.nbt.payload,
 			expected: &StringTag{
-				tagName: NewTagName("String"),
-				payload: NewStringPayload("Hello World"),
+				tagName: &c.nbt.tagName,
+				payload: c.nbt.payload,
 			},
-		},
+		})
 	}
 
 	for _, tt := range cases {
@@ -87,7 +207,7 @@ func TestStringTag_TypeId(t *testing.T) {
 func TestStringTag_Encode(t *testing.T) {
 	type Case struct {
 		name        string
-		tag         Tag
+		tag         *StringTag
 		expected    []byte
 		expectedErr error
 	}
@@ -97,8 +217,8 @@ func TestStringTag_Encode(t *testing.T) {
 	for _, c := range stringTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			tag:         c.tag,
-			expected:    c.raw,
+			tag:         NewStringTag(&c.nbt.tagName, c.nbt.payload),
+			expected:    append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
 			expectedErr: nil,
 		})
 	}
@@ -122,7 +242,7 @@ func TestStringTag_Decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
-		expected    Tag
+		expected    *StringTag
 		expectedErr error
 	}
 
@@ -131,8 +251,8 @@ func TestStringTag_Decode(t *testing.T) {
 	for _, c := range stringTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			raw:         c.raw,
-			expected:    c.tag,
+			raw:         append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
+			expected:    NewStringTag(&c.nbt.tagName, c.nbt.payload),
 			expectedErr: nil,
 		})
 	}
@@ -154,88 +274,26 @@ func TestStringTag_Decode(t *testing.T) {
 	}
 }
 
-var stringPayloadCases = []struct {
-	name    string
-	payload Payload
-	raw     []byte
-}{
-	{
-		name:    "positive case: \"Test\"",
-		payload: NewStringPayload("Test"),
-		raw: []byte{
-			// Payload Length: 4
-			0x00, 0x04,
-			// Payload: "Test"
-			0x54, 0x65, 0x73, 0x74,
-		},
-	},
-	{
-		name:    "positive case: \"minecraft:the_end\"",
-		payload: NewStringPayload("minecraft:the_end"),
-		raw: []byte{
-			// Payload Length: 17
-			0x00, 0x11,
-			// Payload: "minecraft:the_end"
-			0x6D, 0x69, 0x6E, 0x65, 0x63, 0x72, 0x61, 0x66, 0x74, 0x3A,
-			0x74, 0x68, 0x65, 0x5F, 0x65, 0x6E, 0x64,
-		},
-	},
-	{
-		name:    "positive case: \"\"",
-		payload: NewStringPayload(""),
-		raw: []byte{
-			// Payload Length: 0
-			0x00, 0x00,
-			// Payload: ""
-		},
-	},
-	{
-		name:    "positive case: \"マインクラフト\"",
-		payload: NewStringPayload("マインクラフト"),
-		raw: []byte{
-			// Payload Length: 21
-			0x00, 0x15,
-			// Payload: "マインクラフト"
-			0xE3, 0x83, 0x9E, 0xE3, 0x82, 0xA4, 0xE3, 0x83, 0xB3,
-			0xE3, 0x82, 0xAF, 0xE3, 0x83, 0xA9, 0xE3, 0x83, 0x95,
-			0xE3, 0x83, 0x88,
-		},
-	},
-}
-
 func TestNewStringPayload(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name     string
 		value    string
-		expected Payload
-	}{
-		{
-			name:     "positive case: \"Test\"",
-			value:    "Test",
-			expected: pointer.Pointer(StringPayload("Test")),
-		},
-		{
-			name:     "positive case: \"minecraft:the_end\"",
-			value:    "minecraft:the_end",
-			expected: pointer.Pointer(StringPayload("minecraft:the_end")),
-		},
-		{
-			name:     "positive case: \"\"",
-			value:    "",
-			expected: pointer.Pointer(StringPayload("")),
-		},
-		{
-			name:     "positive case: \"マインクラフト\"",
-			value:    "マインクラフト",
-			expected: pointer.Pointer(StringPayload("マインクラフト")),
-		},
+		expected *StringPayload
+	}
+
+	cases := []Case{}
+
+	for _, c := range stringTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			value:    c.data,
+			expected: c.nbt.payload,
+		})
 	}
 
 	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := NewStringPayload(tt.value)
-			assert.Equal(t, tt.expected, actual)
-		})
+		actual := NewStringPayload(tt.value)
+		assert.Equal(t, tt.expected, actual)
 	}
 }
 
@@ -249,18 +307,18 @@ func TestStringPayload_TypeId(t *testing.T) {
 func TestStringPayload_Encode(t *testing.T) {
 	type Case struct {
 		name        string
-		payload     Payload
+		payload     *StringPayload
 		expected    []byte
 		expectedErr error
 	}
 
 	cases := []Case{}
 
-	for _, c := range stringPayloadCases {
+	for _, c := range stringTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			payload:     c.payload,
-			expected:    c.raw,
+			payload:     c.nbt.payload,
+			expected:    c.raw.payload,
 			expectedErr: nil,
 		})
 	}
@@ -284,17 +342,17 @@ func TestStringPayload_Decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
-		expected    Payload
+		expected    *StringPayload
 		expectedErr error
 	}
 
 	cases := []Case{}
 
-	for _, c := range stringPayloadCases {
+	for _, c := range stringTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			raw:         c.raw,
-			expected:    c.payload,
+			raw:         c.raw.payload,
+			expected:    c.nbt.payload,
 			expectedErr: nil,
 		})
 	}

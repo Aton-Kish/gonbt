@@ -27,30 +27,34 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var endTagCases = []struct {
-	name string
-	tag  Tag
-	raw  []byte
-}{
+var endTagCases = []tagTestCase[any, Payload]{
 	{
-		name: "positive case",
-		tag:  NewEndTag(),
-		raw: []byte{
-			// Type: End(=0)
-			0x00,
+		name: "positive case: EndTag",
+		nbt: nbtTestCase[Payload]{
+			tagType: EndType,
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: End(=0)
+				0x00,
+			},
 		},
 	},
 }
 
 func TestNewEndTag(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name     string
-		expected Tag
-	}{
-		{
-			name:     "positive case",
+		expected *EndTag
+	}
+
+	cases := []Case{}
+
+	for _, c := range byteTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
 			expected: &EndTag{},
-		},
+		})
 	}
 
 	for _, tt := range cases {
@@ -71,7 +75,7 @@ func TestEndTag_TypeId(t *testing.T) {
 func TestEndTag_Encode(t *testing.T) {
 	type Case struct {
 		name        string
-		tag         Tag
+		tag         *EndTag
 		expected    []byte
 		expectedErr error
 	}
@@ -81,8 +85,8 @@ func TestEndTag_Encode(t *testing.T) {
 	for _, c := range endTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			tag:         c.tag,
-			expected:    c.raw,
+			tag:         NewEndTag(),
+			expected:    c.raw.tagType,
 			expectedErr: nil,
 		})
 	}
@@ -115,8 +119,8 @@ func TestEndTag_Decode(t *testing.T) {
 	for _, c := range endTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			raw:         c.raw,
-			expected:    c.tag,
+			raw:         c.raw.tagType,
+			expected:    NewEndTag(),
 			expectedErr: nil,
 		})
 	}

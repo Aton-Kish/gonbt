@@ -29,6 +29,25 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type tagTestCase[T any, U Payload] struct {
+	name string
+	data T
+	nbt  nbtTestCase[U]
+	raw  rawTestCase
+}
+
+type nbtTestCase[T Payload] struct {
+	tagType TagType
+	tagName TagName
+	payload T
+}
+
+type rawTestCase struct {
+	tagType []byte
+	tagName []byte
+	payload []byte
+}
+
 var tagTypeCases = []struct {
 	name    string
 	tagType TagType

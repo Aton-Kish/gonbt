@@ -27,48 +27,85 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var longArrayTagCases = []struct {
-	name string
-	tag  Tag
-	raw  []byte
-}{
+var longArrayTagCases = []tagTestCase[[]int64, *LongArrayPayload]{
 	{
-		name: "positive case",
-		tag:  NewLongArrayTag(NewTagName("LongArray"), NewLongArrayPayload(0, 1, 2, 3)),
-		raw: []byte{
-			// Type: LongArray(=12)
-			0x0C,
-			// Name Length: 9
-			0x00, 0x09,
-			// Name: "LongArray"
-			0x4C, 0x6F, 0x6E, 0x67, 0x41, 0x72, 0x72, 0x61, 0x79,
-			// Payload Length: 4
-			0x00, 0x00, 0x00, 0x04,
-			// Payload: [L; 0L, 1L, 2L, 3L]
-			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
-			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02,
-			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,
+		name: "positive case: LongArrayTag - has items",
+		data: []int64{0, 1, 2, 3},
+		nbt: nbtTestCase[*LongArrayPayload]{
+			tagType: LongArrayType,
+			tagName: "LongArray",
+			payload: NewLongArrayPayload(0, 1, 2, 3),
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: LongArray(=12)
+				0x0C,
+			},
+			tagName: []byte{
+				// Name Length: 9
+				0x00, 0x09,
+				// Name: "LongArray"
+				0x4C, 0x6F, 0x6E, 0x67, 0x41, 0x72, 0x72, 0x61, 0x79,
+			},
+			payload: []byte{
+				// Payload Length: 4
+				0x00, 0x00, 0x00, 0x04,
+				// Payload: [L; 0L, 1L, 2L, 3L]
+				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
+				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02,
+				0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,
+			},
+		},
+	},
+	{
+		name: "positive case: LongArrayTag - empty",
+		data: []int64{},
+		nbt: nbtTestCase[*LongArrayPayload]{
+			tagType: LongArrayType,
+			tagName: "LongArray",
+			payload: NewLongArrayPayload(),
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: LongArray(=12)
+				0x0C,
+			},
+			tagName: []byte{
+				// Name Length: 9
+				0x00, 0x09,
+				// Name: "LongArray"
+				0x4C, 0x6F, 0x6E, 0x67, 0x41, 0x72, 0x72, 0x61, 0x79,
+			},
+			payload: []byte{
+				// Payload Length: 0
+				0x00, 0x00, 0x00, 0x00,
+				// Payload: [L; ]
+			},
 		},
 	},
 }
 
 func TestNewLongArrayTag(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name     string
 		tagName  *TagName
 		payload  *LongArrayPayload
-		expected Tag
-	}{
-		{
-			name:    "positive case",
-			tagName: NewTagName("LongArray"),
-			payload: NewLongArrayPayload(0, 1, 2, 3),
+		expected *LongArrayTag
+	}
+
+	cases := []Case{}
+
+	for _, c := range longArrayTagCases {
+		cases = append(cases, Case{
+			name:    c.name,
+			tagName: &c.nbt.tagName,
+			payload: c.nbt.payload,
 			expected: &LongArrayTag{
-				tagName: NewTagName("LongArray"),
-				payload: NewLongArrayPayload(0, 1, 2, 3),
+				tagName: &c.nbt.tagName,
+				payload: c.nbt.payload,
 			},
-		},
+		})
 	}
 
 	for _, tt := range cases {
@@ -89,7 +126,7 @@ func TestLongArrayTag_TypeId(t *testing.T) {
 func TestLongArrayTag_Encode(t *testing.T) {
 	type Case struct {
 		name        string
-		tag         Tag
+		tag         *LongArrayTag
 		expected    []byte
 		expectedErr error
 	}
@@ -99,8 +136,8 @@ func TestLongArrayTag_Encode(t *testing.T) {
 	for _, c := range longArrayTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			tag:         c.tag,
-			expected:    c.raw,
+			tag:         NewLongArrayTag(&c.nbt.tagName, c.nbt.payload),
+			expected:    append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
 			expectedErr: nil,
 		})
 	}
@@ -124,7 +161,7 @@ func TestLongArrayTag_Decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
-		expected    Tag
+		expected    *LongArrayTag
 		expectedErr error
 	}
 
@@ -133,8 +170,8 @@ func TestLongArrayTag_Decode(t *testing.T) {
 	for _, c := range longArrayTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			raw:         c.raw,
-			expected:    c.tag,
+			raw:         append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
+			expected:    NewLongArrayTag(&c.nbt.tagName, c.nbt.payload),
 			expectedErr: nil,
 		})
 	}
@@ -156,58 +193,26 @@ func TestLongArrayTag_Decode(t *testing.T) {
 	}
 }
 
-var longArrayPayloadCases = []struct {
-	name    string
-	payload Payload
-	raw     []byte
-}{
-	{
-		name:    "positive case: has items",
-		payload: NewLongArrayPayload(0, 1, 2, 3),
-		raw: []byte{
-			// Payload Length: 4
-			0x00, 0x00, 0x00, 0x04,
-			// Payload: [L; 0L, 1L, 2L, 3L]
-			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
-			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02,
-			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,
-		},
-	},
-	{
-		name:    "positive case: empty",
-		payload: NewLongArrayPayload(),
-		raw: []byte{
-			// Payload Length: 0
-			0x00, 0x00, 0x00, 0x00,
-			// Payload: [L; ]
-		},
-	},
-}
-
 func TestNewLongArrayPayload(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name     string
 		values   []int64
-		expected Payload
-	}{
-		{
-			name:     "positive case: has items",
-			values:   []int64{0, 1, 2, 3},
-			expected: &LongArrayPayload{0, 1, 2, 3},
-		},
-		{
-			name:     "positive case: empty",
-			values:   []int64{},
-			expected: &LongArrayPayload{},
-		},
+		expected *LongArrayPayload
+	}
+
+	cases := []Case{}
+
+	for _, c := range longArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			values:   c.data,
+			expected: c.nbt.payload,
+		})
 	}
 
 	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := NewLongArrayPayload(tt.values...)
-			assert.Equal(t, tt.expected, actual)
-		})
+		actual := NewLongArrayPayload(tt.values...)
+		assert.Equal(t, tt.expected, actual)
 	}
 }
 
@@ -221,18 +226,18 @@ func TestLongArrayPayload_TypeId(t *testing.T) {
 func TestLongArrayPayload_Encode(t *testing.T) {
 	type Case struct {
 		name        string
-		payload     Payload
+		payload     *LongArrayPayload
 		expected    []byte
 		expectedErr error
 	}
 
 	cases := []Case{}
 
-	for _, c := range longArrayPayloadCases {
+	for _, c := range longArrayTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			payload:     c.payload,
-			expected:    c.raw,
+			payload:     c.nbt.payload,
+			expected:    c.raw.payload,
 			expectedErr: nil,
 		})
 	}
@@ -256,17 +261,17 @@ func TestLongArrayPayload_Decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
-		expected    Payload
+		expected    *LongArrayPayload
 		expectedErr error
 	}
 
 	cases := []Case{}
 
-	for _, c := range longArrayPayloadCases {
+	for _, c := range longArrayTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			raw:         c.raw,
-			expected:    c.payload,
+			raw:         c.raw.payload,
+			expected:    c.nbt.payload,
 			expectedErr: nil,
 		})
 	}

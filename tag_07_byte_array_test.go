@@ -27,45 +27,82 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var byteArrayTagCases = []struct {
-	name string
-	tag  Tag
-	raw  []byte
-}{
+var byteArrayTagCases = []tagTestCase[[]int8, *ByteArrayPayload]{
 	{
-		name: "positive case",
-		tag:  NewByteArrayTag(NewTagName("ByteArray"), NewByteArrayPayload(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)),
-		raw: []byte{
-			// Type: ByteArray(=7)
-			0x07,
-			// Name Length: 9
-			0x00, 0x09,
-			// Name: "ByteArray"
-			0x42, 0x79, 0x74, 0x65, 0x41, 0x72, 0x72, 0x61, 0x79,
-			// Payload Length: 10
-			0x00, 0x00, 0x00, 0x0A,
-			// Payload: [B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]
-			0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
+		name: "positive case: ByteArrayTag - has items",
+		data: []int8{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+		nbt: nbtTestCase[*ByteArrayPayload]{
+			tagType: ByteArrayType,
+			tagName: "ByteArray",
+			payload: NewByteArrayPayload(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: ByteArray(=7)
+				0x07,
+			},
+			tagName: []byte{
+				// Name Length: 9
+				0x00, 0x09,
+				// Name: "ByteArray"
+				0x42, 0x79, 0x74, 0x65, 0x41, 0x72, 0x72, 0x61, 0x79,
+			},
+			payload: []byte{
+				// Payload Length: 10
+				0x00, 0x00, 0x00, 0x0A,
+				// Payload: [B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]
+				0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
+			},
+		},
+	},
+	{
+		name: "positive case: ByteArrayTag - empty",
+		data: []int8{},
+		nbt: nbtTestCase[*ByteArrayPayload]{
+			tagType: ByteArrayType,
+			tagName: "ByteArray",
+			payload: NewByteArrayPayload(),
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: ByteArray(=7)
+				0x07,
+			},
+			tagName: []byte{
+				// Name Length: 9
+				0x00, 0x09,
+				// Name: "ByteArray"
+				0x42, 0x79, 0x74, 0x65, 0x41, 0x72, 0x72, 0x61, 0x79,
+			},
+			payload: []byte{
+				// Payload Length: 0
+				0x00, 0x00, 0x00, 0x00,
+				// Payload: [B; ]
+			},
 		},
 	},
 }
 
 func TestNewByteArrayTag(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name     string
 		tagName  *TagName
 		payload  *ByteArrayPayload
-		expected Tag
-	}{
-		{
-			name:    "positive case",
-			tagName: NewTagName("ByteArray"),
-			payload: NewByteArrayPayload(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+		expected *ByteArrayTag
+	}
+
+	cases := []Case{}
+
+	for _, c := range byteArrayTagCases {
+		cases = append(cases, Case{
+			name:    c.name,
+			tagName: &c.nbt.tagName,
+			payload: c.nbt.payload,
 			expected: &ByteArrayTag{
-				tagName: NewTagName("ByteArray"),
-				payload: NewByteArrayPayload(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+				tagName: &c.nbt.tagName,
+				payload: c.nbt.payload,
 			},
-		},
+		})
 	}
 
 	for _, tt := range cases {
@@ -86,7 +123,7 @@ func TestByteArrayTag_TypeId(t *testing.T) {
 func TestByteArrayTag_Encode(t *testing.T) {
 	type Case struct {
 		name        string
-		tag         Tag
+		tag         *ByteArrayTag
 		expected    []byte
 		expectedErr error
 	}
@@ -96,8 +133,8 @@ func TestByteArrayTag_Encode(t *testing.T) {
 	for _, c := range byteArrayTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			tag:         c.tag,
-			expected:    c.raw,
+			tag:         NewByteArrayTag(&c.nbt.tagName, c.nbt.payload),
+			expected:    append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
 			expectedErr: nil,
 		})
 	}
@@ -121,7 +158,7 @@ func TestByteArrayTag_Decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
-		expected    Tag
+		expected    *ByteArrayTag
 		expectedErr error
 	}
 
@@ -130,8 +167,8 @@ func TestByteArrayTag_Decode(t *testing.T) {
 	for _, c := range byteArrayTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			raw:         c.raw,
-			expected:    c.tag,
+			raw:         append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
+			expected:    NewByteArrayTag(&c.nbt.tagName, c.nbt.payload),
 			expectedErr: nil,
 		})
 	}
@@ -153,55 +190,26 @@ func TestByteArrayTag_Decode(t *testing.T) {
 	}
 }
 
-var byteArrayPayloadCases = []struct {
-	name    string
-	payload Payload
-	raw     []byte
-}{
-	{
-		name:    "positive case: has items",
-		payload: NewByteArrayPayload(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
-		raw: []byte{
-			// Payload Length: 10
-			0x00, 0x00, 0x00, 0x0A,
-			// Payload: [B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]
-			0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
-		},
-	},
-	{
-		name:    "positive case: empty",
-		payload: NewByteArrayPayload(),
-		raw: []byte{
-			// Payload Length: 0
-			0x00, 0x00, 0x00, 0x00,
-			// Payload: [B; ]
-		},
-	},
-}
-
 func TestNewByteArrayPayload(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name     string
 		values   []int8
-		expected Payload
-	}{
-		{
-			name:     "positive case: has items",
-			values:   []int8{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
-			expected: &ByteArrayPayload{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
-		},
-		{
-			name:     "positive case: empty",
-			values:   []int8{},
-			expected: &ByteArrayPayload{},
-		},
+		expected *ByteArrayPayload
+	}
+
+	cases := []Case{}
+
+	for _, c := range byteArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			values:   c.data,
+			expected: c.nbt.payload,
+		})
 	}
 
 	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := NewByteArrayPayload(tt.values...)
-			assert.Equal(t, tt.expected, actual)
-		})
+		actual := NewByteArrayPayload(tt.values...)
+		assert.Equal(t, tt.expected, actual)
 	}
 }
 
@@ -215,18 +223,18 @@ func TestByteArrayPayload_TypeId(t *testing.T) {
 func TestByteArrayPayload_Encode(t *testing.T) {
 	type Case struct {
 		name        string
-		payload     Payload
+		payload     *ByteArrayPayload
 		expected    []byte
 		expectedErr error
 	}
 
 	cases := []Case{}
 
-	for _, c := range byteArrayPayloadCases {
+	for _, c := range byteArrayTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			payload:     c.payload,
-			expected:    c.raw,
+			payload:     c.nbt.payload,
+			expected:    c.raw.payload,
 			expectedErr: nil,
 		})
 	}
@@ -250,17 +258,17 @@ func TestByteArrayPayload_Decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
-		expected    Payload
+		expected    *ByteArrayPayload
 		expectedErr error
 	}
 
 	cases := []Case{}
 
-	for _, c := range byteArrayPayloadCases {
+	for _, c := range byteArrayTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			raw:         c.raw,
-			expected:    c.payload,
+			raw:         c.raw.payload,
+			expected:    c.nbt.payload,
 			expectedErr: nil,
 		})
 	}

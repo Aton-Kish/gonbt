@@ -27,48 +27,85 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var intArrayTagCases = []struct {
-	name string
-	tag  Tag
-	raw  []byte
-}{
+var intArrayTagCases = []tagTestCase[[]int32, *IntArrayPayload]{
 	{
-		name: "positive case",
-		tag:  NewIntArrayTag(NewTagName("IntArray"), NewIntArrayPayload(0, 1, 2, 3)),
-		raw: []byte{
-			// Type: IntArray(=11)
-			0x0B,
-			// Name Length: 8
-			0x00, 0x08,
-			// Name: "IntArray"
-			0x49, 0x6E, 0x74, 0x41, 0x72, 0x72, 0x61, 0x79,
-			// Payload Length: 4
-			0x00, 0x00, 0x00, 0x04,
-			// Payload: [I; 0, 1, 2, 3]
-			0x00, 0x00, 0x00, 0x00,
-			0x00, 0x00, 0x00, 0x01,
-			0x00, 0x00, 0x00, 0x02,
-			0x00, 0x00, 0x00, 0x03,
+		name: "positive case: IntArrayTag - has items",
+		data: []int32{0, 1, 2, 3},
+		nbt: nbtTestCase[*IntArrayPayload]{
+			tagType: IntArrayType,
+			tagName: "IntArray",
+			payload: NewIntArrayPayload(0, 1, 2, 3),
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: IntArray(=11)
+				0x0B,
+			},
+			tagName: []byte{
+				// Name Length: 8
+				0x00, 0x08,
+				// Name: "IntArray"
+				0x49, 0x6E, 0x74, 0x41, 0x72, 0x72, 0x61, 0x79,
+			},
+			payload: []byte{
+				// Payload Length: 4
+				0x00, 0x00, 0x00, 0x04,
+				// Payload: [I; 0, 1, 2, 3]
+				0x00, 0x00, 0x00, 0x00,
+				0x00, 0x00, 0x00, 0x01,
+				0x00, 0x00, 0x00, 0x02,
+				0x00, 0x00, 0x00, 0x03,
+			},
+		},
+	},
+	{
+		name: "positive case: IntArrayTag - empty",
+		data: []int32{},
+		nbt: nbtTestCase[*IntArrayPayload]{
+			tagType: IntArrayType,
+			tagName: "IntArray",
+			payload: NewIntArrayPayload(),
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: IntArray(=11)
+				0x0B,
+			},
+			tagName: []byte{
+				// Name Length: 8
+				0x00, 0x08,
+				// Name: "IntArray"
+				0x49, 0x6E, 0x74, 0x41, 0x72, 0x72, 0x61, 0x79,
+			},
+			payload: []byte{
+				// Payload Length: 0
+				0x00, 0x00, 0x00, 0x00,
+				// Payload: [I; ]
+			},
 		},
 	},
 }
 
 func TestNewIntArrayTag(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name     string
 		tagName  *TagName
 		payload  *IntArrayPayload
-		expected Tag
-	}{
-		{
-			name:    "positive case",
-			tagName: NewTagName("IntArray"),
-			payload: NewIntArrayPayload(0, 1, 2, 3),
+		expected *IntArrayTag
+	}
+
+	cases := []Case{}
+
+	for _, c := range intArrayTagCases {
+		cases = append(cases, Case{
+			name:    c.name,
+			tagName: &c.nbt.tagName,
+			payload: c.nbt.payload,
 			expected: &IntArrayTag{
-				tagName: NewTagName("IntArray"),
-				payload: NewIntArrayPayload(0, 1, 2, 3),
+				tagName: &c.nbt.tagName,
+				payload: c.nbt.payload,
 			},
-		},
+		})
 	}
 
 	for _, tt := range cases {
@@ -89,7 +126,7 @@ func TestIntArrayTag_TypeId(t *testing.T) {
 func TestIntArrayTag_Encode(t *testing.T) {
 	type Case struct {
 		name        string
-		tag         Tag
+		tag         *IntArrayTag
 		expected    []byte
 		expectedErr error
 	}
@@ -99,8 +136,8 @@ func TestIntArrayTag_Encode(t *testing.T) {
 	for _, c := range intArrayTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			tag:         c.tag,
-			expected:    c.raw,
+			tag:         NewIntArrayTag(&c.nbt.tagName, c.nbt.payload),
+			expected:    append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
 			expectedErr: nil,
 		})
 	}
@@ -124,7 +161,7 @@ func TestIntArrayTag_Decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
-		expected    Tag
+		expected    *IntArrayTag
 		expectedErr error
 	}
 
@@ -133,8 +170,8 @@ func TestIntArrayTag_Decode(t *testing.T) {
 	for _, c := range intArrayTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			raw:         c.raw,
-			expected:    c.tag,
+			raw:         append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
+			expected:    NewIntArrayTag(&c.nbt.tagName, c.nbt.payload),
 			expectedErr: nil,
 		})
 	}
@@ -156,58 +193,26 @@ func TestIntArrayTag_Decode(t *testing.T) {
 	}
 }
 
-var intArrayPayloadCases = []struct {
-	name    string
-	payload Payload
-	raw     []byte
-}{
-	{
-		name:    "positive case: has items",
-		payload: NewIntArrayPayload(0, 1, 2, 3),
-		raw: []byte{
-			// Payload Length: 4
-			0x00, 0x00, 0x00, 0x04,
-			// Payload: [I; 0, 1, 2, 3]
-			0x00, 0x00, 0x00, 0x00,
-			0x00, 0x00, 0x00, 0x01,
-			0x00, 0x00, 0x00, 0x02,
-			0x00, 0x00, 0x00, 0x03,
-		},
-	},
-	{
-		name:    "positive case: empty",
-		payload: NewIntArrayPayload(),
-		raw: []byte{
-			// Payload Length: 0
-			0x00, 0x00, 0x00, 0x00,
-			// Payload: [I; ]
-		},
-	},
-}
-
 func TestNewIntArrayPayload(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name     string
 		values   []int32
-		expected Payload
-	}{
-		{
-			name:     "positive case: has items",
-			values:   []int32{0, 1, 2, 3},
-			expected: &IntArrayPayload{0, 1, 2, 3},
-		},
-		{
-			name:     "positive case: empty",
-			values:   []int32{},
-			expected: &IntArrayPayload{},
-		},
+		expected *IntArrayPayload
+	}
+
+	cases := []Case{}
+
+	for _, c := range intArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			values:   c.data,
+			expected: c.nbt.payload,
+		})
 	}
 
 	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := NewIntArrayPayload(tt.values...)
-			assert.Equal(t, tt.expected, actual)
-		})
+		actual := NewIntArrayPayload(tt.values...)
+		assert.Equal(t, tt.expected, actual)
 	}
 }
 
@@ -221,18 +226,18 @@ func TestIntArrayPayload_TypeId(t *testing.T) {
 func TestIntArrayPayload_Encode(t *testing.T) {
 	type Case struct {
 		name        string
-		payload     Payload
+		payload     *IntArrayPayload
 		expected    []byte
 		expectedErr error
 	}
 
 	cases := []Case{}
 
-	for _, c := range intArrayPayloadCases {
+	for _, c := range intArrayTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			payload:     c.payload,
-			expected:    c.raw,
+			payload:     c.nbt.payload,
+			expected:    c.raw.payload,
 			expectedErr: nil,
 		})
 	}
@@ -256,17 +261,17 @@ func TestIntArrayPayload_Decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
-		expected    Payload
+		expected    *IntArrayPayload
 		expectedErr error
 	}
 
 	cases := []Case{}
 
-	for _, c := range intArrayPayloadCases {
+	for _, c := range intArrayTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			raw:         c.raw,
-			expected:    c.payload,
+			raw:         c.raw.payload,
+			expected:    c.nbt.payload,
 			expectedErr: nil,
 		})
 	}

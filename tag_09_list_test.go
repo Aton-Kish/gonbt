@@ -27,53 +27,253 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var listTagCases = []struct {
-	name string
-	tag  Tag
-	raw  []byte
-}{
+var listTagCases = []tagTestCase[[]Payload, *ListPayload]{
 	{
-		name: "positive case",
-		tag: NewListTag(
-			NewTagName("List"),
-			NewListPayload(NewShortPayload(12345), NewShortPayload(6789)),
-		),
-		raw: []byte{
-			// Type: List(=9)
-			0x09,
-			// Name Length: 4
-			0x00, 0x04,
-			// Name: "List"
-			0x4C, 0x69, 0x73, 0x74,
-			// Payload Type: TagShort(=2)
-			0x02,
-			// Payload Length: 2
-			0x00, 0x00, 0x00, 0x02,
-			// Payload:
-			//   - 12345s
-			0x30, 0x39,
-			//   - 6789s
-			0x1A, 0x85,
+		name: "positive case: ListTag - Short",
+		data: []Payload{NewShortPayload(12345), NewShortPayload(6789)},
+		nbt: nbtTestCase[*ListPayload]{
+			tagType: ListType,
+			tagName: "List",
+			payload: NewListPayload(NewShortPayload(12345), NewShortPayload(6789)),
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: List(=9)
+				0x09,
+			},
+			tagName: []byte{
+				// Name Length: 4
+				0x00, 0x04,
+				// Name: "List"
+				0x4C, 0x69, 0x73, 0x74,
+			},
+			payload: []byte{
+				// Payload Type: TagShort(=2)
+				0x02,
+				// Payload Length: 2
+				0x00, 0x00, 0x00, 0x02,
+				// Payload:
+				//   - 12345s
+				0x30, 0x39,
+				//   - 6789s
+				0x1A, 0x85,
+			},
+		},
+	},
+	{
+		name: "positive case: ListTag - ByteArray",
+		data: []Payload{NewByteArrayPayload(0, 1), NewByteArrayPayload(2, 3)},
+		nbt: nbtTestCase[*ListPayload]{
+			tagType: ListType,
+			tagName: "List",
+			payload: NewListPayload(NewByteArrayPayload(0, 1), NewByteArrayPayload(2, 3)),
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: List(=9)
+				0x09,
+			},
+			tagName: []byte{
+				// Name Length: 4
+				0x00, 0x04,
+				// Name: "List"
+				0x4C, 0x69, 0x73, 0x74,
+			},
+			payload: []byte{
+				// Payload Type: TagByteArray(=7)
+				0x07,
+				// Payload Length: 2
+				0x00, 0x00, 0x00, 0x02,
+				// Payload:
+				//   - [B; 0b, 1b]
+				0x00, 0x00, 0x00, 0x02,
+				0x00, 0x01,
+				//   - [B; 2b, 3b]
+				0x00, 0x00, 0x00, 0x02,
+				0x02, 0x03,
+			},
+		},
+	},
+	{
+		name: "positive case: ListTag - String",
+		data: []Payload{NewStringPayload("Hello"), NewStringPayload("World")},
+		nbt: nbtTestCase[*ListPayload]{
+			tagType: ListType,
+			tagName: "List",
+			payload: NewListPayload(NewStringPayload("Hello"), NewStringPayload("World")),
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: List(=9)
+				0x09,
+			},
+			tagName: []byte{
+				// Name Length: 4
+				0x00, 0x04,
+				// Name: "List"
+				0x4C, 0x69, 0x73, 0x74,
+			},
+			payload: []byte{
+				// Payload Type: TagString(=8)
+				0x08,
+				// Payload Length: 2
+				0x00, 0x00, 0x00, 0x02,
+				// Payload:
+				//   - "Hello"
+				0x00, 0x05,
+				0x48, 0x65, 0x6C, 0x6C, 0x6F,
+				//   - "World"
+				0x00, 0x05,
+				0x57, 0x6F, 0x72, 0x6C, 0x64,
+			},
+		},
+	},
+	{
+		name: "positive case: ListTag - List",
+		data: []Payload{
+			NewListPayload(NewBytePayload(123)),
+			NewListPayload(NewStringPayload("Test")),
+		},
+		nbt: nbtTestCase[*ListPayload]{
+			tagType: ListType,
+			tagName: "List",
+			payload: NewListPayload(
+				NewListPayload(NewBytePayload(123)),
+				NewListPayload(NewStringPayload("Test")),
+			),
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: List(=9)
+				0x09,
+			},
+			tagName: []byte{
+				// Name Length: 4
+				0x00, 0x04,
+				// Name: "List"
+				0x4C, 0x69, 0x73, 0x74,
+			},
+			payload: []byte{
+				// Payload Type: TagList(=9)
+				0x09,
+				// Payload Length: 2
+				0x00, 0x00, 0x00, 0x02,
+				// Payload:
+				//   - [123b]
+				0x01,
+				0x00, 0x00, 0x00, 0x01,
+				0x7B,
+				//   - ["Test"]
+				0x08,
+				0x00, 0x00, 0x00, 0x01,
+				0x00, 0x04,
+				0x54, 0x65, 0x73, 0x74,
+			},
+		},
+	},
+	{
+		name: "positive case: ListTag - Compound",
+		data: []Payload{
+			NewCompoundPayload(NewByteTag(NewTagName("Byte"), NewBytePayload(123)), NewEndTag()),
+			NewCompoundPayload(NewStringTag(NewTagName("String"), NewStringPayload("Hello")), NewEndTag()),
+		},
+		nbt: nbtTestCase[*ListPayload]{
+			tagType: ListType,
+			tagName: "List",
+			payload: NewListPayload(
+				NewCompoundPayload(NewByteTag(NewTagName("Byte"), NewBytePayload(123)), NewEndTag()),
+				NewCompoundPayload(NewStringTag(NewTagName("String"), NewStringPayload("Hello")), NewEndTag()),
+			),
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: List(=9)
+				0x09,
+			},
+			tagName: []byte{
+				// Name Length: 4
+				0x00, 0x04,
+				// Name: "List"
+				0x4C, 0x69, 0x73, 0x74,
+			},
+			payload: []byte{
+				// Payload Type: TagCompound(=10)
+				0x0A,
+				// Payload Length: 2
+				0x00, 0x00, 0x00, 0x02,
+				// Payload:
+				//   - - Type: Byte(=1)
+				//       Name: "Byte"
+				//       Payload: 123b
+				0x01,
+				0x00, 0x04,
+				0x42, 0x79, 0x74, 0x65,
+				0x7B,
+				//     - Type: End(=0)
+				0x00,
+				//   - - Type: String(=8)
+				//       Name: "String"
+				//       Payload: "Hello"
+				0x08,
+				0x00, 0x06,
+				0x53, 0x74, 0x72, 0x69, 0x6E, 0x67,
+				0x00, 0x05,
+				0x48, 0x65, 0x6C, 0x6C, 0x6F,
+				//     - Type: End(=0)
+				0x00,
+			},
+		},
+	},
+	{
+		name: "positive case: ListTag - empty",
+		data: []Payload{},
+		nbt: nbtTestCase[*ListPayload]{
+			tagType: ListType,
+			tagName: "List",
+			payload: NewListPayload(),
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: List(=9)
+				0x09,
+			},
+			tagName: []byte{
+				// Name Length: 4
+				0x00, 0x04,
+				// Name: "List"
+				0x4C, 0x69, 0x73, 0x74,
+			},
+			payload: []byte{
+				// Payload Type: TagEnd(=0)
+				0x00,
+				// Payload Length: 0
+				0x00, 0x00, 0x00, 0x00,
+				// Payload: []
+			},
 		},
 	},
 }
 
 func TestNewListTag(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name     string
 		tagName  *TagName
 		payload  *ListPayload
-		expected Tag
-	}{
-		{
-			name:    "positive case",
-			tagName: NewTagName("List"),
-			payload: NewListPayload(NewShortPayload(12345), NewShortPayload(6789)),
+		expected *ListTag
+	}
+
+	cases := []Case{}
+
+	for _, c := range listTagCases {
+		cases = append(cases, Case{
+			name:    c.name,
+			tagName: &c.nbt.tagName,
+			payload: c.nbt.payload,
 			expected: &ListTag{
-				tagName: NewTagName("List"),
-				payload: NewListPayload(NewShortPayload(12345), NewShortPayload(6789)),
+				tagName: &c.nbt.tagName,
+				payload: c.nbt.payload,
 			},
-		},
+		})
 	}
 
 	for _, tt := range cases {
@@ -94,7 +294,7 @@ func TestListTag_TypeId(t *testing.T) {
 func TestListTag_Encode(t *testing.T) {
 	type Case struct {
 		name        string
-		tag         Tag
+		tag         *ListTag
 		expected    []byte
 		expectedErr error
 	}
@@ -104,8 +304,8 @@ func TestListTag_Encode(t *testing.T) {
 	for _, c := range listTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			tag:         c.tag,
-			expected:    c.raw,
+			tag:         NewListTag(&c.nbt.tagName, c.nbt.payload),
+			expected:    append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
 			expectedErr: nil,
 		})
 	}
@@ -129,7 +329,7 @@ func TestListTag_Decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
-		expected    Tag
+		expected    *ListTag
 		expectedErr error
 	}
 
@@ -138,8 +338,8 @@ func TestListTag_Decode(t *testing.T) {
 	for _, c := range listTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			raw:         c.raw,
-			expected:    c.tag,
+			raw:         append(append(c.raw.tagType, c.raw.tagName...), c.raw.payload...),
+			expected:    NewListTag(&c.nbt.tagName, c.nbt.payload),
 			expectedErr: nil,
 		})
 	}
@@ -161,184 +361,26 @@ func TestListTag_Decode(t *testing.T) {
 	}
 }
 
-var listPayloadCases = []struct {
-	name    string
-	payload Payload
-	raw     []byte
-}{
-	{
-		name:    "positive case: Short",
-		payload: NewListPayload(NewShortPayload(12345), NewShortPayload(6789)),
-		raw: []byte{
-			// Payload Type: TagShort(=2)
-			0x02,
-			// Payload Length: 2
-			0x00, 0x00, 0x00, 0x02,
-			// Payload:
-			//   - 12345s
-			0x30, 0x39,
-			//   - 6789s
-			0x1A, 0x85,
-		},
-	},
-	{
-		name:    "positive case: ByteArray",
-		payload: NewListPayload(NewByteArrayPayload(0, 1), NewByteArrayPayload(2, 3)),
-		raw: []byte{
-			// Payload Type: TagByteArray(=7)
-			0x07,
-			// Payload Length: 2
-			0x00, 0x00, 0x00, 0x02,
-			// Payload:
-			//   - [B; 0b, 1b]
-			0x00, 0x00, 0x00, 0x02,
-			0x00, 0x01,
-			//   - [B; 2b, 3b]
-			0x00, 0x00, 0x00, 0x02,
-			0x02, 0x03,
-		},
-	},
-	{
-		name:    "positive case: String",
-		payload: NewListPayload(NewStringPayload("Hello"), NewStringPayload("World")),
-		raw: []byte{
-			// Payload Type: TagString(=8)
-			0x08,
-			// Payload Length: 2
-			0x00, 0x00, 0x00, 0x02,
-			// Payload:
-			//   - "Hello"
-			0x00, 0x05,
-			0x48, 0x65, 0x6C, 0x6C, 0x6F,
-			//   - "World"
-			0x00, 0x05,
-			0x57, 0x6F, 0x72, 0x6C, 0x64,
-		},
-	},
-	{
-		name: "positive case: List",
-		payload: NewListPayload(
-			NewListPayload(NewBytePayload(123)),
-			NewListPayload(NewStringPayload("Test")),
-		),
-		raw: []byte{
-			// Payload Type: TagList(=9)
-			0x09,
-			// Payload Length: 2
-			0x00, 0x00, 0x00, 0x02,
-			// Payload:
-			//   - [123b]
-			0x01,
-			0x00, 0x00, 0x00, 0x01,
-			0x7B,
-			//   - ["Test"]
-			0x08,
-			0x00, 0x00, 0x00, 0x01,
-			0x00, 0x04,
-			0x54, 0x65, 0x73, 0x74,
-		},
-	},
-	{
-		name: "positive case: Compound",
-		payload: NewListPayload(
-			NewCompoundPayload(NewByteTag(NewTagName("Byte"), NewBytePayload(123)), NewEndTag()),
-			NewCompoundPayload(NewStringTag(NewTagName("String"), NewStringPayload("Hello")), NewEndTag()),
-		),
-		raw: []byte{
-			// Payload Type: TagCompound(=10)
-			0x0A,
-			// Payload Length: 2
-			0x00, 0x00, 0x00, 0x02,
-			// Payload:
-			//   - - Type: Byte(=1)
-			//       Name: "Byte"
-			//       Payload: 123b
-			0x01,
-			0x00, 0x04,
-			0x42, 0x79, 0x74, 0x65,
-			0x7B,
-			//     - Type: End(=0)
-			0x00,
-			//   - - Type: String(=8)
-			//       Name: "String"
-			//       Payload: "Hello"
-			0x08,
-			0x00, 0x06,
-			0x53, 0x74, 0x72, 0x69, 0x6E, 0x67,
-			0x00, 0x05,
-			0x48, 0x65, 0x6C, 0x6C, 0x6F,
-			//     - Type: End(=0)
-			0x00,
-		},
-	},
-	{
-		name:    "positive case: empty",
-		payload: NewListPayload(),
-		raw: []byte{
-			// Payload Type: TagEnd(=0)
-			0x00,
-			// Payload Length: 0
-			0x00, 0x00, 0x00, 0x00,
-			// Payload: []
-		},
-	},
-}
-
 func TestNewListPayload(t *testing.T) {
-	cases := []struct {
+	type Case struct {
 		name     string
 		values   []Payload
-		expected Payload
-	}{
-		{
-			name:     "positive case: Short",
-			values:   []Payload{NewShortPayload(12345), NewShortPayload(6789)},
-			expected: &ListPayload{NewShortPayload(12345), NewShortPayload(6789)},
-		},
-		{
-			name:     "positive case: ByteArray",
-			values:   []Payload{NewByteArrayPayload(0, 1), NewByteArrayPayload(2, 3)},
-			expected: &ListPayload{NewByteArrayPayload(0, 1), NewByteArrayPayload(2, 3)},
-		},
-		{
-			name:     "positive case: String",
-			values:   []Payload{NewStringPayload("Hello"), NewStringPayload("World")},
-			expected: &ListPayload{NewStringPayload("Hello"), NewStringPayload("World")},
-		},
-		{
-			name: "positive case: List",
-			values: []Payload{
-				&ListPayload{NewBytePayload(123)},
-				&ListPayload{NewStringPayload("Test")},
-			},
-			expected: &ListPayload{
-				&ListPayload{NewBytePayload(123)},
-				&ListPayload{NewStringPayload("Test")},
-			},
-		},
-		{
-			name: "positive case: Compound",
-			values: []Payload{
-				NewCompoundPayload(NewByteTag(NewTagName("Byte"), NewBytePayload(123)), NewEndTag()),
-				NewCompoundPayload(NewStringTag(NewTagName("String"), NewStringPayload("Hello")), NewEndTag()),
-			},
-			expected: &ListPayload{
-				NewCompoundPayload(NewByteTag(NewTagName("Byte"), NewBytePayload(123)), NewEndTag()),
-				NewCompoundPayload(NewStringTag(NewTagName("String"), NewStringPayload("Hello")), NewEndTag()),
-			},
-		},
-		{
-			name:     "positive case: empty",
-			values:   []Payload{},
-			expected: &ListPayload{},
-		},
+		expected *ListPayload
+	}
+
+	cases := []Case{}
+
+	for _, c := range listTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			values:   c.data,
+			expected: c.nbt.payload,
+		})
 	}
 
 	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := NewListPayload(tt.values...)
-			assert.Equal(t, tt.expected, actual)
-		})
+		actual := NewListPayload(tt.values...)
+		assert.Equal(t, tt.expected, actual)
 	}
 }
 
@@ -352,18 +394,18 @@ func TestListPayload_TypeId(t *testing.T) {
 func TestListPayload_Encode(t *testing.T) {
 	type Case struct {
 		name        string
-		payload     Payload
+		payload     *ListPayload
 		expected    []byte
 		expectedErr error
 	}
 
 	cases := []Case{}
 
-	for _, c := range listPayloadCases {
+	for _, c := range listTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			payload:     c.payload,
-			expected:    c.raw,
+			payload:     c.nbt.payload,
+			expected:    c.raw.payload,
 			expectedErr: nil,
 		})
 	}
@@ -387,17 +429,17 @@ func TestListPayload_Decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
-		expected    Payload
+		expected    *ListPayload
 		expectedErr error
 	}
 
 	cases := []Case{}
 
-	for _, c := range listPayloadCases {
+	for _, c := range listTagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			raw:         c.raw,
-			expected:    c.payload,
+			raw:         c.raw.payload,
+			expected:    c.nbt.payload,
 			expectedErr: nil,
 		})
 	}
