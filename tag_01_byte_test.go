@@ -176,7 +176,7 @@ func TestNewBytePayload(t *testing.T) {
 		{
 			name:     "positive case",
 			value:    123,
-			expected: pointer.Pointer[BytePayload](123),
+			expected: pointer.Pointer(BytePayload(123)),
 		},
 	}
 

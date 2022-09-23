@@ -212,22 +212,22 @@ func TestNewStringPayload(t *testing.T) {
 		{
 			name:     "positive case: \"Test\"",
 			value:    "Test",
-			expected: pointer.Pointer[StringPayload]("Test"),
+			expected: pointer.Pointer(StringPayload("Test")),
 		},
 		{
 			name:     "positive case: \"minecraft:the_end\"",
 			value:    "minecraft:the_end",
-			expected: pointer.Pointer[StringPayload]("minecraft:the_end"),
+			expected: pointer.Pointer(StringPayload("minecraft:the_end")),
 		},
 		{
 			name:     "positive case: \"\"",
 			value:    "",
-			expected: pointer.Pointer[StringPayload](""),
+			expected: pointer.Pointer(StringPayload("")),
 		},
 		{
 			name:     "positive case: \"マインクラフト\"",
 			value:    "マインクラフト",
-			expected: pointer.Pointer[StringPayload]("マインクラフト"),
+			expected: pointer.Pointer(StringPayload("マインクラフト")),
 		},
 	}
 

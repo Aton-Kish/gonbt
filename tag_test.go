@@ -268,7 +268,7 @@ func TestNewTagName(t *testing.T) {
 		{
 			name:     "positive case",
 			value:    "Test",
-			expected: pointer.Pointer[TagName]("Test"),
+			expected: pointer.Pointer(TagName("Test")),
 		},
 	}
 

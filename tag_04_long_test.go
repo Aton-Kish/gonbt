@@ -176,7 +176,7 @@ func TestNewLongPayload(t *testing.T) {
 		{
 			name:     "positive case",
 			value:    123456789123456789,
-			expected: pointer.Pointer[LongPayload](123456789123456789),
+			expected: pointer.Pointer(LongPayload(123456789123456789)),
 		},
 	}
 

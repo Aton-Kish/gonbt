@@ -176,7 +176,7 @@ func TestNewShortPayload(t *testing.T) {
 		{
 			name:     "positive case",
 			value:    12345,
-			expected: pointer.Pointer[ShortPayload](12345),
+			expected: pointer.Pointer(ShortPayload(12345)),
 		},
 	}
 

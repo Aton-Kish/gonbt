@@ -176,7 +176,7 @@ func TestNewFloatPayload(t *testing.T) {
 		{
 			name:     "positive case",
 			value:    0.12345678,
-			expected: pointer.Pointer[FloatPayload](0.12345678),
+			expected: pointer.Pointer(FloatPayload(0.12345678)),
 		},
 	}
 
