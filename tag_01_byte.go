@@ -32,7 +32,7 @@ type ByteTag struct {
 	payload BytePayload
 }
 
-func NewByteTag(tagName TagName, payload BytePayload) Tag {
+func NewByteTag(tagName TagName, payload BytePayload) *ByteTag {
 	return &ByteTag{
 		tagName: tagName,
 		payload: payload,
@@ -73,7 +73,7 @@ func (t *ByteTag) Decode(r io.Reader) error {
 
 type BytePayload int8
 
-func NewBytePayload(value int8) Payload {
+func NewBytePayload(value int8) *BytePayload {
 	return pointer.Pointer(BytePayload(value))
 }
 

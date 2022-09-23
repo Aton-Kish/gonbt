@@ -32,7 +32,7 @@ type ShortTag struct {
 	payload ShortPayload
 }
 
-func NewShortTag(tagName TagName, payload ShortPayload) Tag {
+func NewShortTag(tagName TagName, payload ShortPayload) *ShortTag {
 	return &ShortTag{
 		tagName: tagName,
 		payload: payload,
@@ -73,7 +73,7 @@ func (t *ShortTag) Decode(r io.Reader) error {
 
 type ShortPayload int16
 
-func NewShortPayload(value int16) Payload {
+func NewShortPayload(value int16) *ShortPayload {
 	return pointer.Pointer(ShortPayload(value))
 }
 

@@ -33,7 +33,7 @@ type LongArrayTag struct {
 	payload LongArrayPayload
 }
 
-func NewLongArrayTag(tagName TagName, payload LongArrayPayload) Tag {
+func NewLongArrayTag(tagName TagName, payload LongArrayPayload) *LongArrayTag {
 	return &LongArrayTag{
 		tagName: tagName,
 		payload: payload,
@@ -74,7 +74,7 @@ func (t *LongArrayTag) Decode(r io.Reader) error {
 
 type LongArrayPayload []int64
 
-func NewLongArrayPayload(values ...int64) Payload {
+func NewLongArrayPayload(values ...int64) *LongArrayPayload {
 	if values == nil {
 		values = []int64{}
 	}

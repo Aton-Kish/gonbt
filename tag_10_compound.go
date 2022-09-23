@@ -32,7 +32,7 @@ type CompoundTag struct {
 	payload CompoundPayload
 }
 
-func NewCompoundTag(tagName TagName, payload CompoundPayload) Tag {
+func NewCompoundTag(tagName TagName, payload CompoundPayload) *CompoundTag {
 	return &CompoundTag{
 		tagName: tagName,
 		payload: payload,
@@ -73,7 +73,7 @@ func (t *CompoundTag) Decode(r io.Reader) error {
 
 type CompoundPayload []Tag
 
-func NewCompoundPayload(values ...Tag) Payload {
+func NewCompoundPayload(values ...Tag) *CompoundPayload {
 	if values == nil {
 		values = []Tag{}
 	}

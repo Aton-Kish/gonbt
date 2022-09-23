@@ -33,7 +33,7 @@ type ByteArrayTag struct {
 	payload ByteArrayPayload
 }
 
-func NewByteArrayTag(tagName TagName, payload ByteArrayPayload) Tag {
+func NewByteArrayTag(tagName TagName, payload ByteArrayPayload) *ByteArrayTag {
 	return &ByteArrayTag{
 		tagName: tagName,
 		payload: payload,
@@ -74,7 +74,7 @@ func (t *ByteArrayTag) Decode(r io.Reader) error {
 
 type ByteArrayPayload []int8
 
-func NewByteArrayPayload(values ...int8) Payload {
+func NewByteArrayPayload(values ...int8) *ByteArrayPayload {
 	if values == nil {
 		values = []int8{}
 	}

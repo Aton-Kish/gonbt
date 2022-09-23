@@ -32,7 +32,7 @@ type LongTag struct {
 	payload LongPayload
 }
 
-func NewLongTag(tagName TagName, payload LongPayload) Tag {
+func NewLongTag(tagName TagName, payload LongPayload) *LongTag {
 	return &LongTag{
 		tagName: tagName,
 		payload: payload,
@@ -73,7 +73,7 @@ func (t *LongTag) Decode(r io.Reader) error {
 
 type LongPayload int64
 
-func NewLongPayload(value int64) Payload {
+func NewLongPayload(value int64) *LongPayload {
 	return pointer.Pointer(LongPayload(value))
 }
 

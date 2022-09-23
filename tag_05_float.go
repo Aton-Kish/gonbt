@@ -32,7 +32,7 @@ type FloatTag struct {
 	payload FloatPayload
 }
 
-func NewFloatTag(tagName TagName, payload FloatPayload) Tag {
+func NewFloatTag(tagName TagName, payload FloatPayload) *FloatTag {
 	return &FloatTag{
 		tagName: tagName,
 		payload: payload,
@@ -72,7 +72,7 @@ func (t *FloatTag) Decode(r io.Reader) error {
 
 type FloatPayload float32
 
-func NewFloatPayload(value float32) Payload {
+func NewFloatPayload(value float32) *FloatPayload {
 	return pointer.Pointer(FloatPayload(value))
 }
 

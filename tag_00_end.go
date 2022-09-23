@@ -28,7 +28,7 @@ import (
 type EndTag struct {
 }
 
-func NewEndTag() Tag {
+func NewEndTag() *EndTag {
 	return &EndTag{}
 }
 

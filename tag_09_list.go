@@ -33,7 +33,7 @@ type ListTag struct {
 	payload ListPayload
 }
 
-func NewListTag(tagName TagName, payload ListPayload) Tag {
+func NewListTag(tagName TagName, payload ListPayload) *ListTag {
 	return &ListTag{
 		tagName: tagName,
 		payload: payload,
@@ -74,7 +74,7 @@ func (t *ListTag) Decode(r io.Reader) error {
 
 type ListPayload []Payload
 
-func NewListPayload(values ...Payload) Payload {
+func NewListPayload(values ...Payload) *ListPayload {
 	if values == nil {
 		values = []Payload{}
 	}

@@ -33,7 +33,7 @@ type IntArrayTag struct {
 	payload IntArrayPayload
 }
 
-func NewIntArrayTag(tagName TagName, payload IntArrayPayload) Tag {
+func NewIntArrayTag(tagName TagName, payload IntArrayPayload) *IntArrayTag {
 	return &IntArrayTag{
 		tagName: tagName,
 		payload: payload,
@@ -74,7 +74,7 @@ func (t *IntArrayTag) Decode(r io.Reader) error {
 
 type IntArrayPayload []int32
 
-func NewIntArrayPayload(values ...int32) Payload {
+func NewIntArrayPayload(values ...int32) *IntArrayPayload {
 	if values == nil {
 		values = []int32{}
 	}

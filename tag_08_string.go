@@ -33,7 +33,7 @@ type StringTag struct {
 	payload StringPayload
 }
 
-func NewStringTag(tagName TagName, payload StringPayload) Tag {
+func NewStringTag(tagName TagName, payload StringPayload) *StringTag {
 	return &StringTag{
 		tagName: tagName,
 		payload: payload,
@@ -74,7 +74,7 @@ func (t *StringTag) Decode(r io.Reader) error {
 
 type StringPayload string
 
-func NewStringPayload(value string) Payload {
+func NewStringPayload(value string) *StringPayload {
 	return pointer.Pointer(StringPayload(value))
 }
 
