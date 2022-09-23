@@ -24,6 +24,8 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+
+	"github.com/Aton-Kish/gonbt/pointer"
 )
 
 // Tag Type
@@ -65,6 +67,10 @@ func (t *TagType) Decode(r io.Reader) error {
 // Tag Name
 
 type TagName string
+
+func NewTagName(value string) *TagName {
+	return pointer.Pointer(TagName(value))
+}
 
 func (n *TagName) Encode(w io.Writer) error {
 	l := uint16(len(*n))

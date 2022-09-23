@@ -25,6 +25,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/Aton-Kish/gonbt/pointer"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -256,6 +257,27 @@ var tagNameCases = []struct {
 			0xE3, 0x83, 0x88,
 		},
 	},
+}
+
+func TestNewTagName(t *testing.T) {
+	cases := []struct {
+		name     string
+		value    string
+		expected *TagName
+	}{
+		{
+			name:     "positive case",
+			value:    "Test",
+			expected: pointer.Pointer[TagName]("Test"),
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := NewTagName(tt.value)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
 }
 
 func TestTagName_Encode(t *testing.T) {
