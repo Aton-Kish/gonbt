@@ -2,7 +2,10 @@ module github.com/Aton-Kish/gonbt
 
 go 1.19
 
-require github.com/stretchr/testify v1.8.0
+require (
+	github.com/stretchr/testify v1.8.0
+	golang.org/x/exp v0.0.0-20220921164117-439092de6870
+)
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
