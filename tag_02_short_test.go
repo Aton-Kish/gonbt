@@ -45,6 +45,14 @@ var shortTagCases = []tagTestCase[*ShortPayload]{
 				typePretty:  `12345s`,
 			},
 		},
+		json: jsonTestCase{
+			tagName: `"Short"`,
+			payload: stringifyType{
+				typeDefault: `12345`,
+				typeCompact: `12345`,
+				typePretty:  `12345`,
+			},
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: Short(=2)

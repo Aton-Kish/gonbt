@@ -45,6 +45,14 @@ var floatTagCases = []tagTestCase[*FloatPayload]{
 				typePretty:  `0.12345678f`,
 			},
 		},
+		json: jsonTestCase{
+			tagName: `"Float"`,
+			payload: stringifyType{
+				typeDefault: `0.12345678`,
+				typeCompact: `0.12345678`,
+				typePretty:  `0.12345678`,
+			},
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: Float(=5)

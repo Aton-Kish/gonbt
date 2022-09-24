@@ -45,6 +45,25 @@ var byteArrayTagCases = []tagTestCase[*ByteArrayPayload]{
 				typePretty:  `[B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]`,
 			},
 		},
+		json: jsonTestCase{
+			tagName: `"ByteArray"`,
+			payload: stringifyType{
+				typeDefault: `[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]`,
+				typeCompact: `[0,1,2,3,4,5,6,7,8,9]`,
+				typePretty: `[
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9
+]`,
+			},
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: ByteArray(=7)
@@ -77,6 +96,14 @@ var byteArrayTagCases = []tagTestCase[*ByteArrayPayload]{
 				typeDefault: `[B; ]`,
 				typeCompact: `[B;]`,
 				typePretty:  `[B; ]`,
+			},
+		},
+		json: jsonTestCase{
+			tagName: `"ByteArray"`,
+			payload: stringifyType{
+				typeDefault: `[]`,
+				typeCompact: `[]`,
+				typePretty:  `[]`,
 			},
 		},
 		raw: rawTestCase{

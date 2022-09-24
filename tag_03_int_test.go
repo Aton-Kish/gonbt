@@ -45,6 +45,14 @@ var intTagCases = []tagTestCase[*IntPayload]{
 				typePretty:  `123456789`,
 			},
 		},
+		json: jsonTestCase{
+			tagName: `"Int"`,
+			payload: stringifyType{
+				typeDefault: `123456789`,
+				typeCompact: `123456789`,
+				typePretty:  `123456789`,
+			},
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: Int(=3)

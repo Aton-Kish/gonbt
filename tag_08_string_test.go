@@ -45,6 +45,14 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 				typePretty:  `"Hello World"`,
 			},
 		},
+		json: jsonTestCase{
+			tagName: `"String"`,
+			payload: stringifyType{
+				typeDefault: `"Hello World"`,
+				typeCompact: `"Hello World"`,
+				typePretty:  `"Hello World"`,
+			},
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: String(=8)
@@ -73,6 +81,14 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: `String`,
+			payload: stringifyType{
+				typeDefault: `"Test"`,
+				typeCompact: `"Test"`,
+				typePretty:  `"Test"`,
+			},
+		},
+		json: jsonTestCase{
+			tagName: `"String"`,
 			payload: stringifyType{
 				typeDefault: `"Test"`,
 				typeCompact: `"Test"`,
@@ -113,6 +129,14 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 				typePretty:  `'"Test'`,
 			},
 		},
+		json: jsonTestCase{
+			tagName: `"String"`,
+			payload: stringifyType{
+				typeDefault: `"\"Test"`,
+				typeCompact: `"\"Test"`,
+				typePretty:  `"\"Test"`,
+			},
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: String(=8)
@@ -141,6 +165,14 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: `String`,
+			payload: stringifyType{
+				typeDefault: `"'Test"`,
+				typeCompact: `"'Test"`,
+				typePretty:  `"'Test"`,
+			},
+		},
+		json: jsonTestCase{
+			tagName: `"String"`,
 			payload: stringifyType{
 				typeDefault: `"'Test"`,
 				typeCompact: `"'Test"`,
@@ -181,6 +213,14 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 				typePretty:  `"\"'Test"`,
 			},
 		},
+		json: jsonTestCase{
+			tagName: `"String"`,
+			payload: stringifyType{
+				typeDefault: `"\"'Test"`,
+				typeCompact: `"\"'Test"`,
+				typePretty:  `"\"'Test"`,
+			},
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: String(=8)
@@ -209,6 +249,14 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: `String`,
+			payload: stringifyType{
+				typeDefault: `"minecraft:the_end"`,
+				typeCompact: `"minecraft:the_end"`,
+				typePretty:  `"minecraft:the_end"`,
+			},
+		},
+		json: jsonTestCase{
+			tagName: `"String"`,
 			payload: stringifyType{
 				typeDefault: `"minecraft:the_end"`,
 				typeCompact: `"minecraft:the_end"`,
@@ -250,6 +298,14 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 				typePretty:  `""`,
 			},
 		},
+		json: jsonTestCase{
+			tagName: `"String"`,
+			payload: stringifyType{
+				typeDefault: `""`,
+				typeCompact: `""`,
+				typePretty:  `""`,
+			},
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: String(=8)
@@ -277,6 +333,14 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: `String`,
+			payload: stringifyType{
+				typeDefault: `"マインクラフト"`,
+				typeCompact: `"マインクラフト"`,
+				typePretty:  `"マインクラフト"`,
+			},
+		},
+		json: jsonTestCase{
+			tagName: `"String"`,
 			payload: stringifyType{
 				typeDefault: `"マインクラフト"`,
 				typeCompact: `"マインクラフト"`,

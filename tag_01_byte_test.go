@@ -45,6 +45,14 @@ var byteTagCases = []tagTestCase[*BytePayload]{
 				typePretty:  `123b`,
 			},
 		},
+		json: jsonTestCase{
+			tagName: `"Byte"`,
+			payload: stringifyType{
+				typeDefault: `123`,
+				typeCompact: `123`,
+				typePretty:  `123`,
+			},
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: Byte(=1)

@@ -48,6 +48,17 @@ var listTagCases = []tagTestCase[*ListPayload]{
 ]`,
 			},
 		},
+		json: jsonTestCase{
+			tagName: `"List"`,
+			payload: stringifyType{
+				typeDefault: `[12345, 6789]`,
+				typeCompact: `[12345,6789]`,
+				typePretty: `[
+  12345,
+  6789
+]`,
+			},
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: List(=9)
@@ -90,6 +101,23 @@ var listTagCases = []tagTestCase[*ListPayload]{
 ]`,
 			},
 		},
+		json: jsonTestCase{
+			tagName: `"List"`,
+			payload: stringifyType{
+				typeDefault: `[[0, 1], [2, 3]]`,
+				typeCompact: `[[0,1],[2,3]]`,
+				typePretty: `[
+  [
+    0,
+    1
+  ],
+  [
+    2,
+    3
+  ]
+]`,
+			},
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: List(=9)
@@ -125,6 +153,17 @@ var listTagCases = []tagTestCase[*ListPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: `List`,
+			payload: stringifyType{
+				typeDefault: `["Hello", "World"]`,
+				typeCompact: `["Hello","World"]`,
+				typePretty: `[
+  "Hello",
+  "World"
+]`,
+			},
+		},
+		json: jsonTestCase{
+			tagName: `"List"`,
 			payload: stringifyType{
 				typeDefault: `["Hello", "World"]`,
 				typeCompact: `["Hello","World"]`,
@@ -178,6 +217,21 @@ var listTagCases = []tagTestCase[*ListPayload]{
 				typePretty: `[
   [
     123b
+  ],
+  [
+    "Test"
+  ]
+]`,
+			},
+		},
+		json: jsonTestCase{
+			tagName: `"List"`,
+			payload: stringifyType{
+				typeDefault: `[[123], ["Test"]]`,
+				typeCompact: `[[123],["Test"]]`,
+				typePretty: `[
+  [
+    123
   ],
   [
     "Test"
@@ -239,6 +293,21 @@ var listTagCases = []tagTestCase[*ListPayload]{
 ]`,
 			},
 		},
+		json: jsonTestCase{
+			tagName: `"List"`,
+			payload: stringifyType{
+				typeDefault: `[{"Byte": 123}, {"String": "Hello"}]`,
+				typeCompact: `[{"Byte":123},{"String":"Hello"}]`,
+				typePretty: `[
+  {
+    "Byte": 123
+  },
+  {
+    "String": "Hello"
+  }
+]`,
+			},
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: List(=9)
@@ -287,6 +356,14 @@ var listTagCases = []tagTestCase[*ListPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: `List`,
+			payload: stringifyType{
+				typeDefault: `[]`,
+				typeCompact: `[]`,
+				typePretty:  `[]`,
+			},
+		},
+		json: jsonTestCase{
+			tagName: `"List"`,
 			payload: stringifyType{
 				typeDefault: `[]`,
 				typeCompact: `[]`,

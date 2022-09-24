@@ -45,6 +45,19 @@ var longArrayTagCases = []tagTestCase[*LongArrayPayload]{
 				typePretty:  `[L; 0L, 1L, 2L, 3L]`,
 			},
 		},
+		json: jsonTestCase{
+			tagName: `"LongArray"`,
+			payload: stringifyType{
+				typeDefault: `[0, 1, 2, 3]`,
+				typeCompact: `[0,1,2,3]`,
+				typePretty: `[
+  0,
+  1,
+  2,
+  3
+]`,
+			},
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: LongArray(=12)
@@ -80,6 +93,14 @@ var longArrayTagCases = []tagTestCase[*LongArrayPayload]{
 				typeDefault: `[L; ]`,
 				typeCompact: `[L;]`,
 				typePretty:  `[L; ]`,
+			},
+		},
+		json: jsonTestCase{
+			tagName: `"LongArray"`,
+			payload: stringifyType{
+				typeDefault: `[]`,
+				typeCompact: `[]`,
+				typePretty:  `[]`,
 			},
 		},
 		raw: rawTestCase{

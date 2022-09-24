@@ -45,6 +45,14 @@ var doubleTagCases = []tagTestCase[*DoublePayload]{
 				typePretty:  `0.123456789d`,
 			},
 		},
+		json: jsonTestCase{
+			tagName: `"Double"`,
+			payload: stringifyType{
+				typeDefault: `0.123456789`,
+				typeCompact: `0.123456789`,
+				typePretty:  `0.123456789`,
+			},
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: Double(=6)

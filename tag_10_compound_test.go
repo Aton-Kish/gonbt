@@ -62,6 +62,27 @@ var compoundTagCases = []tagTestCase[*CompoundPayload]{
 }`,
 			},
 		},
+		json: jsonTestCase{
+			tagName: `"Compound"`,
+			payload: stringifyType{
+				typeDefault: `{"ByteArray": [0, 1], "Compound": {"String": "World"}, "List": [123], "Short": 12345, "String": "Hello"}`,
+				typeCompact: `{"ByteArray":[0,1],"Compound":{"String":"World"},"List":[123],"Short":12345,"String":"Hello"}`,
+				typePretty: `{
+  "ByteArray": [
+    0,
+    1
+  ],
+  "Compound": {
+    "String": "World"
+  },
+  "List": [
+    123
+  ],
+  "Short": 12345,
+  "String": "Hello"
+}`,
+			},
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: Compound(=10)
@@ -137,6 +158,14 @@ var compoundTagCases = []tagTestCase[*CompoundPayload]{
 		},
 		snbt: snbtTestCase{
 			tagName: `Compound`,
+			payload: stringifyType{
+				typeDefault: `{}`,
+				typeCompact: `{}`,
+				typePretty:  `{}`,
+			},
+		},
+		json: jsonTestCase{
+			tagName: `"Compound"`,
 			payload: stringifyType{
 				typeDefault: `{}`,
 				typeCompact: `{}`,

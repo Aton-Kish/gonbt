@@ -122,6 +122,11 @@ func (n *TagName) stringify() string {
 	return qs
 }
 
+func (n *TagName) json() string {
+	s := string(*n)
+	return strconv.Quote(s)
+}
+
 // Tag
 
 type Tag interface {

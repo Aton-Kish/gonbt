@@ -45,6 +45,14 @@ var longTagCases = []tagTestCase[*LongPayload]{
 				typePretty:  `123456789123456789L`,
 			},
 		},
+		json: jsonTestCase{
+			tagName: `"Long"`,
+			payload: stringifyType{
+				typeDefault: `123456789123456789`,
+				typeCompact: `123456789123456789`,
+				typePretty:  `123456789123456789`,
+			},
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: Long(=4)

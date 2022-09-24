@@ -45,6 +45,19 @@ var intArrayTagCases = []tagTestCase[*IntArrayPayload]{
 				typePretty:  `[I; 0, 1, 2, 3]`,
 			},
 		},
+		json: jsonTestCase{
+			tagName: `"IntArray"`,
+			payload: stringifyType{
+				typeDefault: `[0, 1, 2, 3]`,
+				typeCompact: `[0,1,2,3]`,
+				typePretty: `[
+  0,
+  1,
+  2,
+  3
+]`,
+			},
+		},
 		raw: rawTestCase{
 			tagType: []byte{
 				// Type: IntArray(=11)
@@ -80,6 +93,14 @@ var intArrayTagCases = []tagTestCase[*IntArrayPayload]{
 				typeDefault: `[I; ]`,
 				typeCompact: `[I;]`,
 				typePretty:  `[I; ]`,
+			},
+		},
+		json: jsonTestCase{
+			tagName: `"IntArray"`,
+			payload: stringifyType{
+				typeDefault: `[]`,
+				typeCompact: `[]`,
+				typePretty:  `[]`,
 			},
 		},
 		raw: rawTestCase{

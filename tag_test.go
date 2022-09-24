@@ -34,6 +34,7 @@ type tagTestCase[T Payload] struct {
 	name string
 	nbt  nbtTestCase[T]
 	snbt snbtTestCase
+	json jsonTestCase
 	raw  rawTestCase
 }
 
@@ -44,6 +45,11 @@ type nbtTestCase[T Payload] struct {
 }
 
 type snbtTestCase struct {
+	tagName string
+	payload stringifyType
+}
+
+type jsonTestCase struct {
 	tagName string
 	payload stringifyType
 }
@@ -72,6 +78,7 @@ func interfacedTagTestCases[T Payload](cases []tagTestCase[T]) []tagTestCase[Pay
 				payload: c.nbt.payload,
 			},
 			snbt: c.snbt,
+			json: c.json,
 			raw:  c.raw,
 		})
 	}
@@ -303,6 +310,52 @@ func TestTagName_stringify(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.tagName.stringify()
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestTagName_json(t *testing.T) {
+	type Case struct {
+		name     string
+		tagName  TagName
+		expected string
+	}
+
+	cases := []Case{
+		{
+			name:     `positive case: quotation - Test`,
+			tagName:  TagName(`Test`),
+			expected: `"Test"`,
+		},
+		{
+			name:     `positive case: quotation - '"Test'`,
+			tagName:  TagName(`"Test`),
+			expected: `"\"Test"`,
+		},
+		{
+			name:     `positive case: quotation - "'Test"`,
+			tagName:  TagName(`'Test`),
+			expected: `"'Test"`,
+		},
+		{
+			name:     `positive case: quotation - "\"'Test"`,
+			tagName:  TagName(`"'Test`),
+			expected: `"\"'Test"`,
+		},
+	}
+
+	for _, c := range excludeEndTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tagName:  c.nbt.tagName,
+			expected: c.json.tagName,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tagName.json()
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
