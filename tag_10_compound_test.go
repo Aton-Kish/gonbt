@@ -31,25 +31,35 @@ import (
 
 var compoundTagCases = []tagTestCase[*CompoundPayload]{
 	{
-		name: "positive case: CompoundTag - has items",
+		name: `positive case: CompoundTag - has items`,
 		nbt: nbtTestCase[*CompoundPayload]{
 			tagType: CompoundType,
-			tagName: "Compound",
+			tagName: `Compound`,
 			payload: NewCompoundPayload(
-				NewShortTag(NewTagName("Short"), NewShortPayload(12345)),
-				NewByteArrayTag(NewTagName("ByteArray"), NewByteArrayPayload(0, 1)),
-				NewStringTag(NewTagName("String"), NewStringPayload("Hello")),
-				NewListTag(NewTagName("List"), NewListPayload(NewBytePayload(123))),
-				NewCompoundTag(NewTagName("Compound"), NewCompoundPayload(NewStringTag(NewTagName("String"), NewStringPayload("World")), NewEndTag())),
+				NewShortTag(NewTagName(`Short`), NewShortPayload(12345)),
+				NewByteArrayTag(NewTagName(`ByteArray`), NewByteArrayPayload(0, 1)),
+				NewStringTag(NewTagName(`String`), NewStringPayload(`Hello`)),
+				NewListTag(NewTagName(`List`), NewListPayload(NewBytePayload(123))),
+				NewCompoundTag(NewTagName(`Compound`), NewCompoundPayload(NewStringTag(NewTagName(`String`), NewStringPayload("World")), NewEndTag())),
 				NewEndTag(),
 			),
 		},
 		snbt: snbtTestCase{
-			tagName: "Compound",
+			tagName: `Compound`,
 			payload: stringifyType{
-				typeDefault: "{ByteArray: [B; 0b, 1b], Compound: {String: \"World\"}, List: [123b], Short: 12345s, String: \"Hello\"}",
-				typeCompact: "{ByteArray:[B;0b,1b],Compound:{String:\"World\"},List:[123b],Short:12345s,String:\"Hello\"}",
-				typePretty:  "{\n  ByteArray: [B; 0b, 1b],\n  Compound: {\n    String: \"World\"\n  },\n  List: [\n    123b\n  ],\n  Short: 12345s,\n  String: \"Hello\"\n}",
+				typeDefault: `{ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}`,
+				typeCompact: `{ByteArray:[B;0b,1b],Compound:{String:"World"},List:[123b],Short:12345s,String:"Hello"}`,
+				typePretty: `{
+  ByteArray: [B; 0b, 1b],
+  Compound: {
+    String: "World"
+  },
+  List: [
+    123b
+  ],
+  Short: 12345s,
+  String: "Hello"
+}`,
 			},
 		},
 		raw: rawTestCase{
@@ -60,20 +70,20 @@ var compoundTagCases = []tagTestCase[*CompoundPayload]{
 			tagName: []byte{
 				// Name Length: 8
 				0x00, 0x08,
-				// Name: "Compound"
+				// Name: Compound
 				0x43, 0x6F, 0x6D, 0x70, 0x6F, 0x75, 0x6E, 0x64,
 			},
 			payload: []byte{
 				// Payload:
 				//   - Type: Short(=2)
-				//     Name: "Short"
+				//     Name: Short
 				//     Payload: 12345s
 				0x02,
 				0x00, 0x05,
 				0x53, 0x68, 0x6f, 0x72, 0x74,
 				0x30, 0x39,
 				//   - Type: ByteArray(=7)
-				//     Name: "ByteArray"
+				//     Name: ByteArray
 				//     Payload: [B; 0b, 1b]
 				0x07,
 				0x00, 0x09,
@@ -81,7 +91,7 @@ var compoundTagCases = []tagTestCase[*CompoundPayload]{
 				0x00, 0x00, 0x00, 0x02,
 				0x00, 0x01,
 				//   - Type: String(=8)
-				//     Name: "String"
+				//     Name: String
 				//     Payload: "Hello"
 				0x08,
 				0x00, 0x06,
@@ -89,7 +99,7 @@ var compoundTagCases = []tagTestCase[*CompoundPayload]{
 				0x00, 0x05,
 				0x48, 0x65, 0x6C, 0x6C, 0x6F,
 				//   - Type: List(=9)
-				//     Name: "List"
+				//     Name: List
 				//     Payload: [123b]
 				0x09,
 				0x00, 0x04,
@@ -98,13 +108,13 @@ var compoundTagCases = []tagTestCase[*CompoundPayload]{
 				0x00, 0x00, 0x00, 0x01,
 				0x7B,
 				//   - Type: Compound(=10)
-				//     Name: "Compound"
+				//     Name: Compound
 				0x0A,
 				0x00, 0x08,
 				0x43, 0x6F, 0x6D, 0x70, 0x6F, 0x75, 0x6E, 0x64,
 				//     Payload:
 				//       - Type: String(=8)
-				//         Name: "String"
+				//         Name: String
 				//         Payload: "World"
 				0x08,
 				0x00, 0x06,
@@ -119,18 +129,18 @@ var compoundTagCases = []tagTestCase[*CompoundPayload]{
 		},
 	},
 	{
-		name: "positive case: CompoundTag - empty",
+		name: `positive case: CompoundTag - empty`,
 		nbt: nbtTestCase[*CompoundPayload]{
 			tagType: CompoundType,
-			tagName: "Compound",
+			tagName: `Compound`,
 			payload: NewCompoundPayload(NewEndTag()),
 		},
 		snbt: snbtTestCase{
-			tagName: "Compound",
+			tagName: `Compound`,
 			payload: stringifyType{
-				typeDefault: "{}",
-				typeCompact: "{}",
-				typePretty:  "{}",
+				typeDefault: `{}`,
+				typeCompact: `{}`,
+				typePretty:  `{}`,
 			},
 		},
 		raw: rawTestCase{
@@ -141,7 +151,7 @@ var compoundTagCases = []tagTestCase[*CompoundPayload]{
 			tagName: []byte{
 				// Name Length: 8
 				0x00, 0x08,
-				// Name: "Compound"
+				// Name: Compound
 				0x43, 0x6F, 0x6D, 0x70, 0x6F, 0x75, 0x6E, 0x64,
 			},
 			payload: []byte{

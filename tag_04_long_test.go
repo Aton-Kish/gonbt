@@ -31,18 +31,18 @@ import (
 
 var longTagCases = []tagTestCase[*LongPayload]{
 	{
-		name: "positive case: LongTag",
+		name: `positive case: LongTag`,
 		nbt: nbtTestCase[*LongPayload]{
 			tagType: LongType,
-			tagName: "Long",
+			tagName: `Long`,
 			payload: NewLongPayload(123456789123456789),
 		},
 		snbt: snbtTestCase{
-			tagName: "Long",
+			tagName: `Long`,
 			payload: stringifyType{
-				typeDefault: "123456789123456789L",
-				typeCompact: "123456789123456789L",
-				typePretty:  "123456789123456789L",
+				typeDefault: `123456789123456789L`,
+				typeCompact: `123456789123456789L`,
+				typePretty:  `123456789123456789L`,
 			},
 		},
 		raw: rawTestCase{
@@ -53,7 +53,7 @@ var longTagCases = []tagTestCase[*LongPayload]{
 			tagName: []byte{
 				// Name Length: 4
 				0x00, 0x04,
-				// Name: "Long"
+				// Name: Long
 				0x4C, 0x6F, 0x6E, 0x67,
 			},
 			payload: []byte{

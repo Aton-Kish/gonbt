@@ -31,18 +31,21 @@ import (
 
 var listTagCases = []tagTestCase[*ListPayload]{
 	{
-		name: "positive case: ListTag - Short",
+		name: `positive case: ListTag - Short`,
 		nbt: nbtTestCase[*ListPayload]{
 			tagType: ListType,
-			tagName: "List",
+			tagName: `List`,
 			payload: NewListPayload(NewShortPayload(12345), NewShortPayload(6789)),
 		},
 		snbt: snbtTestCase{
-			tagName: "List",
+			tagName: `List`,
 			payload: stringifyType{
-				typeDefault: "[12345s, 6789s]",
-				typeCompact: "[12345s,6789s]",
-				typePretty:  "[\n  12345s,\n  6789s\n]",
+				typeDefault: `[12345s, 6789s]`,
+				typeCompact: `[12345s,6789s]`,
+				typePretty: `[
+  12345s,
+  6789s
+]`,
 			},
 		},
 		raw: rawTestCase{
@@ -53,7 +56,7 @@ var listTagCases = []tagTestCase[*ListPayload]{
 			tagName: []byte{
 				// Name Length: 4
 				0x00, 0x04,
-				// Name: "List"
+				// Name: List
 				0x4C, 0x69, 0x73, 0x74,
 			},
 			payload: []byte{
@@ -70,18 +73,21 @@ var listTagCases = []tagTestCase[*ListPayload]{
 		},
 	},
 	{
-		name: "positive case: ListTag - ByteArray",
+		name: `positive case: ListTag - ByteArray`,
 		nbt: nbtTestCase[*ListPayload]{
 			tagType: ListType,
-			tagName: "List",
+			tagName: `List`,
 			payload: NewListPayload(NewByteArrayPayload(0, 1), NewByteArrayPayload(2, 3)),
 		},
 		snbt: snbtTestCase{
-			tagName: "List",
+			tagName: `List`,
 			payload: stringifyType{
-				typeDefault: "[[B; 0b, 1b], [B; 2b, 3b]]",
-				typeCompact: "[[B;0b,1b],[B;2b,3b]]",
-				typePretty:  "[\n  [B; 0b, 1b],\n  [B; 2b, 3b]\n]",
+				typeDefault: `[[B; 0b, 1b], [B; 2b, 3b]]`,
+				typeCompact: `[[B;0b,1b],[B;2b,3b]]`,
+				typePretty: `[
+  [B; 0b, 1b],
+  [B; 2b, 3b]
+]`,
 			},
 		},
 		raw: rawTestCase{
@@ -92,7 +98,7 @@ var listTagCases = []tagTestCase[*ListPayload]{
 			tagName: []byte{
 				// Name Length: 4
 				0x00, 0x04,
-				// Name: "List"
+				// Name: List
 				0x4C, 0x69, 0x73, 0x74,
 			},
 			payload: []byte{
@@ -111,18 +117,21 @@ var listTagCases = []tagTestCase[*ListPayload]{
 		},
 	},
 	{
-		name: "positive case: ListTag - String",
+		name: `positive case: ListTag - String`,
 		nbt: nbtTestCase[*ListPayload]{
 			tagType: ListType,
-			tagName: "List",
-			payload: NewListPayload(NewStringPayload("Hello"), NewStringPayload("World")),
+			tagName: `List`,
+			payload: NewListPayload(NewStringPayload(`Hello`), NewStringPayload(`World`)),
 		},
 		snbt: snbtTestCase{
-			tagName: "List",
+			tagName: `List`,
 			payload: stringifyType{
-				typeDefault: "[\"Hello\", \"World\"]",
-				typeCompact: "[\"Hello\",\"World\"]",
-				typePretty:  "[\n  \"Hello\",\n  \"World\"\n]",
+				typeDefault: `["Hello", "World"]`,
+				typeCompact: `["Hello","World"]`,
+				typePretty: `[
+  "Hello",
+  "World"
+]`,
 			},
 		},
 		raw: rawTestCase{
@@ -133,7 +142,7 @@ var listTagCases = []tagTestCase[*ListPayload]{
 			tagName: []byte{
 				// Name Length: 4
 				0x00, 0x04,
-				// Name: "List"
+				// Name: List
 				0x4C, 0x69, 0x73, 0x74,
 			},
 			payload: []byte{
@@ -152,21 +161,28 @@ var listTagCases = []tagTestCase[*ListPayload]{
 		},
 	},
 	{
-		name: "positive case: ListTag - List",
+		name: `positive case: ListTag - List`,
 		nbt: nbtTestCase[*ListPayload]{
 			tagType: ListType,
-			tagName: "List",
+			tagName: `List`,
 			payload: NewListPayload(
 				NewListPayload(NewBytePayload(123)),
-				NewListPayload(NewStringPayload("Test")),
+				NewListPayload(NewStringPayload(`Test`)),
 			),
 		},
 		snbt: snbtTestCase{
-			tagName: "List",
+			tagName: `List`,
 			payload: stringifyType{
-				typeDefault: "[[123b], [\"Test\"]]",
-				typeCompact: "[[123b],[\"Test\"]]",
-				typePretty:  "[\n  [\n    123b\n  ],\n  [\n    \"Test\"\n  ]\n]",
+				typeDefault: `[[123b], ["Test"]]`,
+				typeCompact: `[[123b],["Test"]]`,
+				typePretty: `[
+  [
+    123b
+  ],
+  [
+    "Test"
+  ]
+]`,
 			},
 		},
 		raw: rawTestCase{
@@ -177,7 +193,7 @@ var listTagCases = []tagTestCase[*ListPayload]{
 			tagName: []byte{
 				// Name Length: 4
 				0x00, 0x04,
-				// Name: "List"
+				// Name: List
 				0x4C, 0x69, 0x73, 0x74,
 			},
 			payload: []byte{
@@ -199,21 +215,28 @@ var listTagCases = []tagTestCase[*ListPayload]{
 		},
 	},
 	{
-		name: "positive case: ListTag - Compound",
+		name: `positive case: ListTag - Compound`,
 		nbt: nbtTestCase[*ListPayload]{
 			tagType: ListType,
-			tagName: "List",
+			tagName: `List`,
 			payload: NewListPayload(
-				NewCompoundPayload(NewByteTag(NewTagName("Byte"), NewBytePayload(123)), NewEndTag()),
-				NewCompoundPayload(NewStringTag(NewTagName("String"), NewStringPayload("Hello")), NewEndTag()),
+				NewCompoundPayload(NewByteTag(NewTagName(`Byte`), NewBytePayload(123)), NewEndTag()),
+				NewCompoundPayload(NewStringTag(NewTagName(`String`), NewStringPayload(`Hello`)), NewEndTag()),
 			),
 		},
 		snbt: snbtTestCase{
-			tagName: "List",
+			tagName: `List`,
 			payload: stringifyType{
-				typeDefault: "[{Byte: 123b}, {String: \"Hello\"}]",
-				typeCompact: "[{Byte:123b},{String:\"Hello\"}]",
-				typePretty:  "[\n  {\n    Byte: 123b\n  },\n  {\n    String: \"Hello\"\n  }\n]",
+				typeDefault: `[{Byte: 123b}, {String: "Hello"}]`,
+				typeCompact: `[{Byte:123b},{String:"Hello"}]`,
+				typePretty: `[
+  {
+    Byte: 123b
+  },
+  {
+    String: "Hello"
+  }
+]`,
 			},
 		},
 		raw: rawTestCase{
@@ -224,7 +247,7 @@ var listTagCases = []tagTestCase[*ListPayload]{
 			tagName: []byte{
 				// Name Length: 4
 				0x00, 0x04,
-				// Name: "List"
+				// Name: List
 				0x4C, 0x69, 0x73, 0x74,
 			},
 			payload: []byte{
@@ -234,7 +257,7 @@ var listTagCases = []tagTestCase[*ListPayload]{
 				0x00, 0x00, 0x00, 0x02,
 				// Payload:
 				//   - - Type: Byte(=1)
-				//       Name: "Byte"
+				//       Name: Byte
 				//       Payload: 123b
 				0x01,
 				0x00, 0x04,
@@ -243,7 +266,7 @@ var listTagCases = []tagTestCase[*ListPayload]{
 				//     - Type: End(=0)
 				0x00,
 				//   - - Type: String(=8)
-				//       Name: "String"
+				//       Name: String
 				//       Payload: "Hello"
 				0x08,
 				0x00, 0x06,
@@ -256,18 +279,18 @@ var listTagCases = []tagTestCase[*ListPayload]{
 		},
 	},
 	{
-		name: "positive case: ListTag - empty",
+		name: `positive case: ListTag - empty`,
 		nbt: nbtTestCase[*ListPayload]{
 			tagType: ListType,
-			tagName: "List",
+			tagName: `List`,
 			payload: NewListPayload(),
 		},
 		snbt: snbtTestCase{
-			tagName: "List",
+			tagName: `List`,
 			payload: stringifyType{
-				typeDefault: "[]",
-				typeCompact: "[]",
-				typePretty:  "[]",
+				typeDefault: `[]`,
+				typeCompact: `[]`,
+				typePretty:  `[]`,
 			},
 		},
 		raw: rawTestCase{
@@ -278,7 +301,7 @@ var listTagCases = []tagTestCase[*ListPayload]{
 			tagName: []byte{
 				// Name Length: 4
 				0x00, 0x04,
-				// Name: "List"
+				// Name: List
 				0x4C, 0x69, 0x73, 0x74,
 			},
 			payload: []byte{

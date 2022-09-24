@@ -31,18 +31,18 @@ import (
 
 var byteArrayTagCases = []tagTestCase[*ByteArrayPayload]{
 	{
-		name: "positive case: ByteArrayTag - has items",
+		name: `positive case: ByteArrayTag - has items`,
 		nbt: nbtTestCase[*ByteArrayPayload]{
 			tagType: ByteArrayType,
-			tagName: "ByteArray",
+			tagName: `ByteArray`,
 			payload: NewByteArrayPayload(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
 		},
 		snbt: snbtTestCase{
-			tagName: "ByteArray",
+			tagName: `ByteArray`,
 			payload: stringifyType{
-				typeDefault: "[B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]",
-				typeCompact: "[B;0b,1b,2b,3b,4b,5b,6b,7b,8b,9b]",
-				typePretty:  "[B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]",
+				typeDefault: `[B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]`,
+				typeCompact: `[B;0b,1b,2b,3b,4b,5b,6b,7b,8b,9b]`,
+				typePretty:  `[B; 0b, 1b, 2b, 3b, 4b, 5b, 6b, 7b, 8b, 9b]`,
 			},
 		},
 		raw: rawTestCase{
@@ -53,7 +53,7 @@ var byteArrayTagCases = []tagTestCase[*ByteArrayPayload]{
 			tagName: []byte{
 				// Name Length: 9
 				0x00, 0x09,
-				// Name: "ByteArray"
+				// Name: ByteArray
 				0x42, 0x79, 0x74, 0x65, 0x41, 0x72, 0x72, 0x61, 0x79,
 			},
 			payload: []byte{
@@ -65,18 +65,18 @@ var byteArrayTagCases = []tagTestCase[*ByteArrayPayload]{
 		},
 	},
 	{
-		name: "positive case: ByteArrayTag - empty",
+		name: `positive case: ByteArrayTag - empty`,
 		nbt: nbtTestCase[*ByteArrayPayload]{
 			tagType: ByteArrayType,
-			tagName: "ByteArray",
+			tagName: `ByteArray`,
 			payload: NewByteArrayPayload(),
 		},
 		snbt: snbtTestCase{
-			tagName: "ByteArray",
+			tagName: `ByteArray`,
 			payload: stringifyType{
-				typeDefault: "[B; ]",
-				typeCompact: "[B;]",
-				typePretty:  "[B; ]",
+				typeDefault: `[B; ]`,
+				typeCompact: `[B;]`,
+				typePretty:  `[B; ]`,
 			},
 		},
 		raw: rawTestCase{
@@ -87,7 +87,7 @@ var byteArrayTagCases = []tagTestCase[*ByteArrayPayload]{
 			tagName: []byte{
 				// Name Length: 9
 				0x00, 0x09,
-				// Name: "ByteArray"
+				// Name: ByteArray
 				0x42, 0x79, 0x74, 0x65, 0x41, 0x72, 0x72, 0x61, 0x79,
 			},
 			payload: []byte{

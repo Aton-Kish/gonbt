@@ -213,6 +213,36 @@ func Decode(r io.Reader) (Tag, error) {
 	return tag, nil
 }
 
+func Stringify(tag Tag) string {
+	return prettyStringify(tag, " ", "")
+}
+
+func CompactStringify(tag Tag) string {
+	return prettyStringify(tag, "", "")
+}
+
+func PrettyStringify(tag Tag, indent string) string {
+	return prettyStringify(tag, " ", indent)
+}
+
+func prettyStringify(tag Tag, space string, indent string) string {
+	rootName := ""
+	if tag.TagName() != nil {
+		rootName = string(*tag.TagName())
+	}
+
+	if rootName == "" {
+		snbt := tag.stringify(space, indent, 0)
+		return strings.TrimLeft(snbt[1:], space)
+	}
+
+	if indent == "" {
+		return fmt.Sprintf("{%s%s}", indent, tag.stringify(space, indent, 1))
+	}
+
+	return fmt.Sprintf("{\n%s%s\n}", indent, tag.stringify(space, indent, 1))
+}
+
 func stringifyTag(tag Tag, space string, indent string, depth int) string {
 	typ := tag.TypeId()
 	if typ == EndType {

@@ -31,18 +31,18 @@ import (
 
 var longArrayTagCases = []tagTestCase[*LongArrayPayload]{
 	{
-		name: "positive case: LongArrayTag - has items",
+		name: `positive case: LongArrayTag - has items`,
 		nbt: nbtTestCase[*LongArrayPayload]{
 			tagType: LongArrayType,
-			tagName: "LongArray",
+			tagName: `LongArray`,
 			payload: NewLongArrayPayload(0, 1, 2, 3),
 		},
 		snbt: snbtTestCase{
-			tagName: "LongArray",
+			tagName: `LongArray`,
 			payload: stringifyType{
-				typeDefault: "[L; 0L, 1L, 2L, 3L]",
-				typeCompact: "[L;0L,1L,2L,3L]",
-				typePretty:  "[L; 0L, 1L, 2L, 3L]",
+				typeDefault: `[L; 0L, 1L, 2L, 3L]`,
+				typeCompact: `[L;0L,1L,2L,3L]`,
+				typePretty:  `[L; 0L, 1L, 2L, 3L]`,
 			},
 		},
 		raw: rawTestCase{
@@ -53,7 +53,7 @@ var longArrayTagCases = []tagTestCase[*LongArrayPayload]{
 			tagName: []byte{
 				// Name Length: 9
 				0x00, 0x09,
-				// Name: "LongArray"
+				// Name: LongArray
 				0x4C, 0x6F, 0x6E, 0x67, 0x41, 0x72, 0x72, 0x61, 0x79,
 			},
 			payload: []byte{
@@ -68,18 +68,18 @@ var longArrayTagCases = []tagTestCase[*LongArrayPayload]{
 		},
 	},
 	{
-		name: "positive case: LongArrayTag - empty",
+		name: `positive case: LongArrayTag - empty`,
 		nbt: nbtTestCase[*LongArrayPayload]{
 			tagType: LongArrayType,
-			tagName: "LongArray",
+			tagName: `LongArray`,
 			payload: NewLongArrayPayload(),
 		},
 		snbt: snbtTestCase{
-			tagName: "LongArray",
+			tagName: `LongArray`,
 			payload: stringifyType{
-				typeDefault: "[L; ]",
-				typeCompact: "[L;]",
-				typePretty:  "[L; ]",
+				typeDefault: `[L; ]`,
+				typeCompact: `[L;]`,
+				typePretty:  `[L; ]`,
 			},
 		},
 		raw: rawTestCase{
@@ -90,7 +90,7 @@ var longArrayTagCases = []tagTestCase[*LongArrayPayload]{
 			tagName: []byte{
 				// Name Length: 9
 				0x00, 0x09,
-				// Name: "LongArray"
+				// Name: LongArray
 				0x4C, 0x6F, 0x6E, 0x67, 0x41, 0x72, 0x72, 0x61, 0x79,
 			},
 			payload: []byte{

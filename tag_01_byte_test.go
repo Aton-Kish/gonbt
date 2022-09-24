@@ -31,18 +31,18 @@ import (
 
 var byteTagCases = []tagTestCase[*BytePayload]{
 	{
-		name: "positive case: ByteTag",
+		name: `positive case: ByteTag`,
 		nbt: nbtTestCase[*BytePayload]{
 			tagType: ByteType,
-			tagName: "Byte",
+			tagName: `Byte`,
 			payload: NewBytePayload(123),
 		},
 		snbt: snbtTestCase{
-			tagName: "Byte",
+			tagName: `Byte`,
 			payload: stringifyType{
-				typeDefault: "123b",
-				typeCompact: "123b",
-				typePretty:  "123b",
+				typeDefault: `123b`,
+				typeCompact: `123b`,
+				typePretty:  `123b`,
 			},
 		},
 		raw: rawTestCase{
@@ -53,7 +53,7 @@ var byteTagCases = []tagTestCase[*BytePayload]{
 			tagName: []byte{
 				// Name Length: 4
 				0x00, 0x04,
-				// Name: "Byte"
+				// Name: Byte
 				0x42, 0x79, 0x74, 0x65,
 			},
 			payload: []byte{

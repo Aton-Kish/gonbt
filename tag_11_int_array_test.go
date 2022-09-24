@@ -31,18 +31,18 @@ import (
 
 var intArrayTagCases = []tagTestCase[*IntArrayPayload]{
 	{
-		name: "positive case: IntArrayTag - has items",
+		name: `positive case: IntArrayTag - has items`,
 		nbt: nbtTestCase[*IntArrayPayload]{
 			tagType: IntArrayType,
-			tagName: "IntArray",
+			tagName: `IntArray`,
 			payload: NewIntArrayPayload(0, 1, 2, 3),
 		},
 		snbt: snbtTestCase{
-			tagName: "IntArray",
+			tagName: `IntArray`,
 			payload: stringifyType{
-				typeDefault: "[I; 0, 1, 2, 3]",
-				typeCompact: "[I;0,1,2,3]",
-				typePretty:  "[I; 0, 1, 2, 3]",
+				typeDefault: `[I; 0, 1, 2, 3]`,
+				typeCompact: `[I;0,1,2,3]`,
+				typePretty:  `[I; 0, 1, 2, 3]`,
 			},
 		},
 		raw: rawTestCase{
@@ -53,7 +53,7 @@ var intArrayTagCases = []tagTestCase[*IntArrayPayload]{
 			tagName: []byte{
 				// Name Length: 8
 				0x00, 0x08,
-				// Name: "IntArray"
+				// Name: IntArray
 				0x49, 0x6E, 0x74, 0x41, 0x72, 0x72, 0x61, 0x79,
 			},
 			payload: []byte{
@@ -68,18 +68,18 @@ var intArrayTagCases = []tagTestCase[*IntArrayPayload]{
 		},
 	},
 	{
-		name: "positive case: IntArrayTag - empty",
+		name: `positive case: IntArrayTag - empty`,
 		nbt: nbtTestCase[*IntArrayPayload]{
 			tagType: IntArrayType,
-			tagName: "IntArray",
+			tagName: `IntArray`,
 			payload: NewIntArrayPayload(),
 		},
 		snbt: snbtTestCase{
-			tagName: "IntArray",
+			tagName: `IntArray`,
 			payload: stringifyType{
-				typeDefault: "[I; ]",
-				typeCompact: "[I;]",
-				typePretty:  "[I; ]",
+				typeDefault: `[I; ]`,
+				typeCompact: `[I;]`,
+				typePretty:  `[I; ]`,
 			},
 		},
 		raw: rawTestCase{
@@ -90,7 +90,7 @@ var intArrayTagCases = []tagTestCase[*IntArrayPayload]{
 			tagName: []byte{
 				// Name Length: 8
 				0x00, 0x08,
-				// Name: "IntArray"
+				// Name: IntArray
 				0x49, 0x6E, 0x74, 0x41, 0x72, 0x72, 0x61, 0x79,
 			},
 			payload: []byte{

@@ -31,18 +31,18 @@ import (
 
 var intTagCases = []tagTestCase[*IntPayload]{
 	{
-		name: "positive case: IntTag",
+		name: `positive case: IntTag`,
 		nbt: nbtTestCase[*IntPayload]{
 			tagType: IntType,
-			tagName: "Int",
+			tagName: `Int`,
 			payload: NewIntPayload(123456789),
 		},
 		snbt: snbtTestCase{
-			tagName: "Int",
+			tagName: `Int`,
 			payload: stringifyType{
-				typeDefault: "123456789",
-				typeCompact: "123456789",
-				typePretty:  "123456789",
+				typeDefault: `123456789`,
+				typeCompact: `123456789`,
+				typePretty:  `123456789`,
 			},
 		},
 		raw: rawTestCase{
@@ -53,7 +53,7 @@ var intTagCases = []tagTestCase[*IntPayload]{
 			tagName: []byte{
 				// Name Length: 3
 				0x00, 0x03,
-				// Name: "Int"
+				// Name: Int
 				0x49, 0x6E, 0x74,
 			},
 			payload: []byte{

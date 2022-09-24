@@ -29,7 +29,7 @@ import (
 
 var endTagCases = []tagTestCase[Payload]{
 	{
-		name: "positive case: EndTag",
+		name: `positive case: EndTag`,
 		nbt: nbtTestCase[Payload]{
 			tagType: EndType,
 		},

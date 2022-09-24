@@ -31,18 +31,18 @@ import (
 
 var shortTagCases = []tagTestCase[*ShortPayload]{
 	{
-		name: "positive case: ShortTag",
+		name: `positive case: ShortTag`,
 		nbt: nbtTestCase[*ShortPayload]{
 			tagType: ShortType,
-			tagName: "Short",
+			tagName: `Short`,
 			payload: NewShortPayload(12345),
 		},
 		snbt: snbtTestCase{
-			tagName: "Short",
+			tagName: `Short`,
 			payload: stringifyType{
-				typeDefault: "12345s",
-				typeCompact: "12345s",
-				typePretty:  "12345s",
+				typeDefault: `12345s`,
+				typeCompact: `12345s`,
+				typePretty:  `12345s`,
 			},
 		},
 		raw: rawTestCase{
@@ -53,7 +53,7 @@ var shortTagCases = []tagTestCase[*ShortPayload]{
 			tagName: []byte{
 				// Name Length: 5
 				0x00, 0x05,
-				// Name: "Short"
+				// Name: Short
 				0x53, 0x68, 0x6f, 0x72, 0x74,
 			},
 			payload: []byte{

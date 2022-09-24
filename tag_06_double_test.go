@@ -31,18 +31,18 @@ import (
 
 var doubleTagCases = []tagTestCase[*DoublePayload]{
 	{
-		name: "positive case: DoubleTag",
+		name: `positive case: DoubleTag`,
 		nbt: nbtTestCase[*DoublePayload]{
 			tagType: DoubleType,
-			tagName: "Double",
+			tagName: `Double`,
 			payload: NewDoublePayload(0.123456789),
 		},
 		snbt: snbtTestCase{
-			tagName: "Double",
+			tagName: `Double`,
 			payload: stringifyType{
-				typeDefault: "0.123456789d",
-				typeCompact: "0.123456789d",
-				typePretty:  "0.123456789d",
+				typeDefault: `0.123456789d`,
+				typeCompact: `0.123456789d`,
+				typePretty:  `0.123456789d`,
 			},
 		},
 		raw: rawTestCase{
@@ -53,7 +53,7 @@ var doubleTagCases = []tagTestCase[*DoublePayload]{
 			tagName: []byte{
 				// Name Length: 6
 				0x00, 0x06,
-				// Name: "Double"
+				// Name: Double
 				0x44, 0x6F, 0x75, 0x62, 0x6C, 0x65,
 			},
 			payload: []byte{

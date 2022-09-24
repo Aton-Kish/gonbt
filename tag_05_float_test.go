@@ -31,18 +31,18 @@ import (
 
 var floatTagCases = []tagTestCase[*FloatPayload]{
 	{
-		name: "positive case: FloatTag",
+		name: `positive case: FloatTag`,
 		nbt: nbtTestCase[*FloatPayload]{
 			tagType: FloatType,
-			tagName: "Float",
+			tagName: `Float`,
 			payload: NewFloatPayload(0.12345678),
 		},
 		snbt: snbtTestCase{
-			tagName: "Float",
+			tagName: `Float`,
 			payload: stringifyType{
-				typeDefault: "0.12345678f",
-				typeCompact: "0.12345678f",
-				typePretty:  "0.12345678f",
+				typeDefault: `0.12345678f`,
+				typeCompact: `0.12345678f`,
+				typePretty:  `0.12345678f`,
 			},
 		},
 		raw: rawTestCase{
@@ -53,7 +53,7 @@ var floatTagCases = []tagTestCase[*FloatPayload]{
 			tagName: []byte{
 				// Name Length: 5
 				0x00, 0x05,
-				// Name: "Float"
+				// Name: Float
 				0x46, 0x6C, 0x6F, 0x61, 0x74,
 			},
 			payload: []byte{
