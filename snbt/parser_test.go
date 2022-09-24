@@ -21,6 +21,7 @@
 package snbt
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -178,6 +179,75 @@ func TestNewParser(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := NewParser(tt.snbt)
 			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestParser_Next(t *testing.T) {
+	cases := []struct {
+		name        string
+		snbt        string
+		expected    []*token
+		expectedErr error
+	}{
+		{
+			name: `positive case: Simple`,
+			snbt: `{"Hello World": {Name: "Steve"}}`,
+			expected: []*token{
+				{index: 0, char: '{'},
+				{index: 14, char: ':'},
+				{index: 16, char: '{'},
+				{index: 21, char: ':'},
+				{index: 30, char: '}'},
+				{index: 31, char: '}'},
+			},
+			expectedErr: errors.New("stop iteration"),
+		},
+		{
+			name: `positive case: Simple`,
+			snbt: `{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`,
+			expected: []*token{
+				{index: 0, char: '{'},
+				{index: 9, char: ':'},
+				{index: 11, char: '{'},
+				{index: 21, char: ':'},
+				{index: 23, char: '['},
+				{index: 25, char: ';'},
+				{index: 29, char: ','},
+				{index: 33, char: ']'},
+				{index: 34, char: ','},
+				{index: 44, char: ':'},
+				{index: 46, char: '{'},
+				{index: 53, char: ':'},
+				{index: 62, char: '}'},
+				{index: 63, char: ','},
+				{index: 69, char: ':'},
+				{index: 71, char: '['},
+				{index: 76, char: ']'},
+				{index: 77, char: ','},
+				{index: 84, char: ':'},
+				{index: 92, char: ','},
+				{index: 100, char: ':'},
+				{index: 109, char: '}'},
+				{index: 110, char: '}'},
+			},
+			expectedErr: errors.New("stop iteration"),
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			p := NewParser(tt.snbt)
+
+			for _, expected := range tt.expected {
+				err := p.Next()
+				assert.NoError(t, err)
+				assert.Equal(t, expected, p.curr)
+			}
+
+			err := p.Next()
+			assert.Error(t, err, tt.expectedErr)
+			assert.Equal(t, &token{index: len(tt.snbt)}, p.curr)
 		})
 	}
 }

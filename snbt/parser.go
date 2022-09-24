@@ -20,47 +20,95 @@
 
 package snbt
 
+import (
+	"errors"
+	"strings"
+)
+
 var (
 	bitmapSize = 64
 )
 
-type Bitmaps []uint64
+type bitmaps []uint64
+
+type token struct {
+	index int
+	char  rune
+}
+
+type parseOptions struct {
+	ignoreQuote        bool
+	ignoreSpace        bool
+	ignoreLeftBrace    bool
+	ignoreRightBrace   bool
+	ignoreLeftBracket  bool
+	ignoreRightBracket bool
+	ignoreComma        bool
+	ignoreColon        bool
+	ignoreSemicolon    bool
+}
 
 type Parser struct {
 	raw               []byte
-	stringMask        Bitmaps
-	quoteToken        Bitmaps
-	spaceToken        Bitmaps
-	leftBraceToken    Bitmaps
-	rightBraceToken   Bitmaps
-	leftBracketToken  Bitmaps
-	rightBracketToken Bitmaps
-	commaToken        Bitmaps
-	colonToken        Bitmaps
-	semicolonToken    Bitmaps
+	stringMask        bitmaps
+	quoteToken        bitmaps
+	spaceToken        bitmaps
+	leftBraceToken    bitmaps
+	rightBraceToken   bitmaps
+	leftBracketToken  bitmaps
+	rightBracketToken bitmaps
+	commaToken        bitmaps
+	colonToken        bitmaps
+	semicolonToken    bitmaps
+	prev              *token
+	curr              *token
 }
 
 func NewParser(snbt string) *Parser {
 	l := len(snbt)/bitmapSize + 1
-
 	p := &Parser{
 		raw:               []byte(snbt),
-		stringMask:        make(Bitmaps, l),
-		quoteToken:        make(Bitmaps, l),
-		spaceToken:        make(Bitmaps, l),
-		leftBraceToken:    make(Bitmaps, l),
-		rightBraceToken:   make(Bitmaps, l),
-		leftBracketToken:  make(Bitmaps, l),
-		rightBracketToken: make(Bitmaps, l),
-		commaToken:        make(Bitmaps, l),
-		colonToken:        make(Bitmaps, l),
-		semicolonToken:    make(Bitmaps, l),
+		stringMask:        make(bitmaps, l),
+		quoteToken:        make(bitmaps, l),
+		spaceToken:        make(bitmaps, l),
+		leftBraceToken:    make(bitmaps, l),
+		rightBraceToken:   make(bitmaps, l),
+		leftBracketToken:  make(bitmaps, l),
+		rightBracketToken: make(bitmaps, l),
+		commaToken:        make(bitmaps, l),
+		colonToken:        make(bitmaps, l),
+		semicolonToken:    make(bitmaps, l),
 	}
 
 	p.parseToken()
 	p.parseMask()
 
 	return p
+}
+
+func (p *Parser) tokenBitmaps(token rune) *bitmaps {
+	switch token {
+	case '"':
+		return &p.quoteToken
+	case ' ':
+		return &p.spaceToken
+	case '{':
+		return &p.leftBraceToken
+	case '}':
+		return &p.rightBraceToken
+	case '[':
+		return &p.leftBracketToken
+	case ']':
+		return &p.rightBracketToken
+	case ',':
+		return &p.commaToken
+	case ':':
+		return &p.colonToken
+	case ';':
+		return &p.semicolonToken
+	default:
+		return nil
+	}
 }
 
 func (p *Parser) parseToken() {
@@ -114,7 +162,7 @@ func (p *Parser) parseToken() {
 
 func (p *Parser) parseMask() {
 	l := len(p.quoteToken)
-	quoteBitmaps := make(Bitmaps, l)
+	quoteBitmaps := make(bitmaps, l)
 	copy(quoteBitmaps, p.quoteToken)
 
 	isQuoted := false
@@ -138,4 +186,98 @@ func (p *Parser) parseMask() {
 		p.colonToken[idx] &= ^p.stringMask[idx]
 		p.semicolonToken[idx] &= ^p.stringMask[idx]
 	}
+}
+
+func (p *Parser) Next() error {
+	return p.next()
+}
+
+func (p *Parser) next(optFns ...func(*parseOptions) error) error {
+	options := parseOptions{
+		ignoreQuote: true,
+		ignoreSpace: true,
+	}
+	for _, optFn := range optFns {
+		if err := optFn(&options); err != nil {
+			return err
+		}
+	}
+
+	l := len(p.raw)
+
+	var char rune
+	index := l
+
+	updateTokenIndexFn := func(c rune) {
+		bitmaps := p.tokenBitmaps(c)
+		if bitmaps == nil {
+			return
+		}
+
+		for idx, bitmap := range *bitmaps {
+			if bitmap == 0 {
+				continue
+			}
+
+			if i := idx*bitmapSize + rightmostIndex(bitmap); i < index {
+				index = i
+				char = c
+			}
+
+			break
+		}
+	}
+
+	if !options.ignoreQuote {
+		updateTokenIndexFn('"')
+	}
+
+	if !options.ignoreSpace {
+		updateTokenIndexFn(' ')
+	}
+
+	if !options.ignoreLeftBrace {
+		updateTokenIndexFn('{')
+	}
+
+	if !options.ignoreRightBrace {
+		updateTokenIndexFn('}')
+	}
+
+	if !options.ignoreLeftBracket {
+		updateTokenIndexFn('[')
+	}
+
+	if !options.ignoreRightBracket {
+		updateTokenIndexFn(']')
+	}
+
+	if !options.ignoreComma {
+		updateTokenIndexFn(',')
+	}
+
+	if !options.ignoreColon {
+		updateTokenIndexFn(':')
+	}
+
+	if !options.ignoreSemicolon {
+		updateTokenIndexFn(';')
+	}
+
+	p.prev = p.curr
+	p.curr = &token{index: index, char: char}
+
+	if index == l || !strings.ContainsRune(`" {}[],:;`, char) {
+		return errors.New("stop iteration")
+	}
+
+	bitmaps := p.tokenBitmaps(char)
+	if bitmaps == nil {
+		return errors.New("unexpected error")
+	}
+
+	idx := index / bitmapSize
+	(*bitmaps)[idx] = removeRightmost((*bitmaps)[idx])
+
+	return nil
 }
