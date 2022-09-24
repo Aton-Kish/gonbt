@@ -31,7 +31,7 @@ import (
 
 var floatTagCases = []tagTestCase[*FloatPayload]{
 	{
-		name: `positive case: FloatTag`,
+		name: `positive case: FloatTag - %f`,
 		nbt: nbtTestCase[*FloatPayload]{
 			tagType: FloatType,
 			tagName: `Float`,
@@ -67,6 +67,86 @@ var floatTagCases = []tagTestCase[*FloatPayload]{
 			payload: []byte{
 				// Payload: 0.12345678f
 				0x3D, 0xFC, 0xD6, 0xE9,
+			},
+		},
+	},
+	{
+		name: `positive case: FloatTag - +%e`,
+		nbt: nbtTestCase[*FloatPayload]{
+			tagType: FloatType,
+			tagName: `Float`,
+			payload: NewFloatPayload(1234567.8),
+		},
+		snbt: snbtTestCase{
+			tagName: `Float`,
+			payload: stringifyType{
+				typeDefault: `1.2345678e+06f`,
+				typeCompact: `1.2345678e+06f`,
+				typePretty:  `1.2345678e+06f`,
+			},
+		},
+		json: jsonTestCase{
+			tagName: `"Float"`,
+			payload: stringifyType{
+				typeDefault: `1.2345678e+06`,
+				typeCompact: `1.2345678e+06`,
+				typePretty:  `1.2345678e+06`,
+			},
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: Float(=5)
+				0x05,
+			},
+			tagName: []byte{
+				// Name Length: 5
+				0x00, 0x05,
+				// Name: Float
+				0x46, 0x6C, 0x6F, 0x61, 0x74,
+			},
+			payload: []byte{
+				// Payload: 1.2345678e+06f
+				0x49, 0x96, 0xB4, 0x3E,
+			},
+		},
+	},
+	{
+		name: `positive case: FloatTag - -%e`,
+		nbt: nbtTestCase[*FloatPayload]{
+			tagType: FloatType,
+			tagName: `Float`,
+			payload: NewFloatPayload(0.000012345678),
+		},
+		snbt: snbtTestCase{
+			tagName: `Float`,
+			payload: stringifyType{
+				typeDefault: `1.2345678e-05f`,
+				typeCompact: `1.2345678e-05f`,
+				typePretty:  `1.2345678e-05f`,
+			},
+		},
+		json: jsonTestCase{
+			tagName: `"Float"`,
+			payload: stringifyType{
+				typeDefault: `1.2345678e-05`,
+				typeCompact: `1.2345678e-05`,
+				typePretty:  `1.2345678e-05`,
+			},
+		},
+		raw: rawTestCase{
+			tagType: []byte{
+				// Type: Float(=5)
+				0x05,
+			},
+			tagName: []byte{
+				// Name Length: 5
+				0x00, 0x05,
+				// Name: Float
+				0x46, 0x6C, 0x6F, 0x61, 0x74,
+			},
+			payload: []byte{
+				// Payload: 1.2345678e-05f
+				0x37, 0x4F, 0x20, 0x49,
 			},
 		},
 	},
