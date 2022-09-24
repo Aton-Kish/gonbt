@@ -472,6 +472,7 @@ var nbtCases = []struct {
 	name string
 	nbt  Tag
 	snbt stringifyType
+	json stringifyType
 	raw  []byte
 }{
 	{
@@ -489,6 +490,15 @@ var nbtCases = []struct {
 			typePretty: `{
   "Hello World": {
     Name: "Steve"
+  }
+}`,
+		},
+		json: stringifyType{
+			typeDefault: `{"Hello World": {"Name": "Steve"}}`,
+			typeCompact: `{"Hello World":{"Name":"Steve"}}`,
+			typePretty: `{
+  "Hello World": {
+    "Name": "Steve"
   }
 }`,
 		},
@@ -539,6 +549,26 @@ var nbtCases = []struct {
     ],
     Short: 12345s,
     String: "Hello"
+  }
+}`,
+		},
+		json: stringifyType{
+			typeDefault: `{"Compound": {"ByteArray": [0, 1], "Compound": {"String": "World"}, "List": [123], "Short": 12345, "String": "Hello"}}`,
+			typeCompact: `{"Compound":{"ByteArray":[0,1],"Compound":{"String":"World"},"List":[123],"Short":12345,"String":"Hello"}}`,
+			typePretty: `{
+  "Compound": {
+    "ByteArray": [
+      0,
+      1
+    ],
+    "Compound": {
+      "String": "World"
+    },
+    "List": [
+      123
+    ],
+    "Short": 12345,
+    "String": "Hello"
   }
 }`,
 		},
@@ -727,6 +757,81 @@ func TestPrettyStringify(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := PrettyStringify(tt.nbt, "  ")
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestJson(t *testing.T) {
+	type Case struct {
+		name     string
+		nbt      Tag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range nbtCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			nbt:      c.nbt,
+			expected: c.json.typeDefault,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := Json(tt.nbt)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestCompactJson(t *testing.T) {
+	type Case struct {
+		name     string
+		nbt      Tag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range nbtCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			nbt:      c.nbt,
+			expected: c.json.typeCompact,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := CompactJson(tt.nbt)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestPrettyJson(t *testing.T) {
+	type Case struct {
+		name     string
+		nbt      Tag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range nbtCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			nbt:      c.nbt,
+			expected: c.json.typePretty,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := PrettyJson(tt.nbt, "  ")
 			assert.Equal(t, tt.expected, actual)
 		})
 	}

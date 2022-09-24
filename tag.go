@@ -257,6 +257,36 @@ func stringifyTag(tag Tag, space string, indent string, depth int) string {
 	return fmt.Sprintf("%s:%s%s", tag.TagName().stringify(), space, tag.Payload().stringify(space, indent, depth))
 }
 
+func Json(tag Tag) string {
+	return prettyJson(tag, " ", "")
+}
+
+func CompactJson(tag Tag) string {
+	return prettyJson(tag, "", "")
+}
+
+func PrettyJson(tag Tag, indent string) string {
+	return prettyJson(tag, " ", indent)
+}
+
+func prettyJson(tag Tag, space string, indent string) string {
+	rootName := ""
+	if tag.TagName() != nil {
+		rootName = string(*tag.TagName())
+	}
+
+	if rootName == "" {
+		snbt := tag.json(space, indent, 0)
+		return strings.TrimLeft(snbt[3:], space)
+	}
+
+	if indent == "" {
+		return fmt.Sprintf("{%s%s}", indent, tag.json(space, indent, 1))
+	}
+
+	return fmt.Sprintf("{\n%s%s\n}", indent, tag.json(space, indent, 1))
+}
+
 func jsonTag(tag Tag, space string, indent string, depth int) string {
 	if tag.TypeId() == EndType {
 		return ""
