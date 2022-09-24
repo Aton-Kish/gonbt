@@ -76,6 +76,10 @@ func (t *ByteTag) stringify(space string, indent string, depth int) string {
 	return stringifyTag(t, space, indent, depth)
 }
 
+func (t *ByteTag) json(space string, indent string, depth int) string {
+	return jsonTag(t, space, indent, depth)
+}
+
 type BytePayload int8
 
 func NewBytePayload(value int8) *BytePayload {
@@ -103,4 +107,8 @@ func (p *BytePayload) decode(r io.Reader) error {
 
 func (p *BytePayload) stringify(space string, indent string, depth int) string {
 	return fmt.Sprintf("%db", *p)
+}
+
+func (p *BytePayload) json(space string, indent string, depth int) string {
+	return fmt.Sprintf("%d", *p)
 }

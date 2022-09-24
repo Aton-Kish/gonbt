@@ -78,6 +78,10 @@ func (t *LongArrayTag) stringify(space string, indent string, depth int) string 
 	return stringifyTag(t, space, indent, depth)
 }
 
+func (t *LongArrayTag) json(space string, indent string, depth int) string {
+	return jsonTag(t, space, indent, depth)
+}
+
 type LongArrayPayload []int64
 
 func NewLongArrayPayload(values ...int64) *LongArrayPayload {
@@ -117,4 +121,23 @@ func (p *LongArrayPayload) stringify(space string, indent string, depth int) str
 	}
 
 	return fmt.Sprintf("[L;%s%s]", space, strings.Join(strs, fmt.Sprintf(",%s", space)))
+}
+
+func (p *LongArrayPayload) json(space string, indent string, depth int) string {
+	l := len(*p)
+	strs := make([]string, 0, l)
+	for _, v := range *p {
+		strs = append(strs, fmt.Sprintf("%d", v))
+	}
+
+	if indent == "" || l == 0 {
+		return fmt.Sprintf("[%s]", strings.Join(strs, fmt.Sprintf(",%s", space)))
+	}
+
+	indents := ""
+	for i := 0; i < depth; i++ {
+		indents += indent
+	}
+
+	return fmt.Sprintf("[\n%s%s%s\n%s]", indents, indent, strings.Join(strs, fmt.Sprintf(",\n%s%s", indents, indent)), indents)
 }

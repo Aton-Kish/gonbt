@@ -78,6 +78,10 @@ func (t *ListTag) stringify(space string, indent string, depth int) string {
 	return stringifyTag(t, space, indent, depth)
 }
 
+func (t *ListTag) json(space string, indent string, depth int) string {
+	return jsonTag(t, space, indent, depth)
+}
+
 type ListPayload []Payload
 
 func NewListPayload(values ...Payload) *ListPayload {
@@ -150,6 +154,25 @@ func (p *ListPayload) stringify(space string, indent string, depth int) string {
 	strs := make([]string, 0, l)
 	for _, payload := range *p {
 		strs = append(strs, payload.stringify(space, indent, depth+1))
+	}
+
+	if indent == "" || l == 0 {
+		return fmt.Sprintf("[%s]", strings.Join(strs, fmt.Sprintf(",%s", space)))
+	}
+
+	indents := ""
+	for i := 0; i < depth; i++ {
+		indents += indent
+	}
+
+	return fmt.Sprintf("[\n%s%s%s\n%s]", indents, indent, strings.Join(strs, fmt.Sprintf(",\n%s%s", indents, indent)), indents)
+}
+
+func (p *ListPayload) json(space string, indent string, depth int) string {
+	l := len(*p)
+	strs := make([]string, 0, l)
+	for _, payload := range *p {
+		strs = append(strs, payload.json(space, indent, depth+1))
 	}
 
 	if indent == "" || l == 0 {

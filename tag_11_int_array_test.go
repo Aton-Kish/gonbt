@@ -305,6 +305,81 @@ func TestIntArrayTag_stringify_pretty(t *testing.T) {
 	}
 }
 
+func TestIntArrayTag_json_default(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *IntArrayTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range intArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewIntArrayTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.json.tagName, c.json.payload.typeDefault),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.json(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestIntArrayTag_json_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *IntArrayTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range intArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewIntArrayTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s:%s", c.json.tagName, c.json.payload.typeCompact),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.json("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestIntArrayTag_json_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *IntArrayTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range intArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewIntArrayTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.json.tagName, c.json.payload.typePretty),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.json(" ", "  ", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
 func TestNewIntArrayPayload(t *testing.T) {
 	type Case struct {
 		name     string
@@ -475,6 +550,81 @@ func TestIntArrayPayload_stringify_pretty(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.payload.stringify(" ", "  ", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestIntArrayPayload_json_default(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *IntArrayPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range intArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.json.payload.typeDefault,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.json(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestIntArrayPayload_json_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *IntArrayPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range intArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.json.payload.typeCompact,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.json("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestIntArrayPayload_json_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *IntArrayPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range intArrayTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.json.payload.typePretty,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.json(" ", "  ", 0)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}

@@ -254,6 +254,81 @@ func TestShortTag_stringify_pretty(t *testing.T) {
 	}
 }
 
+func TestShortTag_json_default(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *ShortTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range shortTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewShortTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.json.tagName, c.json.payload.typeDefault),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.json(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestShortTag_json_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *ShortTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range shortTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewShortTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s:%s", c.json.tagName, c.json.payload.typeCompact),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.json("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestShortTag_json_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *ShortTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range shortTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewShortTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.json.tagName, c.json.payload.typePretty),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.json(" ", "  ", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
 func TestNewShortPayload(t *testing.T) {
 	type Case struct {
 		name     string
@@ -424,6 +499,81 @@ func TestShortPayload_stringify_pretty(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.payload.stringify(" ", "  ", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestShortPayload_json_default(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *ShortPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range shortTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.json.payload.typeDefault,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.json(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestShortPayload_json_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *ShortPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range shortTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.json.payload.typeCompact,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.json("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestShortPayload_json_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *ShortPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range shortTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.json.payload.typePretty,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.json(" ", "  ", 0)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}

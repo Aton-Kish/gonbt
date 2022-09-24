@@ -374,6 +374,81 @@ func TestCompoundTag_stringify_pretty(t *testing.T) {
 	}
 }
 
+func TestCompoundTag_json_default(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *CompoundTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range compoundTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewCompoundTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.json.tagName, c.json.payload.typeDefault),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.json(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestCompoundTag_json_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *CompoundTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range compoundTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewCompoundTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s:%s", c.json.tagName, c.json.payload.typeCompact),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.json("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestCompoundTag_json_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *CompoundTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range compoundTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewCompoundTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.json.tagName, c.json.payload.typePretty),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.json(" ", "  ", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
 func TestNewCompoundPayload(t *testing.T) {
 	type Case struct {
 		name     string
@@ -544,6 +619,81 @@ func TestCompoundPayload_stringify_pretty(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.payload.stringify(" ", "  ", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestCompoundPayload_json_default(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *CompoundPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range compoundTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.json.payload.typeDefault,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.json(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestCompoundPayload_json_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *CompoundPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range compoundTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.json.payload.typeCompact,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.json("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestCompoundPayload_json_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *CompoundPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range compoundTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.json.payload.typePretty,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.json(" ", "  ", 0)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}

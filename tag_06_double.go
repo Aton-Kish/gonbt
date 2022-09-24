@@ -76,6 +76,10 @@ func (t *DoubleTag) stringify(space string, indent string, depth int) string {
 	return stringifyTag(t, space, indent, depth)
 }
 
+func (t *DoubleTag) json(space string, indent string, depth int) string {
+	return jsonTag(t, space, indent, depth)
+}
+
 type DoublePayload float64
 
 func NewDoublePayload(value float64) *DoublePayload {
@@ -103,4 +107,8 @@ func (p *DoublePayload) decode(r io.Reader) error {
 
 func (p *DoublePayload) stringify(space string, indent string, depth int) string {
 	return fmt.Sprintf("%gd", *p)
+}
+
+func (p *DoublePayload) json(space string, indent string, depth int) string {
+	return fmt.Sprintf("%g", *p)
 }

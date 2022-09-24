@@ -76,6 +76,10 @@ func (t *ShortTag) stringify(space string, indent string, depth int) string {
 	return stringifyTag(t, space, indent, depth)
 }
 
+func (t *ShortTag) json(space string, indent string, depth int) string {
+	return jsonTag(t, space, indent, depth)
+}
+
 type ShortPayload int16
 
 func NewShortPayload(value int16) *ShortPayload {
@@ -103,4 +107,8 @@ func (p *ShortPayload) decode(r io.Reader) error {
 
 func (p *ShortPayload) stringify(space string, indent string, depth int) string {
 	return fmt.Sprintf("%ds", *p)
+}
+
+func (p *ShortPayload) json(space string, indent string, depth int) string {
+	return fmt.Sprintf("%d", *p)
 }

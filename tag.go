@@ -136,6 +136,7 @@ type Tag interface {
 	encode(w io.Writer) error
 	decode(r io.Reader) error
 	stringify(space string, indent string, depth int) string
+	json(space string, indent string, depth int) string
 }
 
 func NewTag(typ TagType) (Tag, error) {
@@ -249,12 +250,19 @@ func prettyStringify(tag Tag, space string, indent string) string {
 }
 
 func stringifyTag(tag Tag, space string, indent string, depth int) string {
-	typ := tag.TypeId()
-	if typ == EndType {
+	if tag.TypeId() == EndType {
 		return ""
 	}
 
 	return fmt.Sprintf("%s:%s%s", tag.TagName().stringify(), space, tag.Payload().stringify(space, indent, depth))
+}
+
+func jsonTag(tag Tag, space string, indent string, depth int) string {
+	if tag.TypeId() == EndType {
+		return ""
+	}
+
+	return fmt.Sprintf("%s:%s%s", tag.TagName().json(), space, tag.Payload().json(space, indent, depth))
 }
 
 // Payload
@@ -264,6 +272,7 @@ type Payload interface {
 	encode(w io.Writer) error
 	decode(r io.Reader) error
 	stringify(space string, indent string, depth int) string
+	json(space string, indent string, depth int) string
 }
 
 func NewPayload(typ TagType) (Payload, error) {

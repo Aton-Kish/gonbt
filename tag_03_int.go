@@ -76,6 +76,10 @@ func (t *IntTag) stringify(space string, indent string, depth int) string {
 	return stringifyTag(t, space, indent, depth)
 }
 
+func (t *IntTag) json(space string, indent string, depth int) string {
+	return jsonTag(t, space, indent, depth)
+}
+
 type IntPayload int32
 
 func NewIntPayload(value int32) *IntPayload {
@@ -102,5 +106,9 @@ func (p *IntPayload) decode(r io.Reader) error {
 }
 
 func (p *IntPayload) stringify(space string, indent string, depth int) string {
+	return fmt.Sprintf("%d", *p)
+}
+
+func (p *IntPayload) json(space string, indent string, depth int) string {
 	return fmt.Sprintf("%d", *p)
 }

@@ -79,6 +79,10 @@ func (t *StringTag) stringify(space string, indent string, depth int) string {
 	return stringifyTag(t, space, indent, depth)
 }
 
+func (t *StringTag) json(space string, indent string, depth int) string {
+	return jsonTag(t, space, indent, depth)
+}
+
 type StringPayload string
 
 func NewStringPayload(value string) *StringPayload {
@@ -128,4 +132,9 @@ func (p *StringPayload) stringify(space string, indent string, depth int) string
 	}
 
 	return qs
+}
+
+func (p *StringPayload) json(space string, indent string, depth int) string {
+	s := string(*p)
+	return strconv.Quote(s)
 }

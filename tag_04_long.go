@@ -76,6 +76,10 @@ func (t *LongTag) stringify(space string, indent string, depth int) string {
 	return stringifyTag(t, space, indent, depth)
 }
 
+func (t *LongTag) json(space string, indent string, depth int) string {
+	return jsonTag(t, space, indent, depth)
+}
+
 type LongPayload int64
 
 func NewLongPayload(value int64) *LongPayload {
@@ -103,4 +107,8 @@ func (p *LongPayload) decode(r io.Reader) error {
 
 func (p *LongPayload) stringify(space string, indent string, depth int) string {
 	return fmt.Sprintf("%dL", *p)
+}
+
+func (p *LongPayload) json(space string, indent string, depth int) string {
+	return fmt.Sprintf("%d", *p)
 }

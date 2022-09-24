@@ -78,6 +78,10 @@ func (t *ByteArrayTag) stringify(space string, indent string, depth int) string 
 	return stringifyTag(t, space, indent, depth)
 }
 
+func (t *ByteArrayTag) json(space string, indent string, depth int) string {
+	return jsonTag(t, space, indent, depth)
+}
+
 type ByteArrayPayload []int8
 
 func NewByteArrayPayload(values ...int8) *ByteArrayPayload {
@@ -117,4 +121,23 @@ func (p *ByteArrayPayload) stringify(space string, indent string, depth int) str
 	}
 
 	return fmt.Sprintf("[B;%s%s]", space, strings.Join(strs, fmt.Sprintf(",%s", space)))
+}
+
+func (p *ByteArrayPayload) json(space string, indent string, depth int) string {
+	l := len(*p)
+	strs := make([]string, 0, l)
+	for _, v := range *p {
+		strs = append(strs, fmt.Sprintf("%d", v))
+	}
+
+	if indent == "" || l == 0 {
+		return fmt.Sprintf("[%s]", strings.Join(strs, fmt.Sprintf(",%s", space)))
+	}
+
+	indents := ""
+	for i := 0; i < depth; i++ {
+		indents += indent
+	}
+
+	return fmt.Sprintf("[\n%s%s%s\n%s]", indents, indent, strings.Join(strs, fmt.Sprintf(",\n%s%s", indents, indent)), indents)
 }

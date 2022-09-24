@@ -142,7 +142,7 @@ func TestEndTag_decode(t *testing.T) {
 	}
 }
 
-func TestEndTag_stringify_default(t *testing.T) {
+func TestEndTag_stringify(t *testing.T) {
 	type Case struct {
 		name     string
 		tag      *EndTag
@@ -162,6 +162,31 @@ func TestEndTag_stringify_default(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.tag.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestEndTag_json(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *EndTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range endTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewEndTag(),
+			expected: "",
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.json(" ", "", 0)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}

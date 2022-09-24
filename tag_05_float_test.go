@@ -254,6 +254,81 @@ func TestFloatTag_stringify_pretty(t *testing.T) {
 	}
 }
 
+func TestFloatTag_json_default(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *FloatTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range floatTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewFloatTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.json.tagName, c.json.payload.typeDefault),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.json(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestFloatTag_json_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *FloatTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range floatTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewFloatTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s:%s", c.json.tagName, c.json.payload.typeCompact),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.json("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestFloatTag_json_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *FloatTag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range floatTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      NewFloatTag(&c.nbt.tagName, c.nbt.payload),
+			expected: fmt.Sprintf("%s: %s", c.json.tagName, c.json.payload.typePretty),
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.json(" ", "  ", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
 func TestNewFloatPayload(t *testing.T) {
 	type Case struct {
 		name     string
@@ -424,6 +499,81 @@ func TestFloatPayload_stringify_pretty(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.payload.stringify(" ", "  ", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestFloatPayload_json_default(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *FloatPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range floatTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.json.payload.typeDefault,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.json(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestFloatPayload_json_compact(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *FloatPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range floatTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.json.payload.typeCompact,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.json("", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestFloatPayload_json_pretty(t *testing.T) {
+	type Case struct {
+		name     string
+		payload  *FloatPayload
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range floatTagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			payload:  c.nbt.payload,
+			expected: c.json.payload.typePretty,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.payload.json(" ", "  ", 0)
 			assert.Equal(t, tt.expected, actual)
 		})
 	}

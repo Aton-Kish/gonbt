@@ -67,3 +67,7 @@ func (t *EndTag) decode(r io.Reader) error {
 func (t *EndTag) stringify(space string, indent string, depth int) string {
 	return stringifyTag(t, space, indent, depth)
 }
+
+func (t *EndTag) json(space string, indent string, depth int) string {
+	return jsonTag(t, space, indent, depth)
+}
