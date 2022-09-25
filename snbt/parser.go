@@ -60,8 +60,8 @@ type Parser struct {
 	commaToken        bitmaps
 	colonToken        bitmaps
 	semicolonToken    bitmaps
-	prev              *token
-	curr              *token
+	prev              token
+	curr              token
 }
 
 func NewParser(snbt string) *Parser {
@@ -78,6 +78,8 @@ func NewParser(snbt string) *Parser {
 		commaToken:        make(bitmaps, l),
 		colonToken:        make(bitmaps, l),
 		semicolonToken:    make(bitmaps, l),
+		prev:              token{index: -1},
+		curr:              token{index: -1},
 	}
 
 	p.parseToken()
@@ -265,7 +267,7 @@ func (p *Parser) next(optFns ...func(*parseOptions) error) error {
 	}
 
 	p.prev = p.curr
-	p.curr = &token{index: index, char: char}
+	p.curr = token{index: index, char: char}
 
 	if index == l || !strings.ContainsRune(`" {}[],:;`, char) {
 		return errors.New("stop iteration")

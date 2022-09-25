@@ -49,6 +49,8 @@ func TestNewParser(t *testing.T) {
 				commaToken:        []uint64{0b0000000000000000000000000000000000000000000000000000000000000000},
 				colonToken:        []uint64{0b0000000000000000000000000000000000000000001000000100000000000000},
 				semicolonToken:    []uint64{0b0000000000000000000000000000000000000000000000000000000000000000},
+				prev:              token{index: -1},
+				curr:              token{index: -1},
 			},
 		},
 		{
@@ -67,6 +69,8 @@ func TestNewParser(t *testing.T) {
 				commaToken:        []uint64{0b0000000000000000000000000000000000000000000000000000000000000000},
 				colonToken:        []uint64{0b0000000000000000000000000000000000000000000100000100000000000000},
 				semicolonToken:    []uint64{0b0000000000000000000000000000000000000000000000000000000000000000},
+				prev:              token{index: -1},
+				curr:              token{index: -1},
 			},
 		},
 		{
@@ -93,6 +97,8 @@ func TestNewParser(t *testing.T) {
 				commaToken:        []uint64{0b000000000000000000000_0000_000000000000000000_0000000000000000000_00},
 				colonToken:        []uint64{0b000000000000000000000_0000_000000000100000000_0001000000000000000_00},
 				semicolonToken:    []uint64{0b000000000000000000000_0000_000000000000000000_0000000000000000000_00},
+				prev:              token{index: -1},
+				curr:              token{index: -1},
 			},
 		},
 		{
@@ -111,6 +117,8 @@ func TestNewParser(t *testing.T) {
 				commaToken:        []uint64{0b1000000000000000000000000000010000100000000000000000000000000000, 0b0000000000000000000000000000000000010000000000000010000000000000},
 				colonToken:        []uint64{0b0000000000100000000100000000000000000000001000000000001000000000, 0b0000000000000000000000000001000000000000000100000000000000100000},
 				semicolonToken:    []uint64{0b0000000000000000000000000000000000000010000000000000000000000000, 0b0000000000000000000000000000000000000000000000000000000000000000},
+				prev:              token{index: -1},
+				curr:              token{index: -1},
 			},
 		},
 		{
@@ -129,6 +137,8 @@ func TestNewParser(t *testing.T) {
 				commaToken:        []uint64{0b0000000100000000000000000000000001000100000000000000000000000000, 0b0000000000000000000000000000000000000000000000100000000000010000},
 				colonToken:        []uint64{0b0010000000000000100000001000000000000000000100000000001000000000, 0b0000000000000000000000000000000000000001000000000000010000000000},
 				semicolonToken:    []uint64{0b0000000000000000000000000000000000000000100000000000000000000000, 0b0000000000000000000000000000000000000000000000000000000000000000},
+				prev:              token{index: -1},
+				curr:              token{index: -1},
 			},
 		},
 		{
@@ -171,6 +181,8 @@ func TestNewParser(t *testing.T) {
 				commaToken:        []uint64{0b0000_0000000000000000_0100001000000000000000000000_00000000000000_00, 0b000000000_0100000_00000000000_000000000000_0100000_000000000000000000, 0b000000000000000000000000000000_0000_00000000000000000000_0100000000},
 				colonToken:        []uint64{0b0000_0001000000000000_0000000000000010000000000000_00010000000000_00, 0b000000000_0000000_00000000000_000100000000_0000000_000000000100000000, 0b000000000000000000000000000000_0000_00000000010000000000_0000000001},
 				semicolonToken:    []uint64{0b0000_0000000000000000_0000000000100000000000000000_00000000000000_00, 0b000000000_0000000_00000000000_000000000000_0000000_000000000000000000, 0b000000000000000000000000000000_0000_00000000000000000000_0000000000},
+				prev:              token{index: -1},
+				curr:              token{index: -1},
 			},
 		},
 	}
@@ -187,13 +199,13 @@ func TestParser_Next(t *testing.T) {
 	cases := []struct {
 		name        string
 		snbt        string
-		expected    []*token
+		expected    []token
 		expectedErr error
 	}{
 		{
 			name: `positive case: Simple`,
 			snbt: `{"Hello World": {Name: "Steve"}}`,
-			expected: []*token{
+			expected: []token{
 				{index: 0, char: '{'},
 				{index: 14, char: ':'},
 				{index: 16, char: '{'},
@@ -206,7 +218,7 @@ func TestParser_Next(t *testing.T) {
 		{
 			name: `positive case: Simple`,
 			snbt: `{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`,
-			expected: []*token{
+			expected: []token{
 				{index: 0, char: '{'},
 				{index: 9, char: ':'},
 				{index: 11, char: '{'},
@@ -239,6 +251,8 @@ func TestParser_Next(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			p := NewParser(tt.snbt)
 
+			assert.Equal(t, token{index: -1}, p.curr)
+
 			for _, expected := range tt.expected {
 				err := p.Next()
 				assert.NoError(t, err)
@@ -247,7 +261,7 @@ func TestParser_Next(t *testing.T) {
 
 			err := p.Next()
 			assert.Error(t, err, tt.expectedErr)
-			assert.Equal(t, &token{index: len(tt.snbt)}, p.curr)
+			assert.Equal(t, token{index: len(tt.snbt)}, p.curr)
 		})
 	}
 }
