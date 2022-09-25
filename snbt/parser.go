@@ -31,9 +31,17 @@ var (
 
 type bitmaps []uint64
 
-type token struct {
+type Token struct {
 	index int
 	char  rune
+}
+
+func (t *Token) Index() int {
+	return t.index
+}
+
+func (t *Token) Char() rune {
+	return t.char
 }
 
 type parseOptions struct {
@@ -60,8 +68,8 @@ type Parser struct {
 	commaToken        bitmaps
 	colonToken        bitmaps
 	semicolonToken    bitmaps
-	prev              token
-	curr              token
+	prev              Token
+	curr              Token
 }
 
 func NewParser(snbt string) *Parser {
@@ -78,8 +86,8 @@ func NewParser(snbt string) *Parser {
 		commaToken:        make(bitmaps, l),
 		colonToken:        make(bitmaps, l),
 		semicolonToken:    make(bitmaps, l),
-		prev:              token{index: -1},
-		curr:              token{index: -1},
+		prev:              Token{index: -1},
+		curr:              Token{index: -1},
 	}
 
 	p.parseToken()
@@ -206,12 +214,12 @@ func (p *Parser) Slice(start int, end int) ([]byte, error) {
 	return p.raw[start:end], nil
 }
 
-func (p *Parser) PrevToken() (int, rune) {
-	return p.prev.index, p.prev.char
+func (p *Parser) PrevToken() *Token {
+	return &p.prev
 }
 
-func (p *Parser) CurrToken() (int, rune) {
-	return p.curr.index, p.curr.char
+func (p *Parser) CurrToken() *Token {
+	return &p.curr
 }
 
 func (p *Parser) Next() error {
@@ -231,7 +239,7 @@ func (p *Parser) next(optFns ...func(*parseOptions) error) error {
 
 	l := len(p.raw)
 
-	var char rune
+	var token rune
 	index := l
 
 	updateTokenIndexFn := func(c rune) {
@@ -247,7 +255,7 @@ func (p *Parser) next(optFns ...func(*parseOptions) error) error {
 
 			if i := idx*bitmapSize + rightmostIndex(bitmap); i < index {
 				index = i
-				char = c
+				token = c
 			}
 
 			break
@@ -291,13 +299,13 @@ func (p *Parser) next(optFns ...func(*parseOptions) error) error {
 	}
 
 	p.prev = p.curr
-	p.curr = token{index: index, char: char}
+	p.curr = Token{index: index, char: token}
 
-	if index == l || !strings.ContainsRune(`" {}[],:;`, char) {
+	if index == l || !strings.ContainsRune(`" {}[],:;`, token) {
 		return errors.New("stop iteration")
 	}
 
-	bitmaps := p.tokenBitmaps(char)
+	bitmaps := p.tokenBitmaps(token)
 	if bitmaps == nil {
 		return errors.New("unexpected error")
 	}
