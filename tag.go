@@ -69,7 +69,7 @@ func (t *TagType) decode(r io.Reader) error {
 
 // Tag Name
 
-var quotationRequiredCharacters = regexp.MustCompile(`[ !"#$%&'()*,/:;<=>?@[\\\]^\x60{|}~]`)
+var quoteRequiredCharacters = regexp.MustCompile(`[ !"#$%&'()*,/:;<=>?@[\\\]^\x60{|}~]`)
 
 type TagName string
 
@@ -108,7 +108,7 @@ func (n *TagName) decode(r io.Reader) error {
 
 func (n *TagName) stringify() string {
 	s := string(*n)
-	if !quotationRequiredCharacters.MatchString(s) {
+	if !quoteRequiredCharacters.MatchString(s) {
 		return s
 	}
 
