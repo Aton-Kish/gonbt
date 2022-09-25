@@ -795,6 +795,72 @@ func TestParse_default(t *testing.T) {
 	}
 }
 
+func TestParse_compact(t *testing.T) {
+	type Case struct {
+		name        string
+		snbt        string
+		expected    Tag
+		expectedErr error
+	}
+
+	cases := []Case{}
+
+	for _, c := range nbtCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			snbt:        c.snbt.typeCompact,
+			expected:    c.nbt,
+			expectedErr: nil,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual, err := Parse(tt.snbt)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, Stringify(tt.expected), Stringify(actual))
+			} else {
+				assert.Error(t, err, tt.expectedErr.Error())
+			}
+		})
+	}
+}
+
+func TestParse_pretty(t *testing.T) {
+	type Case struct {
+		name        string
+		snbt        string
+		expected    Tag
+		expectedErr error
+	}
+
+	cases := []Case{}
+
+	for _, c := range nbtCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			snbt:        c.snbt.typePretty,
+			expected:    c.nbt,
+			expectedErr: nil,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual, err := Parse(tt.snbt)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, Stringify(tt.expected), Stringify(actual))
+			} else {
+				assert.Error(t, err, tt.expectedErr.Error())
+			}
+		})
+	}
+}
+
 func TestJson(t *testing.T) {
 	type Case struct {
 		name     string
