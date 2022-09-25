@@ -195,6 +195,175 @@ func TestNewParser(t *testing.T) {
 	}
 }
 
+func TestParser_Rune(t *testing.T) {
+	cases := []struct {
+		name        string
+		snbt        string
+		index       int
+		expected    rune
+		expectedErr error
+	}{
+		{
+			name:     `positive case: Simple - 0`,
+			snbt:     `{"Hello World": {Name: "Steve"}}`,
+			index:    0,
+			expected: '{',
+		},
+		{
+			name:     `positive case: Simple - 10`,
+			snbt:     `{"Hello World": {Name: "Steve"}}`,
+			index:    10,
+			expected: 'r',
+		},
+		{
+			name:        `negative case: Simple - -1`,
+			snbt:        `{"Hello World": {Name: "Steve"}}`,
+			index:       -1,
+			expectedErr: errors.New("out of range"),
+		},
+		{
+			name:        `negative case: Simple - 32`,
+			snbt:        `{"Hello World": {Name: "Steve"}}`,
+			index:       32,
+			expectedErr: errors.New("out of range"),
+		},
+		{
+			name:     `positive case: Tag Check - 0`,
+			snbt:     `{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`,
+			index:    0,
+			expected: '{',
+		},
+		{
+			name:     `positive case: Tag Check - 10`,
+			snbt:     `{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`,
+			index:    10,
+			expected: ' ',
+		},
+		{
+			name:        `positive case: Tag Check - -1`,
+			snbt:        `{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`,
+			index:       -1,
+			expectedErr: errors.New("out of range"),
+		},
+		{
+			name:        `positive case: Tag Check - 111`,
+			snbt:        `{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`,
+			index:       111,
+			expectedErr: errors.New("out of range"),
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			p := NewParser(tt.snbt)
+			actual, err := p.Rune(tt.index)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expected, actual)
+			} else {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			}
+		})
+	}
+}
+
+func TestParser_Slice(t *testing.T) {
+	cases := []struct {
+		name        string
+		snbt        string
+		start       int
+		end         int
+		expected    []byte
+		expectedErr error
+	}{
+		{
+			name:     `positive case: Simple - [0:0]`,
+			snbt:     `{"Hello World": {Name: "Steve"}}`,
+			start:    0,
+			end:      0,
+			expected: []byte{},
+		},
+		{
+			name:     `positive case: Simple - [0:10]`,
+			snbt:     `{"Hello World": {Name: "Steve"}}`,
+			start:    0,
+			end:      10,
+			expected: []byte(`{"Hello Wo`),
+		},
+		{
+			name:        `negative case: Simple - [-1:0]`,
+			snbt:        `{"Hello World": {Name: "Steve"}}`,
+			start:       -1,
+			end:         0,
+			expectedErr: errors.New("out of range"),
+		},
+		{
+			name:        `negative case: Simple - [0:33]`,
+			snbt:        `{"Hello World": {Name: "Steve"}}`,
+			start:       0,
+			end:         33,
+			expectedErr: errors.New("out of range"),
+		},
+		{
+			name:        `negative case: Simple - [10:0]`,
+			snbt:        `{"Hello World": {Name: "Steve"}}`,
+			start:       10,
+			end:         0,
+			expectedErr: errors.New("out of range"),
+		},
+		{
+			name:     `positive case: Tag Check - [0:0]`,
+			snbt:     `{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`,
+			start:    0,
+			end:      0,
+			expected: []byte{},
+		},
+		{
+			name:     `positive case: Tag Check - [0:10]`,
+			snbt:     `{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`,
+			start:    0,
+			end:      10,
+			expected: []byte(`{Compound:`),
+		},
+		{
+			name:        `negative case: Tag Check - [-1:0]`,
+			snbt:        `{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`,
+			start:       -1,
+			end:         0,
+			expectedErr: errors.New("out of range"),
+		},
+		{
+			name:        `negative case: Tag Check - [0:112]`,
+			snbt:        `{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`,
+			start:       0,
+			end:         112,
+			expectedErr: errors.New("out of range"),
+		},
+		{
+			name:        `negative case: Tag Check - [10:0]`,
+			snbt:        `{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`,
+			start:       10,
+			end:         0,
+			expectedErr: errors.New("out of range"),
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			p := NewParser(tt.snbt)
+			actual, err := p.Slice(tt.start, tt.end)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expected, actual)
+			} else {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			}
+		})
+	}
+}
+
 func TestParser_Next(t *testing.T) {
 	cases := []struct {
 		name        string
@@ -216,7 +385,7 @@ func TestParser_Next(t *testing.T) {
 			expectedErr: errors.New("stop iteration"),
 		},
 		{
-			name: `positive case: Simple`,
+			name: `positive case: Tag Check`,
 			snbt: `{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`,
 			expected: []token{
 				{index: 0, char: '{'},

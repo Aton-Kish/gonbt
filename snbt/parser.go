@@ -190,6 +190,30 @@ func (p *Parser) parseMask() {
 	}
 }
 
+func (p *Parser) Rune(index int) (rune, error) {
+	if index < 0 || index >= len(p.raw) {
+		return *new(rune), errors.New("out of range")
+	}
+
+	return rune(p.raw[index]), nil
+}
+
+func (p *Parser) Slice(start int, end int) ([]byte, error) {
+	if start < 0 || start > len(p.raw) || end < 0 || end > len(p.raw) || start > end {
+		return nil, errors.New("out of range")
+	}
+
+	return p.raw[start:end], nil
+}
+
+func (p *Parser) PrevToken() (int, rune) {
+	return p.prev.index, p.prev.char
+}
+
+func (p *Parser) CurrToken() (int, rune) {
+	return p.curr.index, p.curr.char
+}
+
 func (p *Parser) Next() error {
 	return p.next()
 }
