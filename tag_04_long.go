@@ -24,8 +24,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strconv"
 
 	"github.com/Aton-Kish/gonbt/pointer"
+	"github.com/Aton-Kish/gonbt/snbt"
 )
 
 type LongTag struct {
@@ -76,6 +78,10 @@ func (t *LongTag) stringify(space string, indent string, depth int) string {
 	return stringifyTag(t, space, indent, depth)
 }
 
+func (t *LongTag) parse(parser *snbt.Parser) error {
+	return parseTag(t, parser)
+}
+
 func (t *LongTag) json(space string, indent string, depth int) string {
 	return jsonTag(t, space, indent, depth)
 }
@@ -107,6 +113,27 @@ func (p *LongPayload) decode(r io.Reader) error {
 
 func (p *LongPayload) stringify(space string, indent string, depth int) string {
 	return fmt.Sprintf("%dL", *p)
+}
+
+func (p *LongPayload) parse(parser *snbt.Parser) error {
+	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
+	if err != nil {
+		return err
+	}
+
+	g := longPattern.FindSubmatch(b)
+	if len(g) < 2 {
+		return errors.New("invalid snbt format")
+	}
+
+	i, err := strconv.ParseInt(string(g[1]), 10, 64)
+	if err != nil {
+		return err
+	}
+
+	*p = *NewLongPayload(i)
+
+	return nil
 }
 
 func (p *LongPayload) json(space string, indent string, depth int) string {

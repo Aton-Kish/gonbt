@@ -24,8 +24,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strconv"
 
 	"github.com/Aton-Kish/gonbt/pointer"
+	"github.com/Aton-Kish/gonbt/snbt"
 )
 
 type FloatTag struct {
@@ -75,6 +77,10 @@ func (t *FloatTag) stringify(space string, indent string, depth int) string {
 	return stringifyTag(t, space, indent, depth)
 }
 
+func (t *FloatTag) parse(parser *snbt.Parser) error {
+	return parseTag(t, parser)
+}
+
 func (t *FloatTag) json(space string, indent string, depth int) string {
 	return jsonTag(t, space, indent, depth)
 }
@@ -106,6 +112,27 @@ func (p *FloatPayload) decode(r io.Reader) error {
 
 func (p *FloatPayload) stringify(space string, indent string, depth int) string {
 	return fmt.Sprintf("%gf", *p)
+}
+
+func (p *FloatPayload) parse(parser *snbt.Parser) error {
+	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
+	if err != nil {
+		return err
+	}
+
+	g := floatPattern.FindSubmatch(b)
+	if len(g) < 2 {
+		return errors.New("invalid snbt format")
+	}
+
+	f, err := strconv.ParseFloat(string(g[1]), 32)
+	if err != nil {
+		return err
+	}
+
+	*p = *NewFloatPayload(float32(f))
+
+	return nil
 }
 
 func (p *FloatPayload) json(space string, indent string, depth int) string {

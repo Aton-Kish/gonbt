@@ -28,6 +28,7 @@ import (
 	"strings"
 
 	"github.com/Aton-Kish/gonbt/pointer"
+	"github.com/Aton-Kish/gonbt/snbt"
 )
 
 type CompoundTag struct {
@@ -76,6 +77,10 @@ func (t *CompoundTag) decode(r io.Reader) error {
 
 func (t *CompoundTag) stringify(space string, indent string, depth int) string {
 	return stringifyTag(t, space, indent, depth)
+}
+
+func (t *CompoundTag) parse(parser *snbt.Parser) error {
+	return parseTag(t, parser)
 }
 
 func (t *CompoundTag) json(space string, indent string, depth int) string {
@@ -146,6 +151,34 @@ func (p *CompoundPayload) stringify(space string, indent string, depth int) stri
 	}
 
 	return fmt.Sprintf("{\n%s%s%s\n%s}", indents, indent, strings.Join(strs, fmt.Sprintf(",\n%s%s", indents, indent)), indents)
+}
+
+func (p *CompoundPayload) parse(parser *snbt.Parser) error {
+	for parser.CurrToken().Char() != '}' {
+		if err := parser.Next(); err != nil {
+			return err
+		}
+
+		tag, err := newTagFromSnbt(parser)
+		if err != nil {
+			return err
+		}
+
+		if err := tag.parse(parser); err != nil {
+			return err
+		}
+
+		*p = append(*p, tag)
+	}
+
+	*p = append(*p, &EndTag{})
+
+	// NOTE: ignore stop iteration error
+	if err := parser.Next(); err != nil && err.Error() != "stop iteration" {
+		return err
+	}
+
+	return nil
 }
 
 func (p *CompoundPayload) json(space string, indent string, depth int) string {

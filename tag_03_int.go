@@ -24,8 +24,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strconv"
 
 	"github.com/Aton-Kish/gonbt/pointer"
+	"github.com/Aton-Kish/gonbt/snbt"
 )
 
 type IntTag struct {
@@ -76,6 +78,10 @@ func (t *IntTag) stringify(space string, indent string, depth int) string {
 	return stringifyTag(t, space, indent, depth)
 }
 
+func (t *IntTag) parse(parser *snbt.Parser) error {
+	return parseTag(t, parser)
+}
+
 func (t *IntTag) json(space string, indent string, depth int) string {
 	return jsonTag(t, space, indent, depth)
 }
@@ -107,6 +113,22 @@ func (p *IntPayload) decode(r io.Reader) error {
 
 func (p *IntPayload) stringify(space string, indent string, depth int) string {
 	return fmt.Sprintf("%d", *p)
+}
+
+func (p *IntPayload) parse(parser *snbt.Parser) error {
+	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
+	if err != nil {
+		return err
+	}
+
+	i, err := strconv.ParseInt(string(b), 10, 32)
+	if err != nil {
+		return err
+	}
+
+	*p = *NewIntPayload(int32(i))
+
+	return nil
 }
 
 func (p *IntPayload) json(space string, indent string, depth int) string {

@@ -28,6 +28,7 @@ import (
 	"strings"
 
 	"github.com/Aton-Kish/gonbt/pointer"
+	"github.com/Aton-Kish/gonbt/snbt"
 )
 
 type ListTag struct {
@@ -76,6 +77,10 @@ func (t *ListTag) decode(r io.Reader) error {
 
 func (t *ListTag) stringify(space string, indent string, depth int) string {
 	return stringifyTag(t, space, indent, depth)
+}
+
+func (t *ListTag) parse(parser *snbt.Parser) error {
+	return parseTag(t, parser)
 }
 
 func (t *ListTag) json(space string, indent string, depth int) string {
@@ -166,6 +171,31 @@ func (p *ListPayload) stringify(space string, indent string, depth int) string {
 	}
 
 	return fmt.Sprintf("[\n%s%s%s\n%s]", indents, indent, strings.Join(strs, fmt.Sprintf(",\n%s%s", indents, indent)), indents)
+}
+
+func (p *ListPayload) parse(parser *snbt.Parser) error {
+	for parser.CurrToken().Char() != ']' {
+		if err := parser.Next(); err != nil {
+			return err
+		}
+
+		payload, err := newPayloadFromSnbt(parser)
+		if err != nil {
+			return err
+		}
+
+		if err := payload.parse(parser); err != nil {
+			return err
+		}
+
+		*p = append(*p, payload)
+	}
+
+	if err := parser.Next(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (p *ListPayload) json(space string, indent string, depth int) string {

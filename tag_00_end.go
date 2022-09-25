@@ -23,6 +23,8 @@ package nbt
 import (
 	"errors"
 	"io"
+
+	"github.com/Aton-Kish/gonbt/snbt"
 )
 
 type EndTag struct {
@@ -66,6 +68,10 @@ func (t *EndTag) decode(r io.Reader) error {
 
 func (t *EndTag) stringify(space string, indent string, depth int) string {
 	return stringifyTag(t, space, indent, depth)
+}
+
+func (t *EndTag) parse(parser *snbt.Parser) error {
+	return parseTag(t, parser)
 }
 
 func (t *EndTag) json(space string, indent string, depth int) string {

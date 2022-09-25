@@ -25,9 +25,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 
 	"github.com/Aton-Kish/gonbt/pointer"
+	"github.com/Aton-Kish/gonbt/snbt"
 )
 
 type IntArrayTag struct {
@@ -78,6 +80,10 @@ func (t *IntArrayTag) stringify(space string, indent string, depth int) string {
 	return stringifyTag(t, space, indent, depth)
 }
 
+func (t *IntArrayTag) parse(parser *snbt.Parser) error {
+	return parseTag(t, parser)
+}
+
 func (t *IntArrayTag) json(space string, indent string, depth int) string {
 	return jsonTag(t, space, indent, depth)
 }
@@ -121,6 +127,40 @@ func (p *IntArrayPayload) stringify(space string, indent string, depth int) stri
 	}
 
 	return fmt.Sprintf("[I;%s%s]", space, strings.Join(strs, fmt.Sprintf(",%s", space)))
+}
+
+func (p *IntArrayPayload) parse(parser *snbt.Parser) error {
+	if err := parser.Next(); err != nil {
+		return err
+	}
+
+	if parser.CurrToken().Char() != ';' {
+		return errors.New("invalid snbt format")
+	}
+
+	for parser.CurrToken().Char() != ']' {
+		if err := parser.Next(); err != nil {
+			return err
+		}
+
+		b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
+		if err != nil {
+			return err
+		}
+
+		i, err := strconv.ParseInt(string(b), 10, 32)
+		if err != nil {
+			return err
+		}
+
+		*p = append(*p, int32(i))
+	}
+
+	if err := parser.Next(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (p *IntArrayPayload) json(space string, indent string, depth int) string {
