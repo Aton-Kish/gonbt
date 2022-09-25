@@ -195,7 +195,7 @@ func TestNewParser(t *testing.T) {
 	}
 }
 
-func TestParser_Rune(t *testing.T) {
+func TestParser_Char(t *testing.T) {
 	cases := []struct {
 		name        string
 		snbt        string
@@ -256,7 +256,7 @@ func TestParser_Rune(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			p := NewParser(tt.snbt)
-			actual, err := p.Rune(tt.index)
+			actual, err := p.Char(tt.index)
 
 			if tt.expectedErr == nil {
 				assert.NoError(t, err)

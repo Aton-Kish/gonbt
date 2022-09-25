@@ -198,7 +198,7 @@ func (p *Parser) parseMask() {
 	}
 }
 
-func (p *Parser) Rune(index int) (rune, error) {
+func (p *Parser) Char(index int) (rune, error) {
 	if index < 0 || index >= len(p.raw) {
 		return *new(rune), errors.New("out of range")
 	}
