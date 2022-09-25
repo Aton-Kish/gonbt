@@ -73,22 +73,9 @@ type Parser struct {
 }
 
 func NewParser(snbt string) *Parser {
-	l := len(snbt)/bitmapSize + 1
-	p := &Parser{
-		raw:               []byte(snbt),
-		stringMask:        make(bitmaps, l),
-		quoteToken:        make(bitmaps, l),
-		spaceToken:        make(bitmaps, l),
-		leftBraceToken:    make(bitmaps, l),
-		rightBraceToken:   make(bitmaps, l),
-		leftBracketToken:  make(bitmaps, l),
-		rightBracketToken: make(bitmaps, l),
-		commaToken:        make(bitmaps, l),
-		colonToken:        make(bitmaps, l),
-		semicolonToken:    make(bitmaps, l),
-		prev:              Token{index: -1},
-		curr:              Token{index: -1},
-	}
+	p := new(Parser)
+	p.init(len(snbt))
+	p.raw = []byte(snbt)
 
 	p.parseToken()
 	p.parseMask()
@@ -119,6 +106,24 @@ func (p *Parser) tokenBitmaps(token rune) *bitmaps {
 	default:
 		return nil
 	}
+}
+
+func (p *Parser) init(length int) {
+	bl := length/bitmapSize + 1
+
+	p.raw = make([]byte, length)
+	p.stringMask = make(bitmaps, bl)
+	p.quoteToken = make(bitmaps, bl)
+	p.spaceToken = make(bitmaps, bl)
+	p.leftBraceToken = make(bitmaps, bl)
+	p.rightBraceToken = make(bitmaps, bl)
+	p.leftBracketToken = make(bitmaps, bl)
+	p.rightBracketToken = make(bitmaps, bl)
+	p.commaToken = make(bitmaps, bl)
+	p.colonToken = make(bitmaps, bl)
+	p.semicolonToken = make(bitmaps, bl)
+	p.prev = Token{index: -1}
+	p.curr = Token{index: -1}
 }
 
 func (p *Parser) parseToken() {
@@ -226,7 +231,7 @@ func (p *Parser) Next() error {
 	return p.next()
 }
 
-func (p *Parser) next(optFns ...func(*parseOptions) error) error {
+func (p *Parser) next(optFns ...func(options *parseOptions) error) error {
 	options := parseOptions{
 		ignoreQuote: true,
 		ignoreSpace: true,
@@ -312,6 +317,62 @@ func (p *Parser) next(optFns ...func(*parseOptions) error) error {
 
 	idx := index / bitmapSize
 	(*bitmaps)[idx] = removeRightmost((*bitmaps)[idx])
+
+	return nil
+}
+
+func (p *Parser) Compact() error {
+	orgp := NewParser(string(p.raw))
+
+	dataMask := make(bitmaps, len(orgp.spaceToken))
+	copy(dataMask, orgp.spaceToken)
+
+	optFn := func(options *parseOptions) error {
+		options.ignoreQuote = false
+		return nil
+	}
+
+	comp := new(Parser)
+	cl := len(orgp.raw) - popCount(orgp.spaceToken...)
+	comp.init(cl)
+
+	ci := 0
+
+	if err := orgp.next(optFn); err != nil && err.Error() != "stop iteration" {
+		return err
+	}
+
+	for idx := range dataMask {
+		dataMask[idx] = ^dataMask[idx]
+		for dataMask[idx] != 0 {
+			i := idx*64 + rightmostIndex(dataMask[idx])
+
+			dataMask[idx] = removeRightmost(dataMask[idx])
+
+			if i == orgp.CurrToken().Index() {
+				bitmaps := comp.tokenBitmaps(orgp.CurrToken().Char())
+				if bitmaps == nil {
+					return errors.New("unexpected error")
+				}
+
+				cidx, cpos := ci/bitmapSize, ci%bitmapSize
+				(*bitmaps)[cidx] |= 1 << cpos
+
+				if err := orgp.next(optFn); err != nil && err.Error() != "stop iteration" {
+					return err
+				}
+			}
+
+			comp.raw[ci] = orgp.raw[i]
+			if ci++; ci == cl {
+				break
+			}
+		}
+	}
+
+	comp.parseMask()
+
+	*p = *comp
 
 	return nil
 }
