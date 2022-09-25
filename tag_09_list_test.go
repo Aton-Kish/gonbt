@@ -26,6 +26,7 @@ import (
 	"testing"
 
 	"github.com/Aton-Kish/gonbt/slices"
+	"github.com/Aton-Kish/gonbt/snbt"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -570,6 +571,56 @@ func TestListTag_stringify_pretty(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := tt.tag.stringify(" ", "  ", 0)
 			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+func TestListTag_parse(t *testing.T) {
+	type Case struct {
+		name        string
+		snbt        string
+		expected    *ListPayload
+		expectedErr error
+	}
+
+	cases := []Case{}
+
+	for _, c := range listTagCases {
+		cases = append(cases, Case{
+			name:        c.name,
+			snbt:        c.snbt.payload.typeDefault,
+			expected:    c.nbt.payload,
+			expectedErr: nil,
+		})
+		cases = append(cases, Case{
+			name:        c.name,
+			snbt:        c.snbt.payload.typeCompact,
+			expected:    c.nbt.payload,
+			expectedErr: nil,
+		})
+		cases = append(cases, Case{
+			name:        c.name,
+			snbt:        c.snbt.payload.typePretty,
+			expected:    c.nbt.payload,
+			expectedErr: nil,
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			parser := snbt.NewParser(tt.snbt)
+			err := parser.Compact()
+			assert.NoError(t, err)
+
+			payload := NewListPayload()
+			err = payload.parse(parser)
+
+			if tt.expectedErr == nil {
+				assert.Error(t, err, "stop iteration")
+				assert.Equal(t, tt.expected, payload)
+			} else {
+				assert.Error(t, err, tt.expectedErr.Error())
+			}
 		})
 	}
 }

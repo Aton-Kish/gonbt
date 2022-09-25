@@ -159,6 +159,12 @@ func (p *CompoundPayload) parse(parser *snbt.Parser) error {
 			return err
 		}
 
+		// NOTE: break if empty
+		if parser.CurrToken().Char() == '}' && parser.PrevToken().Char() == '{' &&
+			parser.CurrToken().Index()-parser.PrevToken().Index() == 1 {
+			break
+		}
+
 		tag, err := newTagFromSnbt(parser)
 		if err != nil {
 			return err

@@ -143,6 +143,12 @@ func (p *ByteArrayPayload) parse(parser *snbt.Parser) error {
 			return err
 		}
 
+		// NOTE: break if empty
+		if parser.CurrToken().Char() == ']' && parser.PrevToken().Char() == ';' &&
+			parser.CurrToken().Index()-parser.PrevToken().Index() == 1 {
+			break
+		}
+
 		b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
 		if err != nil {
 			return err
