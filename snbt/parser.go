@@ -79,6 +79,7 @@ func NewParser(snbt string) *Parser {
 
 	p.parseToken()
 	p.parseMask()
+	p.Next()
 
 	return p
 }
@@ -338,10 +339,6 @@ func (p *Parser) Compact() error {
 
 	ci := 0
 
-	if err := orgp.next(optFn); err != nil && err.Error() != "stop iteration" {
-		return err
-	}
-
 	for idx := range dataMask {
 		dataMask[idx] = ^dataMask[idx]
 		for dataMask[idx] != 0 {
@@ -371,6 +368,7 @@ func (p *Parser) Compact() error {
 	}
 
 	comp.parseMask()
+	comp.Next()
 
 	*p = *comp
 
