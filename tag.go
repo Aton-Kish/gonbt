@@ -22,7 +22,6 @@ package nbt
 
 import (
 	"encoding/binary"
-	"errors"
 	"fmt"
 	"io"
 	"regexp"
@@ -55,6 +54,7 @@ const (
 
 func (t *TagType) encode(w io.Writer) error {
 	if err := binary.Write(w, binary.BigEndian, t); err != nil {
+		err = &NbtError{Op: "encode", Err: err}
 		return err
 	}
 
@@ -63,6 +63,7 @@ func (t *TagType) encode(w io.Writer) error {
 
 func (t *TagType) decode(r io.Reader) error {
 	if err := binary.Read(r, binary.BigEndian, t); err != nil {
+		err = &NbtError{Op: "decode", Err: err}
 		return err
 	}
 
@@ -82,11 +83,13 @@ func NewTagName(value string) *TagName {
 func (n *TagName) encode(w io.Writer) error {
 	l := uint16(len(*n))
 	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
+		err = &NbtError{Op: "encode", Err: err}
 		return err
 	}
 
 	b := []byte(*n)
 	if err := binary.Write(w, binary.BigEndian, b); err != nil {
+		err = &NbtError{Op: "encode", Err: err}
 		return err
 	}
 
@@ -96,11 +99,13 @@ func (n *TagName) encode(w io.Writer) error {
 func (n *TagName) decode(r io.Reader) error {
 	var l uint16
 	if err := binary.Read(r, binary.BigEndian, &l); err != nil {
+		err = &NbtError{Op: "decode", Err: err}
 		return err
 	}
 
 	b := make([]byte, l)
 	if err := binary.Read(r, binary.BigEndian, b); err != nil {
+		err = &NbtError{Op: "decode", Err: err}
 		return err
 	}
 	*n = TagName(b)
@@ -127,6 +132,7 @@ func (n *TagName) stringify() string {
 func (n *TagName) parse(parser *snbt.Parser) error {
 	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
 	if err != nil {
+		err = &NbtError{Op: "parse", Err: err}
 		return err
 	}
 
@@ -137,6 +143,7 @@ func (n *TagName) parse(parser *snbt.Parser) error {
 	}
 
 	if err := parser.Next(); err != nil {
+		err = &NbtError{Op: "parse", Err: err}
 		return err
 	}
 
@@ -190,7 +197,8 @@ func NewTag(typ TagType) (Tag, error) {
 	case LongArrayType:
 		return NewLongArrayTag(new(TagName), new(LongArrayPayload)), nil
 	default:
-		return nil, fmt.Errorf("invalid tag type id %d", typ)
+		err := &NbtError{Op: "new", Err: invalidTagTypeError}
+		return nil, err
 	}
 }
 
@@ -199,6 +207,7 @@ func newTagFromSnbt(parser *snbt.Parser) (Tag, error) {
 	// NOTE: skip if nameless root
 	if parser.CurrToken().Index() > 0 {
 		if err := name.parse(parser); err != nil {
+			err = &NbtError{Op: "new", Err: err}
 			return nil, err
 		}
 	}
@@ -234,7 +243,8 @@ func newTagFromSnbt(parser *snbt.Parser) (Tag, error) {
 	case *LongArrayPayload:
 		return NewLongArrayTag(&name, payload), nil
 	default:
-		return nil, errors.New("invalid snbt format")
+		err = &NbtError{Op: "new", Err: invalidSnbtFormatError}
+		return nil, err
 	}
 }
 
@@ -267,6 +277,7 @@ func Decode(r io.Reader) (Tag, error) {
 
 	tag, err := NewTag(typ)
 	if err != nil {
+		err = &NbtError{Op: "decode", Err: err}
 		return nil, err
 	}
 
@@ -327,11 +338,13 @@ func Parse(stringified string) (Tag, error) {
 	p := snbt.NewParser(stringified)
 
 	if err := p.Compact(); err != nil {
+		err = &NbtError{Op: "parse", Err: err}
 		return nil, err
 	}
 
 	tag, err := newTagFromSnbt(p)
 	if err != nil {
+		err = &NbtError{Op: "parse", Err: err}
 		return nil, err
 	}
 
@@ -439,7 +452,8 @@ func NewPayload(typ TagType) (Payload, error) {
 	case LongArrayType:
 		return new(LongArrayPayload), nil
 	default:
-		return nil, fmt.Errorf("invalid tag type id %d", typ)
+		err := &NbtError{Op: "new", Err: invalidTagTypeError}
+		return nil, err
 	}
 }
 
@@ -450,6 +464,7 @@ func newPayloadFromSnbt(parser *snbt.Parser) (Payload, error) {
 	case '[':
 		typ, err := parser.Char(parser.CurrToken().Index() + 1)
 		if err != nil {
+			err = &NbtError{Op: "new", Err: err}
 			return nil, err
 		}
 
@@ -464,11 +479,13 @@ func newPayloadFromSnbt(parser *snbt.Parser) (Payload, error) {
 
 		return new(ListPayload), nil
 	case *new(rune), '"', ' ', ':', ';':
-		return nil, errors.New("invalid snbt format")
+		err := &NbtError{Op: "new", Err: invalidSnbtFormatError}
+		return nil, err
 	}
 
 	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
 	if err != nil {
+		err = &NbtError{Op: "new", Err: err}
 		return nil, err
 	}
 
@@ -513,6 +530,7 @@ type ArrayPayload interface {
 
 func encodeNumericPayload[T NumericPayload](w io.Writer, payload *T) error {
 	if err := binary.Write(w, binary.BigEndian, payload); err != nil {
+		err = &NbtError{Op: "encode", Err: err}
 		return err
 	}
 
@@ -522,10 +540,12 @@ func encodeNumericPayload[T NumericPayload](w io.Writer, payload *T) error {
 func encodeArrayPayload[T ArrayPayload](w io.Writer, payload *T) error {
 	l := int32(len(*payload))
 	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
+		err = &NbtError{Op: "encode", Err: err}
 		return err
 	}
 
 	if err := binary.Write(w, binary.BigEndian, payload); err != nil {
+		err = &NbtError{Op: "encode", Err: err}
 		return err
 	}
 
@@ -535,6 +555,7 @@ func encodeArrayPayload[T ArrayPayload](w io.Writer, payload *T) error {
 func decodeNumericPayload[T NumericPayload](r io.Reader) (*T, error) {
 	var payload T
 	if err := binary.Read(r, binary.BigEndian, &payload); err != nil {
+		err = &NbtError{Op: "decode", Err: err}
 		return nil, err
 	}
 

@@ -21,59 +21,36 @@
 package nbt
 
 import (
-	"io"
-
-	"github.com/Aton-Kish/gonbt/snbt"
+	"errors"
+	"fmt"
 )
 
-type EndTag struct {
+var (
+	invalidTagTypeError    = errors.New("invalid tag type")
+	invalidSnbtFormatError = errors.New("invalid snbt format")
+	decodeError            = errors.New("failed to decode")
+)
+
+type NbtError struct {
+	Op  string
+	Err error
 }
 
-func NewEndTag() *EndTag {
-	return &EndTag{}
-}
-
-func (t *EndTag) TypeId() TagType {
-	return EndType
-}
-
-func (t *EndTag) TagName() *TagName {
-	return nil
-}
-
-func (t *EndTag) Payload() Payload {
-	return nil
-}
-
-func (t *EndTag) encode(w io.Writer) error {
-	return Encode(w, t)
-}
-
-func (t *EndTag) decode(r io.Reader) error {
-	tag, err := Decode(r)
-	if err != nil {
-		return err
+func (e *NbtError) Error() string {
+	if e == nil {
+		return "<nil>"
 	}
 
-	v, ok := tag.(*EndTag)
-	if !ok {
-		err = &NbtError{Op: "decode", Err: decodeError}
-		return err
+	var err string
+	if e.Err == nil {
+		err = "<nil>"
+	} else {
+		err = e.Err.Error()
 	}
 
-	*t = *v
-
-	return nil
+	return fmt.Sprintf("nbt %s: %s", e.Op, err)
 }
 
-func (t *EndTag) stringify(space string, indent string, depth int) string {
-	return stringifyTag(t, space, indent, depth)
-}
-
-func (t *EndTag) parse(parser *snbt.Parser) error {
-	return parseTag(t, parser)
-}
-
-func (t *EndTag) json(space string, indent string, depth int) string {
-	return jsonTag(t, space, indent, depth)
+func (e *NbtError) Unwrap() error {
+	return e.Err
 }

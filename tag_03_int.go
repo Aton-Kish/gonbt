@@ -21,7 +21,6 @@
 package nbt
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"strconv"
@@ -66,7 +65,8 @@ func (t *IntTag) decode(r io.Reader) error {
 
 	v, ok := tag.(*IntTag)
 	if !ok {
-		return errors.New("decode failed")
+		err = &NbtError{Op: "decode", Err: decodeError}
+		return err
 	}
 
 	*t = *v
@@ -118,11 +118,13 @@ func (p *IntPayload) stringify(space string, indent string, depth int) string {
 func (p *IntPayload) parse(parser *snbt.Parser) error {
 	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
 	if err != nil {
+		err = &NbtError{Op: "parse", Err: err}
 		return err
 	}
 
 	i, err := strconv.ParseInt(string(b), 10, 32)
 	if err != nil {
+		err = &NbtError{Op: "parse", Err: err}
 		return err
 	}
 

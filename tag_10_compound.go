@@ -21,7 +21,6 @@
 package nbt
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"sort"
@@ -67,7 +66,8 @@ func (t *CompoundTag) decode(r io.Reader) error {
 
 	v, ok := tag.(*CompoundTag)
 	if !ok {
-		return errors.New("decode failed")
+		err = &NbtError{Op: "decode", Err: decodeError}
+		return err
 	}
 
 	*t = *v
@@ -156,6 +156,7 @@ func (p *CompoundPayload) stringify(space string, indent string, depth int) stri
 func (p *CompoundPayload) parse(parser *snbt.Parser) error {
 	for parser.CurrToken().Char() != '}' {
 		if err := parser.Next(); err != nil {
+			err = &NbtError{Op: "parse", Err: err}
 			return err
 		}
 
@@ -167,6 +168,7 @@ func (p *CompoundPayload) parse(parser *snbt.Parser) error {
 
 		tag, err := newTagFromSnbt(parser)
 		if err != nil {
+			err = &NbtError{Op: "parse", Err: err}
 			return err
 		}
 
@@ -181,6 +183,7 @@ func (p *CompoundPayload) parse(parser *snbt.Parser) error {
 
 	// NOTE: ignore stop iteration error
 	if err := parser.Next(); err != nil && err.Error() != "stop iteration" {
+		err = &NbtError{Op: "parse", Err: err}
 		return err
 	}
 

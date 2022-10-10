@@ -22,7 +22,6 @@ package nbt
 
 import (
 	"bytes"
-	"errors"
 	"testing"
 
 	"github.com/Aton-Kish/gonbt/pointer"
@@ -450,7 +449,7 @@ func TestNewTag(t *testing.T) {
 			name:        `negative case: out of range`,
 			tagType:     TagType(0x0D),
 			expected:    nil,
-			expectedErr: errors.New("invalid tag type id 13"),
+			expectedErr: &NbtError{Op: "new", Err: invalidTagTypeError},
 		},
 	}
 
@@ -1019,20 +1018,20 @@ func TestNewPayload(t *testing.T) {
 			name:        `negative case`,
 			tagType:     TagType(0x0D),
 			expected:    nil,
-			expectedErr: errors.New("invalid tag type id 13"),
+			expectedErr: &NbtError{Op: "new", Err: invalidTagTypeError},
 		},
 		{
 			name:        `negative case: EndType`,
 			tagType:     EndType,
 			expected:    nil,
-			expectedErr: errors.New("invalid tag type id 0"),
+			expectedErr: &NbtError{Op: "new", Err: invalidTagTypeError},
 		},
 
 		{
 			name:        `negative case: out of range`,
 			tagType:     TagType(0x0D),
 			expected:    nil,
-			expectedErr: errors.New("invalid tag type id 13"),
+			expectedErr: &NbtError{Op: "new", Err: invalidTagTypeError},
 		},
 	}
 

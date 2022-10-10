@@ -22,7 +22,6 @@ package nbt
 
 import (
 	"encoding/binary"
-	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -67,7 +66,8 @@ func (t *ListTag) decode(r io.Reader) error {
 
 	v, ok := tag.(*ListTag)
 	if !ok {
-		return errors.New("decode failed")
+		err = &NbtError{Op: "decode", Err: decodeError}
+		return err
 	}
 
 	*t = *v
@@ -110,10 +110,12 @@ func (p *ListPayload) encode(w io.Writer) error {
 	}
 
 	if err := binary.Write(w, binary.BigEndian, &typ); err != nil {
+		err = &NbtError{Op: "encode", Err: err}
 		return err
 	}
 
 	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
+		err = &NbtError{Op: "encode", Err: err}
 		return err
 	}
 
@@ -129,11 +131,13 @@ func (p *ListPayload) encode(w io.Writer) error {
 func (p *ListPayload) decode(r io.Reader) error {
 	var typ TagType
 	if err := binary.Read(r, binary.BigEndian, &typ); err != nil {
+		err = &NbtError{Op: "decode", Err: err}
 		return err
 	}
 
 	var l int32
 	if err := binary.Read(r, binary.BigEndian, &l); err != nil {
+		err = &NbtError{Op: "decode", Err: err}
 		return err
 	}
 
@@ -141,6 +145,7 @@ func (p *ListPayload) decode(r io.Reader) error {
 	for i := 0; i < int(l); i++ {
 		payload, err := NewPayload(typ)
 		if err != nil {
+			err = &NbtError{Op: "decode", Err: err}
 			return err
 		}
 
@@ -176,6 +181,7 @@ func (p *ListPayload) stringify(space string, indent string, depth int) string {
 func (p *ListPayload) parse(parser *snbt.Parser) error {
 	for parser.CurrToken().Char() != ']' {
 		if err := parser.Next(); err != nil {
+			err = &NbtError{Op: "parse", Err: err}
 			return err
 		}
 
@@ -187,6 +193,7 @@ func (p *ListPayload) parse(parser *snbt.Parser) error {
 
 		payload, err := newPayloadFromSnbt(parser)
 		if err != nil {
+			err = &NbtError{Op: "parse", Err: err}
 			return err
 		}
 
@@ -198,6 +205,7 @@ func (p *ListPayload) parse(parser *snbt.Parser) error {
 	}
 
 	if err := parser.Next(); err != nil {
+		err = &NbtError{Op: "parse", Err: err}
 		return err
 	}
 
