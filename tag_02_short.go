@@ -65,7 +65,7 @@ func (t *ShortTag) decode(r io.Reader) error {
 
 	v, ok := tag.(*ShortTag)
 	if !ok {
-		err = &NbtError{Op: "decode", Err: decodeError}
+		err = &NbtError{Op: "decode", Err: DecodeError}
 		return err
 	}
 
@@ -124,7 +124,7 @@ func (p *ShortPayload) parse(parser *snbt.Parser) error {
 
 	g := shortPattern.FindSubmatch(b)
 	if len(g) < 2 {
-		err = &NbtError{Op: "parse", Err: invalidSnbtFormatError}
+		err = &NbtError{Op: "parse", Err: InvalidSnbtFormatError}
 		return err
 	}
 

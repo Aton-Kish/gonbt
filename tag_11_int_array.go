@@ -67,7 +67,7 @@ func (t *IntArrayTag) decode(r io.Reader) error {
 
 	v, ok := tag.(*IntArrayTag)
 	if !ok {
-		err = &NbtError{Op: "decode", Err: decodeError}
+		err = &NbtError{Op: "decode", Err: DecodeError}
 		return err
 	}
 
@@ -138,7 +138,7 @@ func (p *IntArrayPayload) parse(parser *snbt.Parser) error {
 	}
 
 	if parser.CurrToken().Char() != ';' {
-		err := &NbtError{Op: "parse", Err: invalidSnbtFormatError}
+		err := &NbtError{Op: "parse", Err: InvalidSnbtFormatError}
 		return err
 	}
 

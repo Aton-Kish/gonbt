@@ -206,7 +206,7 @@ func (p *Parser) parseMask() {
 
 func (p *Parser) Char(index int) (rune, error) {
 	if index < 0 || index >= len(p.raw) {
-		err := &SnbtError{Op: "char", Err: outOfRangeError}
+		err := &SnbtError{Op: "char", Err: OutOfRangeError}
 		return *new(rune), err
 	}
 
@@ -215,7 +215,7 @@ func (p *Parser) Char(index int) (rune, error) {
 
 func (p *Parser) Slice(start int, end int) ([]byte, error) {
 	if start < 0 || start > len(p.raw) || end < 0 || end > len(p.raw) || start > end {
-		err := &SnbtError{Op: "slice", Err: outOfRangeError}
+		err := &SnbtError{Op: "slice", Err: OutOfRangeError}
 		return nil, err
 	}
 
@@ -311,13 +311,13 @@ func (p *Parser) next(optFns ...func(options *parseOptions) error) error {
 	p.curr = Token{index: index, char: token}
 
 	if index == l || !strings.ContainsRune(`" {}[],:;`, token) {
-		err := &SnbtError{Op: "next", Err: stopIterationError}
+		err := &SnbtError{Op: "next", Err: StopIterationError}
 		return err
 	}
 
 	bitmaps := p.tokenBitmaps(token)
 	if bitmaps == nil {
-		err := &SnbtError{Op: "next", Err: unexpectedError}
+		err := &SnbtError{Op: "next", Err: UnexpectedError}
 		return err
 	}
 
@@ -354,14 +354,14 @@ func (p *Parser) Compact() error {
 			if i == orgp.CurrToken().Index() {
 				bitmaps := comp.tokenBitmaps(orgp.CurrToken().Char())
 				if bitmaps == nil {
-					err := &SnbtError{Op: "compact", Err: unexpectedError}
+					err := &SnbtError{Op: "compact", Err: UnexpectedError}
 					return err
 				}
 
 				cidx, cpos := ci/bitmapSize, ci%bitmapSize
 				(*bitmaps)[cidx] |= 1 << cpos
 
-				if err := orgp.next(optFn); err != nil && !errors.Is(err, stopIterationError) {
+				if err := orgp.next(optFn); err != nil && !errors.Is(err, StopIterationError) {
 					err = &SnbtError{Op: "compact", Err: err}
 					return err
 				}

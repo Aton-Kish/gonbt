@@ -66,7 +66,7 @@ func (t *CompoundTag) decode(r io.Reader) error {
 
 	v, ok := tag.(*CompoundTag)
 	if !ok {
-		err = &NbtError{Op: "decode", Err: decodeError}
+		err = &NbtError{Op: "decode", Err: DecodeError}
 		return err
 	}
 

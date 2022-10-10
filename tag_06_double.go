@@ -65,7 +65,7 @@ func (t *DoubleTag) decode(r io.Reader) error {
 
 	v, ok := tag.(*DoubleTag)
 	if !ok {
-		err = &NbtError{Op: "decode", Err: decodeError}
+		err = &NbtError{Op: "decode", Err: DecodeError}
 		return err
 	}
 
@@ -124,7 +124,7 @@ func (p *DoublePayload) parse(parser *snbt.Parser) error {
 
 	g := doublePattern.FindSubmatch(b)
 	if len(g) < 2 {
-		err = &NbtError{Op: "parse", Err: invalidSnbtFormatError}
+		err = &NbtError{Op: "parse", Err: InvalidSnbtFormatError}
 		return err
 	}
 

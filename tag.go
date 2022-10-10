@@ -197,7 +197,7 @@ func NewTag(typ TagType) (Tag, error) {
 	case LongArrayType:
 		return NewLongArrayTag(new(TagName), new(LongArrayPayload)), nil
 	default:
-		err := &NbtError{Op: "new", Err: invalidTagTypeError}
+		err := &NbtError{Op: "new", Err: InvalidTagTypeError}
 		return nil, err
 	}
 }
@@ -243,7 +243,7 @@ func newTagFromSnbt(parser *snbt.Parser) (Tag, error) {
 	case *LongArrayPayload:
 		return NewLongArrayTag(&name, payload), nil
 	default:
-		err = &NbtError{Op: "new", Err: invalidSnbtFormatError}
+		err = &NbtError{Op: "new", Err: InvalidSnbtFormatError}
 		return nil, err
 	}
 }
@@ -452,7 +452,7 @@ func NewPayload(typ TagType) (Payload, error) {
 	case LongArrayType:
 		return new(LongArrayPayload), nil
 	default:
-		err := &NbtError{Op: "new", Err: invalidTagTypeError}
+		err := &NbtError{Op: "new", Err: InvalidTagTypeError}
 		return nil, err
 	}
 }
@@ -479,7 +479,7 @@ func newPayloadFromSnbt(parser *snbt.Parser) (Payload, error) {
 
 		return new(ListPayload), nil
 	case *new(rune), '"', ' ', ':', ';':
-		err := &NbtError{Op: "new", Err: invalidSnbtFormatError}
+		err := &NbtError{Op: "new", Err: InvalidSnbtFormatError}
 		return nil, err
 	}
 
