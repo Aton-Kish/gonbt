@@ -100,7 +100,8 @@ func TestEndTag_encode(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, buf.Bytes())
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -136,7 +137,8 @@ func TestEndTag_decode(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, tag)
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}

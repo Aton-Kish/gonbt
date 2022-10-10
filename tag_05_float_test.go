@@ -218,7 +218,8 @@ func TestFloatTag_encode(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, buf.Bytes())
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -254,7 +255,8 @@ func TestFloatTag_decode(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, tag)
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -468,7 +470,8 @@ func TestFloatPayload_encode(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, buf.Bytes())
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -504,7 +507,8 @@ func TestFloatPayload_decode(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, payload)
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -629,7 +633,8 @@ func TestFloatPayload_parse(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, payload)
 			} else {
-				assert.Error(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}

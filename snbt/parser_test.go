@@ -261,7 +261,8 @@ func TestParser_Char(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, actual)
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -357,7 +358,8 @@ func TestParser_Slice(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, actual)
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -497,7 +499,8 @@ func TestParser_Compact(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, tt.parser)
 			} else {
-				assert.Error(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
