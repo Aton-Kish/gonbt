@@ -21,6 +21,7 @@
 package nbt
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"sort"
@@ -182,7 +183,7 @@ func (p *CompoundPayload) parse(parser *snbt.Parser) error {
 	*p = append(*p, &EndTag{})
 
 	// NOTE: ignore stop iteration error
-	if err := parser.Next(); err != nil && err.Error() != "stop iteration" {
+	if err := parser.Next(); err != nil && !errors.Is(err, snbt.StopIterationError) {
 		err = &NbtError{Op: "parse", Err: err}
 		return err
 	}
