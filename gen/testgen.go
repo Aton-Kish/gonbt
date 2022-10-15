@@ -34,8 +34,10 @@ import (
 )
 
 var (
-	//go:embed test.tmpl
-	testTemplate string
+	//go:embed tag_test.tmpl
+	tagTestTemplate string
+	//go:embed payload_test.tmpl
+	payloadTestTemplate string
 )
 
 type params struct {
@@ -49,7 +51,12 @@ func testgen() error {
 		"typeof":  typeof,
 	}
 
-	tmpl, err := template.New("Test").Funcs(funcMap).Parse(testTemplate)
+	tagTmpl, err := template.New("TagTest").Funcs(funcMap).Parse(tagTestTemplate)
+	if err != nil {
+		return err
+	}
+
+	payloadTmpl, err := template.New("PayloadTest").Funcs(funcMap).Parse(payloadTestTemplate)
 	if err != nil {
 		return err
 	}
@@ -57,13 +64,27 @@ func testgen() error {
 	for _, typ := range nbt.TagTypes {
 		p := params{Type: typ}
 
-		raw, err := render(tmpl, p)
+		tagRaw, err := render(tagTmpl, p)
 		if err != nil {
 			return err
 		}
 
-		filename := filepath.Join("..", fmt.Sprintf("tag_%02d_%s_test.go", typ, strcase.ToSnake(typ.String())))
-		if err := os.WriteFile(filename, raw, os.ModePerm); err != nil {
+		tagName := filepath.Join("..", fmt.Sprintf("tag_%s_test.go", strcase.ToSnake(typ.String())))
+		if err := os.WriteFile(tagName, tagRaw, os.ModePerm); err != nil {
+			return err
+		}
+
+		if typ == nbt.EndType {
+			continue
+		}
+
+		payloadRaw, err := render(payloadTmpl, p)
+		if err != nil {
+			return err
+		}
+
+		payloadName := filepath.Join("..", fmt.Sprintf("payload_%s_test.go", strcase.ToSnake(typ.String())))
+		if err := os.WriteFile(payloadName, payloadRaw, os.ModePerm); err != nil {
 			return err
 		}
 	}
