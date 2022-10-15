@@ -51,7 +51,11 @@ func (t *IntTag) Payload() Payload {
 }
 
 func (t *IntTag) encode(w io.Writer) error {
-	return Encode(w, t)
+	if err := Encode(w, t); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (t *IntTag) decode(r io.Reader) error {
@@ -76,7 +80,11 @@ func (t *IntTag) stringify(space string, indent string, depth int) string {
 }
 
 func (t *IntTag) parse(parser *snbt.Parser) error {
-	return parseTag(t, parser)
+	if err := parseTag(t, parser); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (t *IntTag) json(space string, indent string, depth int) string {

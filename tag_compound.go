@@ -51,7 +51,11 @@ func (t *CompoundTag) Payload() Payload {
 }
 
 func (t *CompoundTag) encode(w io.Writer) error {
-	return Encode(w, t)
+	if err := Encode(w, t); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (t *CompoundTag) decode(r io.Reader) error {
@@ -76,7 +80,11 @@ func (t *CompoundTag) stringify(space string, indent string, depth int) string {
 }
 
 func (t *CompoundTag) parse(parser *snbt.Parser) error {
-	return parseTag(t, parser)
+	if err := parseTag(t, parser); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (t *CompoundTag) json(space string, indent string, depth int) string {
