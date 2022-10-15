@@ -38,6 +38,10 @@ func NewIntTag(tagName *TagName, payload *IntPayload) *IntTag {
 	}
 }
 
+func (t IntTag) String() string {
+	return t.stringify(" ", "", 0)
+}
+
 func (t *IntTag) TypeId() TagType {
 	return t.Payload().TypeId()
 }

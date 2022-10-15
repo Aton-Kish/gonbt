@@ -36,6 +36,10 @@ func NewShortPayload(value int16) *ShortPayload {
 	return pointer.Pointer(ShortPayload(value))
 }
 
+func (p ShortPayload) String() string {
+	return p.stringify(" ", "", 0)
+}
+
 func (p *ShortPayload) TypeId() TagType {
 	return TagTypeShort
 }

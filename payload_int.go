@@ -36,6 +36,10 @@ func NewIntPayload(value int32) *IntPayload {
 	return pointer.Pointer(IntPayload(value))
 }
 
+func (p IntPayload) String() string {
+	return p.stringify(" ", "", 0)
+}
+
 func (p *IntPayload) TypeId() TagType {
 	return TagTypeInt
 }

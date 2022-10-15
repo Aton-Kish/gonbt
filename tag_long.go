@@ -38,6 +38,10 @@ func NewLongTag(tagName *TagName, payload *LongPayload) *LongTag {
 	}
 }
 
+func (t LongTag) String() string {
+	return t.stringify(" ", "", 0)
+}
+
 func (t *LongTag) TypeId() TagType {
 	return t.Payload().TypeId()
 }

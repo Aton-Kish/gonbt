@@ -38,6 +38,10 @@ func NewCompoundTag(tagName *TagName, payload *CompoundPayload) *CompoundTag {
 	}
 }
 
+func (t CompoundTag) String() string {
+	return t.stringify(" ", "", 0)
+}
+
 func (t *CompoundTag) TypeId() TagType {
 	return t.Payload().TypeId()
 }

@@ -38,6 +38,10 @@ func NewByteArrayTag(tagName *TagName, payload *ByteArrayPayload) *ByteArrayTag 
 	}
 }
 
+func (t ByteArrayTag) String() string {
+	return t.stringify(" ", "", 0)
+}
+
 func (t *ByteArrayTag) TypeId() TagType {
 	return t.Payload().TypeId()
 }

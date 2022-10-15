@@ -29,6 +29,7 @@ import (
 )
 
 type Tag interface {
+	String() string
 	TypeId() TagType
 	TagName() *TagName
 	Payload() Payload

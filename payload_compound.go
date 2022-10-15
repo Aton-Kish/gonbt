@@ -41,6 +41,10 @@ func NewCompoundPayload(values ...Tag) *CompoundPayload {
 	return pointer.Pointer(CompoundPayload(values))
 }
 
+func (p CompoundPayload) String() string {
+	return p.stringify(" ", "", 0)
+}
+
 func (p *CompoundPayload) TypeId() TagType {
 	return TagTypeCompound
 }

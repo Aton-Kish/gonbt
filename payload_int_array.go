@@ -41,6 +41,10 @@ func NewIntArrayPayload(values ...int32) *IntArrayPayload {
 	return pointer.Pointer(IntArrayPayload(values))
 }
 
+func (p IntArrayPayload) String() string {
+	return p.stringify(" ", "", 0)
+}
+
 func (p *IntArrayPayload) TypeId() TagType {
 	return TagTypeIntArray
 }

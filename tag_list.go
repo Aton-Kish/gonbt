@@ -38,6 +38,10 @@ func NewListTag(tagName *TagName, payload *ListPayload) *ListTag {
 	}
 }
 
+func (t ListTag) String() string {
+	return t.stringify(" ", "", 0)
+}
+
 func (t *ListTag) TypeId() TagType {
 	return t.Payload().TypeId()
 }

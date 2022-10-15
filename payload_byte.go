@@ -36,6 +36,10 @@ func NewBytePayload(value int8) *BytePayload {
 	return pointer.Pointer(BytePayload(value))
 }
 
+func (p BytePayload) String() string {
+	return p.stringify(" ", "", 0)
+}
+
 func (p *BytePayload) TypeId() TagType {
 	return TagTypeByte
 }

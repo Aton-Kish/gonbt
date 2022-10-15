@@ -37,6 +37,10 @@ func NewStringPayload(value string) *StringPayload {
 	return pointer.Pointer(StringPayload(value))
 }
 
+func (p StringPayload) String() string {
+	return p.stringify(" ", "", 0)
+}
+
 func (p *StringPayload) TypeId() TagType {
 	return TagTypeString
 }

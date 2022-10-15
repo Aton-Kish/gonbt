@@ -37,6 +37,7 @@ var (
 )
 
 type Payload interface {
+	String() string
 	TypeId() TagType
 	encode(w io.Writer) error
 	decode(r io.Reader) error

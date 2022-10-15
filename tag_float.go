@@ -37,6 +37,11 @@ func NewFloatTag(tagName *TagName, payload *FloatPayload) *FloatTag {
 		payload: payload,
 	}
 }
+
+func (t FloatTag) String() string {
+	return t.stringify(" ", "", 0)
+}
+
 func (t *FloatTag) TypeId() TagType {
 	return t.Payload().TypeId()
 }

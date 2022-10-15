@@ -41,6 +41,10 @@ func NewLongArrayPayload(values ...int64) *LongArrayPayload {
 	return pointer.Pointer(LongArrayPayload(values))
 }
 
+func (p LongArrayPayload) String() string {
+	return p.stringify(" ", "", 0)
+}
+
 func (p *LongArrayPayload) TypeId() TagType {
 	return TagTypeLongArray
 }

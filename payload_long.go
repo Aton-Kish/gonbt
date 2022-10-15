@@ -36,6 +36,10 @@ func NewLongPayload(value int64) *LongPayload {
 	return pointer.Pointer(LongPayload(value))
 }
 
+func (p LongPayload) String() string {
+	return p.stringify(" ", "", 0)
+}
+
 func (p *LongPayload) TypeId() TagType {
 	return TagTypeLong
 }

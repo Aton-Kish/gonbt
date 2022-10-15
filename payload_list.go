@@ -40,6 +40,10 @@ func NewListPayload(values ...Payload) *ListPayload {
 	return pointer.Pointer(ListPayload(values))
 }
 
+func (p ListPayload) String() string {
+	return p.stringify(" ", "", 0)
+}
+
 func (p *ListPayload) TypeId() TagType {
 	return TagTypeList
 }

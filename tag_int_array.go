@@ -38,6 +38,10 @@ func NewIntArrayTag(tagName *TagName, payload *IntArrayPayload) *IntArrayTag {
 	}
 }
 
+func (t IntArrayTag) String() string {
+	return t.stringify(" ", "", 0)
+}
+
 func (t *IntArrayTag) TypeId() TagType {
 	return t.Payload().TypeId()
 }

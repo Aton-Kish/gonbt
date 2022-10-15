@@ -38,6 +38,10 @@ func NewShortTag(tagName *TagName, payload *ShortPayload) *ShortTag {
 	}
 }
 
+func (t ShortTag) String() string {
+	return t.stringify(" ", "", 0)
+}
+
 func (t *ShortTag) TypeId() TagType {
 	return t.Payload().TypeId()
 }

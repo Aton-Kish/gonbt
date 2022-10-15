@@ -33,6 +33,10 @@ func NewEndTag() *EndTag {
 	return &EndTag{}
 }
 
+func (t EndTag) String() string {
+	return t.stringify(" ", "", 0)
+}
+
 func (t *EndTag) TypeId() TagType {
 	return TagTypeEnd
 }

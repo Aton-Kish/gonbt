@@ -36,6 +36,10 @@ func NewDoublePayload(value float64) *DoublePayload {
 	return pointer.Pointer(DoublePayload(value))
 }
 
+func (p DoublePayload) String() string {
+	return p.stringify(" ", "", 0)
+}
+
 func (p *DoublePayload) TypeId() TagType {
 	return TagTypeDouble
 }

@@ -41,7 +41,7 @@ func NewTagName(value string) *TagName {
 }
 
 func (n TagName) String() string {
-	return string(n)
+	return n.stringify()
 }
 
 func (n *TagName) encode(w io.Writer) error {

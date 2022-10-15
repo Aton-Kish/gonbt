@@ -36,6 +36,10 @@ func NewFloatPayload(value float32) *FloatPayload {
 	return pointer.Pointer(FloatPayload(value))
 }
 
+func (p FloatPayload) String() string {
+	return p.stringify(" ", "", 0)
+}
+
 func (p *FloatPayload) TypeId() TagType {
 	return TagTypeFloat
 }

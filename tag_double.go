@@ -38,6 +38,10 @@ func NewDoubleTag(tagName *TagName, payload *DoublePayload) *DoubleTag {
 	}
 }
 
+func (t DoubleTag) String() string {
+	return t.stringify(" ", "", 0)
+}
+
 func (t *DoubleTag) TypeId() TagType {
 	return t.Payload().TypeId()
 }
