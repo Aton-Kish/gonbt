@@ -80,6 +80,157 @@ func interfacedTagTestCases[T Payload](cases []tagTestCase[T]) []tagTestCase[Pay
 	return interfacedCases
 }
 
+var nbtCases = []struct {
+	name string
+	nbt  Tag
+	snbt stringifyType
+	json stringifyType
+	raw  []byte
+}{
+	{
+		name: `positive case: Simple`,
+		nbt: NewCompoundTag(NewTagName(``), NewCompoundPayload(
+			NewCompoundTag(NewTagName(`Hello World`), NewCompoundPayload(
+				NewStringTag(NewTagName(`Name`), NewStringPayload(`Steve`)),
+				NewEndTag(),
+			)),
+			NewEndTag(),
+		)),
+		snbt: stringifyType{
+			typeDefault: `{"Hello World": {Name: "Steve"}}`,
+			typeCompact: `{"Hello World":{Name:"Steve"}}`,
+			typePretty: `{
+  "Hello World": {
+    Name: "Steve"
+  }
+}`,
+		},
+		json: stringifyType{
+			typeDefault: `{"Hello World": {"Name": "Steve"}}`,
+			typeCompact: `{"Hello World":{"Name":"Steve"}}`,
+			typePretty: `{
+  "Hello World": {
+    "Name": "Steve"
+  }
+}`,
+		},
+		raw: []byte{
+			// CompoundTag():
+			0x0A,
+			0x00, 0x00,
+			//   - CompoundTag(Hello World):
+			0x0A,
+			0x00, 0x0B,
+			0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64,
+			//       - StringTag(Name): "Steve"
+			0x08,
+			0x00, 0x04,
+			0x4E, 0x61, 0x6D, 0x65,
+			0x00, 0x05,
+			0x53, 0x74, 0x65, 0x76, 0x65,
+			//       - EndTag
+			0x00,
+			//   - EndTag
+			0x00,
+		},
+	},
+	{
+		name: `positive case: Tag Check`,
+		nbt: NewCompoundTag(NewTagName(`Compound`), NewCompoundPayload(
+			NewShortTag(NewTagName(`Short`), NewShortPayload(12345)),
+			NewByteArrayTag(NewTagName(`ByteArray`), NewByteArrayPayload(0, 1)),
+			NewStringTag(NewTagName(`String`), NewStringPayload(`Hello`)),
+			NewListTag(NewTagName(`List`), NewListPayload(NewBytePayload(123))),
+			NewCompoundTag(NewTagName(`Compound`), NewCompoundPayload(
+				NewStringTag(NewTagName(`String`), NewStringPayload(`World`)),
+				NewEndTag(),
+			)),
+			NewEndTag(),
+		)),
+		snbt: stringifyType{
+			typeDefault: `{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`,
+			typeCompact: `{Compound:{ByteArray:[B;0b,1b],Compound:{String:"World"},List:[123b],Short:12345s,String:"Hello"}}`,
+			typePretty: `{
+  Compound: {
+    ByteArray: [B; 0b, 1b],
+    Compound: {
+      String: "World"
+    },
+    List: [
+      123b
+    ],
+    Short: 12345s,
+    String: "Hello"
+  }
+}`,
+		},
+		json: stringifyType{
+			typeDefault: `{"Compound": {"ByteArray": [0, 1], "Compound": {"String": "World"}, "List": [123], "Short": 12345, "String": "Hello"}}`,
+			typeCompact: `{"Compound":{"ByteArray":[0,1],"Compound":{"String":"World"},"List":[123],"Short":12345,"String":"Hello"}}`,
+			typePretty: `{
+  "Compound": {
+    "ByteArray": [
+      0,
+      1
+    ],
+    "Compound": {
+      "String": "World"
+    },
+    "List": [
+      123
+    ],
+    "Short": 12345,
+    "String": "Hello"
+  }
+}`,
+		},
+		raw: []byte{
+			// CompoundTag(Compound):
+			0x0A,
+			0x00, 0x08,
+			0x43, 0x6F, 0x6D, 0x70, 0x6F, 0x75, 0x6E, 0x64,
+			//   - ShortTag(Short): 12345s
+			0x02,
+			0x00, 0x05,
+			0x53, 0x68, 0x6f, 0x72, 0x74,
+			0x30, 0x39,
+			//   - ByteArrayTag(ByteArray): [B; 0b, 1b]
+			0x07,
+			0x00, 0x09,
+			0x42, 0x79, 0x74, 0x65, 0x41, 0x72, 0x72, 0x61, 0x79,
+			0x00, 0x00, 0x00, 0x02,
+			0x00, 0x01,
+			//   - StringTag(String): "Hello"
+			0x08,
+			0x00, 0x06,
+			0x53, 0x74, 0x72, 0x69, 0x6E, 0x67,
+			0x00, 0x05,
+			0x48, 0x65, 0x6C, 0x6C, 0x6F,
+			//   - ListTag(List): [123b]
+			0x09,
+			0x00, 0x04,
+			0x4C, 0x69, 0x73, 0x74,
+			0x01,
+			0x00, 0x00, 0x00, 0x01,
+			0x7B,
+			//   - CompoundTag(Compound):
+			0x0A,
+			0x00, 0x08,
+			0x43, 0x6F, 0x6D, 0x70, 0x6F, 0x75, 0x6E, 0x64,
+			//       - StringTag(String): "World"
+			0x08,
+			0x00, 0x06,
+			0x53, 0x74, 0x72, 0x69, 0x6E, 0x67,
+			0x00, 0x05,
+			0x57, 0x6F, 0x72, 0x6C, 0x64,
+			//       - EndTag
+			0x00,
+			//   - EndTag
+			0x00,
+		},
+	},
+}
+
 var endTagCases = []tagTestCase[Payload]{
 	{
 		name: `positive case: EndTag`,
