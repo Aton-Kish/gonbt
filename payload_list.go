@@ -30,63 +30,6 @@ import (
 	"github.com/Aton-Kish/gonbt/snbt"
 )
 
-type ListTag struct {
-	tagName *TagName
-	payload *ListPayload
-}
-
-func NewListTag(tagName *TagName, payload *ListPayload) *ListTag {
-	return &ListTag{
-		tagName: tagName,
-		payload: payload,
-	}
-}
-
-func (t *ListTag) TypeId() TagType {
-	return t.Payload().TypeId()
-}
-
-func (t *ListTag) TagName() *TagName {
-	return t.tagName
-}
-
-func (t *ListTag) Payload() Payload {
-	return t.payload
-}
-
-func (t *ListTag) encode(w io.Writer) error {
-	return Encode(w, t)
-}
-
-func (t *ListTag) decode(r io.Reader) error {
-	tag, err := Decode(r)
-	if err != nil {
-		return err
-	}
-
-	v, ok := tag.(*ListTag)
-	if !ok {
-		err = &NbtError{Op: "decode", Err: ErrDecode}
-		return err
-	}
-
-	*t = *v
-
-	return nil
-}
-
-func (t *ListTag) stringify(space string, indent string, depth int) string {
-	return stringifyTag(t, space, indent, depth)
-}
-
-func (t *ListTag) parse(parser *snbt.Parser) error {
-	return parseTag(t, parser)
-}
-
-func (t *ListTag) json(space string, indent string, depth int) string {
-	return jsonTag(t, space, indent, depth)
-}
-
 type ListPayload []Payload
 
 func NewListPayload(values ...Payload) *ListPayload {

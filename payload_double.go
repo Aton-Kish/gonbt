@@ -29,63 +29,6 @@ import (
 	"github.com/Aton-Kish/gonbt/snbt"
 )
 
-type DoubleTag struct {
-	tagName *TagName
-	payload *DoublePayload
-}
-
-func NewDoubleTag(tagName *TagName, payload *DoublePayload) *DoubleTag {
-	return &DoubleTag{
-		tagName: tagName,
-		payload: payload,
-	}
-}
-
-func (t *DoubleTag) TypeId() TagType {
-	return t.Payload().TypeId()
-}
-
-func (t *DoubleTag) TagName() *TagName {
-	return t.tagName
-}
-
-func (t *DoubleTag) Payload() Payload {
-	return t.payload
-}
-
-func (t *DoubleTag) encode(w io.Writer) error {
-	return Encode(w, t)
-}
-
-func (t *DoubleTag) decode(r io.Reader) error {
-	tag, err := Decode(r)
-	if err != nil {
-		return err
-	}
-
-	v, ok := tag.(*DoubleTag)
-	if !ok {
-		err = &NbtError{Op: "decode", Err: ErrDecode}
-		return err
-	}
-
-	*t = *v
-
-	return nil
-}
-
-func (t *DoubleTag) stringify(space string, indent string, depth int) string {
-	return stringifyTag(t, space, indent, depth)
-}
-
-func (t *DoubleTag) parse(parser *snbt.Parser) error {
-	return parseTag(t, parser)
-}
-
-func (t *DoubleTag) json(space string, indent string, depth int) string {
-	return jsonTag(t, space, indent, depth)
-}
-
 type DoublePayload float64
 
 func NewDoublePayload(value float64) *DoublePayload {

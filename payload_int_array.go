@@ -31,63 +31,6 @@ import (
 	"github.com/Aton-Kish/gonbt/snbt"
 )
 
-type IntArrayTag struct {
-	tagName *TagName
-	payload *IntArrayPayload
-}
-
-func NewIntArrayTag(tagName *TagName, payload *IntArrayPayload) *IntArrayTag {
-	return &IntArrayTag{
-		tagName: tagName,
-		payload: payload,
-	}
-}
-
-func (t *IntArrayTag) TypeId() TagType {
-	return t.Payload().TypeId()
-}
-
-func (t *IntArrayTag) TagName() *TagName {
-	return t.tagName
-}
-
-func (t *IntArrayTag) Payload() Payload {
-	return t.payload
-}
-
-func (t *IntArrayTag) encode(w io.Writer) error {
-	return Encode(w, t)
-}
-
-func (t *IntArrayTag) decode(r io.Reader) error {
-	tag, err := Decode(r)
-	if err != nil {
-		return err
-	}
-
-	v, ok := tag.(*IntArrayTag)
-	if !ok {
-		err = &NbtError{Op: "decode", Err: ErrDecode}
-		return err
-	}
-
-	*t = *v
-
-	return nil
-}
-
-func (t *IntArrayTag) stringify(space string, indent string, depth int) string {
-	return stringifyTag(t, space, indent, depth)
-}
-
-func (t *IntArrayTag) parse(parser *snbt.Parser) error {
-	return parseTag(t, parser)
-}
-
-func (t *IntArrayTag) json(space string, indent string, depth int) string {
-	return jsonTag(t, space, indent, depth)
-}
-
 type IntArrayPayload []int32
 
 func NewIntArrayPayload(values ...int32) *IntArrayPayload {

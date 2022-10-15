@@ -21,11 +21,8 @@
 package nbt
 
 import (
-	"fmt"
 	"io"
-	"strconv"
 
-	"github.com/Aton-Kish/gonbt/pointer"
 	"github.com/Aton-Kish/gonbt/snbt"
 )
 
@@ -84,61 +81,4 @@ func (t *ShortTag) parse(parser *snbt.Parser) error {
 
 func (t *ShortTag) json(space string, indent string, depth int) string {
 	return jsonTag(t, space, indent, depth)
-}
-
-type ShortPayload int16
-
-func NewShortPayload(value int16) *ShortPayload {
-	return pointer.Pointer(ShortPayload(value))
-}
-
-func (p *ShortPayload) TypeId() TagType {
-	return ShortType
-}
-
-func (p *ShortPayload) encode(w io.Writer) error {
-	return encodeNumericPayload(w, p)
-}
-
-func (p *ShortPayload) decode(r io.Reader) error {
-	payload, err := decodeNumericPayload[ShortPayload](r)
-	if err != nil {
-		return err
-	}
-
-	*p = *payload
-
-	return nil
-}
-
-func (p *ShortPayload) stringify(space string, indent string, depth int) string {
-	return fmt.Sprintf("%ds", *p)
-}
-
-func (p *ShortPayload) parse(parser *snbt.Parser) error {
-	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
-	if err != nil {
-		err = &NbtError{Op: "parse", Err: err}
-		return err
-	}
-
-	g := shortPattern.FindSubmatch(b)
-	if len(g) < 2 {
-		err = &NbtError{Op: "parse", Err: ErrInvalidSnbtFormat}
-		return err
-	}
-
-	i, err := strconv.ParseInt(string(g[1]), 10, 16)
-	if err != nil {
-		err = &NbtError{Op: "parse", Err: err}
-		return err
-	}
-
-	*p = *NewShortPayload(int16(i))
-
-	return nil
-}
-
-func (p *ShortPayload) json(space string, indent string, depth int) string {
-	return fmt.Sprintf("%d", *p)
 }

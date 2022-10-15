@@ -31,63 +31,6 @@ import (
 	"github.com/Aton-Kish/gonbt/snbt"
 )
 
-type CompoundTag struct {
-	tagName *TagName
-	payload *CompoundPayload
-}
-
-func NewCompoundTag(tagName *TagName, payload *CompoundPayload) *CompoundTag {
-	return &CompoundTag{
-		tagName: tagName,
-		payload: payload,
-	}
-}
-
-func (t *CompoundTag) TypeId() TagType {
-	return t.Payload().TypeId()
-}
-
-func (t *CompoundTag) TagName() *TagName {
-	return t.tagName
-}
-
-func (t *CompoundTag) Payload() Payload {
-	return t.payload
-}
-
-func (t *CompoundTag) encode(w io.Writer) error {
-	return Encode(w, t)
-}
-
-func (t *CompoundTag) decode(r io.Reader) error {
-	tag, err := Decode(r)
-	if err != nil {
-		return err
-	}
-
-	v, ok := tag.(*CompoundTag)
-	if !ok {
-		err = &NbtError{Op: "decode", Err: ErrDecode}
-		return err
-	}
-
-	*t = *v
-
-	return nil
-}
-
-func (t *CompoundTag) stringify(space string, indent string, depth int) string {
-	return stringifyTag(t, space, indent, depth)
-}
-
-func (t *CompoundTag) parse(parser *snbt.Parser) error {
-	return parseTag(t, parser)
-}
-
-func (t *CompoundTag) json(space string, indent string, depth int) string {
-	return jsonTag(t, space, indent, depth)
-}
-
 type CompoundPayload []Tag
 
 func NewCompoundPayload(values ...Tag) *CompoundPayload {

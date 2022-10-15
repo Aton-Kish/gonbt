@@ -29,79 +29,22 @@ import (
 	"github.com/Aton-Kish/gonbt/snbt"
 )
 
-type ByteTag struct {
-	tagName *TagName
-	payload *BytePayload
+type ShortPayload int16
+
+func NewShortPayload(value int16) *ShortPayload {
+	return pointer.Pointer(ShortPayload(value))
 }
 
-func NewByteTag(tagName *TagName, payload *BytePayload) *ByteTag {
-	return &ByteTag{
-		tagName: tagName,
-		payload: payload,
-	}
+func (p *ShortPayload) TypeId() TagType {
+	return ShortType
 }
 
-func (t *ByteTag) TypeId() TagType {
-	return t.Payload().TypeId()
-}
-
-func (t *ByteTag) TagName() *TagName {
-	return t.tagName
-}
-
-func (t *ByteTag) Payload() Payload {
-	return t.payload
-}
-
-func (t *ByteTag) encode(w io.Writer) error {
-	return Encode(w, t)
-}
-
-func (t *ByteTag) decode(r io.Reader) error {
-	tag, err := Decode(r)
-	if err != nil {
-		return err
-	}
-
-	v, ok := tag.(*ByteTag)
-	if !ok {
-		err = &NbtError{Op: "decode", Err: ErrDecode}
-		return err
-	}
-
-	*t = *v
-
-	return nil
-}
-
-func (t *ByteTag) stringify(space string, indent string, depth int) string {
-	return stringifyTag(t, space, indent, depth)
-}
-
-func (t *ByteTag) parse(parser *snbt.Parser) error {
-	return parseTag(t, parser)
-}
-
-func (t *ByteTag) json(space string, indent string, depth int) string {
-	return jsonTag(t, space, indent, depth)
-}
-
-type BytePayload int8
-
-func NewBytePayload(value int8) *BytePayload {
-	return pointer.Pointer(BytePayload(value))
-}
-
-func (p *BytePayload) TypeId() TagType {
-	return ByteType
-}
-
-func (p *BytePayload) encode(w io.Writer) error {
+func (p *ShortPayload) encode(w io.Writer) error {
 	return encodeNumericPayload(w, p)
 }
 
-func (p *BytePayload) decode(r io.Reader) error {
-	payload, err := decodeNumericPayload[BytePayload](r)
+func (p *ShortPayload) decode(r io.Reader) error {
+	payload, err := decodeNumericPayload[ShortPayload](r)
 	if err != nil {
 		return err
 	}
@@ -111,34 +54,34 @@ func (p *BytePayload) decode(r io.Reader) error {
 	return nil
 }
 
-func (p *BytePayload) stringify(space string, indent string, depth int) string {
-	return fmt.Sprintf("%db", *p)
+func (p *ShortPayload) stringify(space string, indent string, depth int) string {
+	return fmt.Sprintf("%ds", *p)
 }
 
-func (p *BytePayload) parse(parser *snbt.Parser) error {
+func (p *ShortPayload) parse(parser *snbt.Parser) error {
 	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
 	if err != nil {
 		err = &NbtError{Op: "parse", Err: err}
 		return err
 	}
 
-	g := bytePattern.FindSubmatch(b)
+	g := shortPattern.FindSubmatch(b)
 	if len(g) < 2 {
 		err = &NbtError{Op: "parse", Err: ErrInvalidSnbtFormat}
 		return err
 	}
 
-	i, err := strconv.ParseInt(string(g[1]), 10, 8)
+	i, err := strconv.ParseInt(string(g[1]), 10, 16)
 	if err != nil {
 		err = &NbtError{Op: "parse", Err: err}
 		return err
 	}
 
-	*p = *NewBytePayload(int8(i))
+	*p = *NewShortPayload(int16(i))
 
 	return nil
 }
 
-func (p *BytePayload) json(space string, indent string, depth int) string {
+func (p *ShortPayload) json(space string, indent string, depth int) string {
 	return fmt.Sprintf("%d", *p)
 }
