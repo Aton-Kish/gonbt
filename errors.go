@@ -26,9 +26,9 @@ import (
 )
 
 var (
-	InvalidTagTypeError    = errors.New("invalid tag type")
-	InvalidSnbtFormatError = errors.New("invalid snbt format")
-	DecodeError            = errors.New("failed to decode")
+	ErrInvalidTagType    = errors.New("invalid tag type")
+	ErrInvalidSnbtFormat = errors.New("invalid snbt format")
+	ErrDecode            = errors.New("failed to decode")
 )
 
 type NbtError struct {

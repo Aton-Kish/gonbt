@@ -218,13 +218,13 @@ func TestParser_Char(t *testing.T) {
 			name:        `negative case: Simple - -1`,
 			snbt:        `{"Hello World": {Name: "Steve"}}`,
 			index:       -1,
-			expectedErr: &SnbtError{Op: "char", Err: OutOfRangeError},
+			expectedErr: &SnbtError{Op: "char", Err: ErrOutOfRange},
 		},
 		{
 			name:        `negative case: Simple - 32`,
 			snbt:        `{"Hello World": {Name: "Steve"}}`,
 			index:       32,
-			expectedErr: &SnbtError{Op: "char", Err: OutOfRangeError},
+			expectedErr: &SnbtError{Op: "char", Err: ErrOutOfRange},
 		},
 		{
 			name:     `positive case: Tag Check - 0`,
@@ -242,13 +242,13 @@ func TestParser_Char(t *testing.T) {
 			name:        `positive case: Tag Check - -1`,
 			snbt:        `{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`,
 			index:       -1,
-			expectedErr: &SnbtError{Op: "char", Err: OutOfRangeError},
+			expectedErr: &SnbtError{Op: "char", Err: ErrOutOfRange},
 		},
 		{
 			name:        `positive case: Tag Check - 111`,
 			snbt:        `{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`,
 			index:       111,
-			expectedErr: &SnbtError{Op: "char", Err: OutOfRangeError},
+			expectedErr: &SnbtError{Op: "char", Err: ErrOutOfRange},
 		},
 	}
 
@@ -296,21 +296,21 @@ func TestParser_Slice(t *testing.T) {
 			snbt:        `{"Hello World": {Name: "Steve"}}`,
 			start:       -1,
 			end:         0,
-			expectedErr: &SnbtError{Op: "slice", Err: OutOfRangeError},
+			expectedErr: &SnbtError{Op: "slice", Err: ErrOutOfRange},
 		},
 		{
 			name:        `negative case: Simple - [0:33]`,
 			snbt:        `{"Hello World": {Name: "Steve"}}`,
 			start:       0,
 			end:         33,
-			expectedErr: &SnbtError{Op: "slice", Err: OutOfRangeError},
+			expectedErr: &SnbtError{Op: "slice", Err: ErrOutOfRange},
 		},
 		{
 			name:        `negative case: Simple - [10:0]`,
 			snbt:        `{"Hello World": {Name: "Steve"}}`,
 			start:       10,
 			end:         0,
-			expectedErr: &SnbtError{Op: "slice", Err: OutOfRangeError},
+			expectedErr: &SnbtError{Op: "slice", Err: ErrOutOfRange},
 		},
 		{
 			name:     `positive case: Tag Check - [0:0]`,
@@ -331,21 +331,21 @@ func TestParser_Slice(t *testing.T) {
 			snbt:        `{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`,
 			start:       -1,
 			end:         0,
-			expectedErr: &SnbtError{Op: "slice", Err: OutOfRangeError},
+			expectedErr: &SnbtError{Op: "slice", Err: ErrOutOfRange},
 		},
 		{
 			name:        `negative case: Tag Check - [0:112]`,
 			snbt:        `{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`,
 			start:       0,
 			end:         112,
-			expectedErr: &SnbtError{Op: "slice", Err: OutOfRangeError},
+			expectedErr: &SnbtError{Op: "slice", Err: ErrOutOfRange},
 		},
 		{
 			name:        `negative case: Tag Check - [10:0]`,
 			snbt:        `{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`,
 			start:       10,
 			end:         0,
-			expectedErr: &SnbtError{Op: "slice", Err: OutOfRangeError},
+			expectedErr: &SnbtError{Op: "slice", Err: ErrOutOfRange},
 		},
 	}
 
@@ -383,7 +383,7 @@ func TestParser_Next(t *testing.T) {
 				{index: 30, char: '}'},
 				{index: 31, char: '}'},
 			},
-			expectedErr: &SnbtError{Op: "next", Err: StopIterationError},
+			expectedErr: &SnbtError{Op: "next", Err: ErrStopIteration},
 		},
 		{
 			name: `positive case: Tag Check`,
@@ -413,7 +413,7 @@ func TestParser_Next(t *testing.T) {
 				{index: 109, char: '}'},
 				{index: 110, char: '}'},
 			},
-			expectedErr: &SnbtError{Op: "next", Err: StopIterationError},
+			expectedErr: &SnbtError{Op: "next", Err: ErrStopIteration},
 		},
 	}
 

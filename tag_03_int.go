@@ -65,7 +65,7 @@ func (t *IntTag) decode(r io.Reader) error {
 
 	v, ok := tag.(*IntTag)
 	if !ok {
-		err = &NbtError{Op: "decode", Err: DecodeError}
+		err = &NbtError{Op: "decode", Err: ErrDecode}
 		return err
 	}
 

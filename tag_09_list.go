@@ -66,7 +66,7 @@ func (t *ListTag) decode(r io.Reader) error {
 
 	v, ok := tag.(*ListTag)
 	if !ok {
-		err = &NbtError{Op: "decode", Err: DecodeError}
+		err = &NbtError{Op: "decode", Err: ErrDecode}
 		return err
 	}
 

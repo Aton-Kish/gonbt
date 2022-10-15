@@ -378,7 +378,7 @@ func TestNewTag(t *testing.T) {
 			name:        `negative case: out of range`,
 			tagType:     TagType(0x0D),
 			expected:    nil,
-			expectedErr: &NbtError{Op: "new", Err: InvalidTagTypeError},
+			expectedErr: &NbtError{Op: "new", Err: ErrInvalidTagType},
 		},
 	}
 
@@ -953,20 +953,20 @@ func TestNewPayload(t *testing.T) {
 			name:        `negative case`,
 			tagType:     TagType(0x0D),
 			expected:    nil,
-			expectedErr: &NbtError{Op: "new", Err: InvalidTagTypeError},
+			expectedErr: &NbtError{Op: "new", Err: ErrInvalidTagType},
 		},
 		{
 			name:        `negative case: EndType`,
 			tagType:     EndType,
 			expected:    nil,
-			expectedErr: &NbtError{Op: "new", Err: InvalidTagTypeError},
+			expectedErr: &NbtError{Op: "new", Err: ErrInvalidTagType},
 		},
 
 		{
 			name:        `negative case: out of range`,
 			tagType:     TagType(0x0D),
 			expected:    nil,
-			expectedErr: &NbtError{Op: "new", Err: InvalidTagTypeError},
+			expectedErr: &NbtError{Op: "new", Err: ErrInvalidTagType},
 		},
 	}
 

@@ -67,7 +67,7 @@ func (t *LongArrayTag) decode(r io.Reader) error {
 
 	v, ok := tag.(*LongArrayTag)
 	if !ok {
-		err = &NbtError{Op: "decode", Err: DecodeError}
+		err = &NbtError{Op: "decode", Err: ErrDecode}
 		return err
 	}
 
@@ -138,7 +138,7 @@ func (p *LongArrayPayload) parse(parser *snbt.Parser) error {
 	}
 
 	if parser.CurrToken().Char() != ';' {
-		err := &NbtError{Op: "parse", Err: InvalidSnbtFormatError}
+		err := &NbtError{Op: "parse", Err: ErrInvalidSnbtFormat}
 		return err
 	}
 
@@ -162,7 +162,7 @@ func (p *LongArrayPayload) parse(parser *snbt.Parser) error {
 
 		g := longPattern.FindSubmatch(b)
 		if len(g) < 2 {
-			err = &NbtError{Op: "parse", Err: InvalidSnbtFormatError}
+			err = &NbtError{Op: "parse", Err: ErrInvalidSnbtFormat}
 			return err
 		}
 
