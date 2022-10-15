@@ -95,6 +95,7 @@ func (t TagType) String() string {
 func (t *TagType) encode(w io.Writer) error {
 	if err := binary.Write(w, binary.BigEndian, t); err != nil {
 		err = &NbtError{Op: "encode", Err: err}
+		logger.Printf("(*TagType).encode; type: %s; error: %s", t, err)
 		return err
 	}
 
@@ -104,6 +105,7 @@ func (t *TagType) encode(w io.Writer) error {
 func (t *TagType) decode(r io.Reader) error {
 	if err := binary.Read(r, binary.BigEndian, t); err != nil {
 		err = &NbtError{Op: "decode", Err: err}
+		logger.Printf("(*TagType).decode; type: %s; error: %s", t, err)
 		return err
 	}
 

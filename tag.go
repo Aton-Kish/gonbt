@@ -69,6 +69,7 @@ func NewTag(typ TagType) (Tag, error) {
 		return NewLongArrayTag(new(TagName), new(LongArrayPayload)), nil
 	default:
 		err := &NbtError{Op: "new", Err: ErrInvalidTagType}
+		logger.Printf("NewTag; error: %s", err)
 		return nil, err
 	}
 }
@@ -79,12 +80,14 @@ func newTagFromSnbt(parser *snbt.Parser) (Tag, error) {
 	if parser.CurrToken().Index() > 0 {
 		if err := name.parse(parser); err != nil {
 			err = &NbtError{Op: "new", Err: err}
+			logger.Printf("newTagFromSnbt; error: %s", err)
 			return nil, err
 		}
 	}
 
 	p, err := newPayloadFromSnbt(parser)
 	if err != nil {
+		logger.Printf("newTagFromSnbt; error: %s", err)
 		return nil, err
 	}
 
@@ -115,6 +118,7 @@ func newTagFromSnbt(parser *snbt.Parser) (Tag, error) {
 		return NewLongArrayTag(&name, payload), nil
 	default:
 		err = &NbtError{Op: "new", Err: ErrInvalidSnbtFormat}
+		logger.Printf("newTagFromSnbt; error: %s", err)
 		return nil, err
 	}
 }
@@ -122,6 +126,7 @@ func newTagFromSnbt(parser *snbt.Parser) (Tag, error) {
 func Encode(w io.Writer, tag Tag) error {
 	typ := tag.TypeId()
 	if err := typ.encode(w); err != nil {
+		logger.Printf("Encode; error: %s", err)
 		return err
 	}
 
@@ -130,10 +135,12 @@ func Encode(w io.Writer, tag Tag) error {
 	}
 
 	if err := tag.TagName().encode(w); err != nil {
+		logger.Printf("Encode; error: %s", err)
 		return err
 	}
 
 	if err := tag.Payload().encode(w); err != nil {
+		logger.Printf("Encode; error: %s", err)
 		return err
 	}
 
@@ -143,12 +150,14 @@ func Encode(w io.Writer, tag Tag) error {
 func Decode(r io.Reader) (Tag, error) {
 	var typ TagType
 	if err := typ.decode(r); err != nil {
+		logger.Printf("Decode; error: %s", err)
 		return nil, err
 	}
 
 	tag, err := NewTag(typ)
 	if err != nil {
 		err = &NbtError{Op: "decode", Err: err}
+		logger.Printf("Decode; error: %s", err)
 		return nil, err
 	}
 
@@ -157,10 +166,12 @@ func Decode(r io.Reader) (Tag, error) {
 	}
 
 	if err := tag.TagName().decode(r); err != nil {
+		logger.Printf("Decode; error: %s", err)
 		return nil, err
 	}
 
 	if err := tag.Payload().decode(r); err != nil {
+		logger.Printf("Decode; error: %s", err)
 		return nil, err
 	}
 
@@ -210,16 +221,19 @@ func Parse(stringified string) (Tag, error) {
 
 	if err := p.Compact(); err != nil {
 		err = &NbtError{Op: "parse", Err: err}
+		logger.Printf("Parse; error: %s", err)
 		return nil, err
 	}
 
 	tag, err := newTagFromSnbt(p)
 	if err != nil {
 		err = &NbtError{Op: "parse", Err: err}
+		logger.Printf("Parse; error: %s", err)
 		return nil, err
 	}
 
 	if err := tag.parse(p); err != nil {
+		logger.Printf("Parse; error: %s", err)
 		return nil, err
 	}
 
@@ -232,6 +246,7 @@ func parseTag(tag Tag, parser *snbt.Parser) error {
 	}
 
 	if err := tag.Payload().parse(parser); err != nil {
+		logger.Printf("parseTag; error: %s", err)
 		return err
 	}
 

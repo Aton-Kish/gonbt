@@ -74,6 +74,7 @@ func NewPayload(typ TagType) (Payload, error) {
 		return new(LongArrayPayload), nil
 	default:
 		err := &NbtError{Op: "new", Err: ErrInvalidTagType}
+		logger.Printf("NewPayload; error: %s", err)
 		return nil, err
 	}
 }
@@ -86,6 +87,7 @@ func newPayloadFromSnbt(parser *snbt.Parser) (Payload, error) {
 		typ, err := parser.Char(parser.CurrToken().Index() + 1)
 		if err != nil {
 			err = &NbtError{Op: "new", Err: err}
+			logger.Printf("newPayloadFromSnbt; error: %s", err)
 			return nil, err
 		}
 
@@ -101,12 +103,14 @@ func newPayloadFromSnbt(parser *snbt.Parser) (Payload, error) {
 		return new(ListPayload), nil
 	case *new(rune), '"', ' ', ':', ';':
 		err := &NbtError{Op: "new", Err: ErrInvalidSnbtFormat}
+		logger.Printf("newPayloadFromSnbt; error: %s", err)
 		return nil, err
 	}
 
 	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
 	if err != nil {
 		err = &NbtError{Op: "new", Err: err}
+		logger.Printf("newPayloadFromSnbt; error: %s", err)
 		return nil, err
 	}
 
