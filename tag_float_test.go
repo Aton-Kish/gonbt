@@ -63,7 +63,7 @@ func TestNewFloatTag(t *testing.T) {
 
 func TestFloatTag_TypeId(t *testing.T) {
 	tag := new(FloatTag)
-	expected := FloatType
+	expected := TagTypeFloat
 	actual := tag.TypeId()
 	assert.Equal(t, expected, actual)
 }

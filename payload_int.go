@@ -36,7 +36,7 @@ func NewIntPayload(value int32) *IntPayload {
 }
 
 func (p *IntPayload) TypeId() TagType {
-	return IntType
+	return TagTypeInt
 }
 
 func (p *IntPayload) encode(w io.Writer) error {

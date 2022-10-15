@@ -38,7 +38,7 @@ func NewStringPayload(value string) *StringPayload {
 }
 
 func (p *StringPayload) TypeId() TagType {
-	return StringType
+	return TagTypeString
 }
 
 func (p *StringPayload) encode(w io.Writer) error {

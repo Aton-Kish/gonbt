@@ -63,7 +63,7 @@ func TestNewShortTag(t *testing.T) {
 
 func TestShortTag_TypeId(t *testing.T) {
 	tag := new(ShortTag)
-	expected := ShortType
+	expected := TagTypeShort
 	actual := tag.TypeId()
 	assert.Equal(t, expected, actual)
 }

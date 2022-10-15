@@ -28,53 +28,64 @@ import (
 type TagType byte
 
 const (
-	EndType TagType = iota
-	ByteType
-	ShortType
-	IntType
-	LongType
-	FloatType
-	DoubleType
-	ByteArrayType
-	StringType
-	ListType
-	CompoundType
-	IntArrayType
-	LongArrayType
+	TagTypeEnd TagType = iota
+	TagTypeByte
+	TagTypeShort
+	TagTypeInt
+	TagTypeLong
+	TagTypeFloat
+	TagTypeDouble
+	TagTypeByteArray
+	TagTypeString
+	TagTypeList
+	TagTypeCompound
+	TagTypeIntArray
+	TagTypeLongArray
 )
 
 var TagTypes []TagType = []TagType{
-	EndType, ByteType, ShortType, IntType, LongType, FloatType, DoubleType,
-	ByteArrayType, StringType, ListType, CompoundType, IntArrayType, LongArrayType,
+	TagTypeEnd,
+	TagTypeByte,
+	TagTypeShort,
+	TagTypeInt,
+	TagTypeLong,
+	TagTypeFloat,
+	TagTypeDouble,
+	TagTypeByteArray,
+	TagTypeString,
+	TagTypeList,
+	TagTypeCompound,
+	TagTypeIntArray,
+	TagTypeLongArray,
 }
 
 func (t TagType) String() string {
 	switch t {
-	case EndType:
+	case TagTypeEnd:
 		return "End"
-	case ByteType:
+	case TagTypeByte:
 		return "Byte"
-	case ShortType:
+	case TagTypeShort:
 		return "Short"
-	case IntType:
+	case TagTypeInt:
 		return "Int"
-	case LongType:
+	case TagTypeLong:
 		return "Long"
-	case FloatType:
+	case TagTypeFloat:
 		return "Float"
-	case DoubleType:
+	case TagTypeDouble:
 		return "Double"
-	case ByteArrayType:
+	case TagTypeByteArray:
 		return "ByteArray"
-	case StringType:
+	case TagTypeString:
 		return "String"
-	case ListType:
+	case TagTypeList:
 		return "List"
-	case CompoundType:
+	case TagTypeCompound:
 		return "Compound"
-	case IntArrayType:
+	case TagTypeIntArray:
 		return "IntArray"
-	case LongArrayType:
+	case TagTypeLongArray:
 		return "LongArray"
 	default:
 		return ""

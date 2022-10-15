@@ -55,7 +55,7 @@ func TestNewDoublePayload(t *testing.T) {
 
 func TestDoublePayload_TypeId(t *testing.T) {
 	payload := new(DoublePayload)
-	expected := DoubleType
+	expected := TagTypeDouble
 	actual := payload.TypeId()
 	assert.Equal(t, expected, actual)
 }

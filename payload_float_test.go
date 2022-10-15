@@ -55,7 +55,7 @@ func TestNewFloatPayload(t *testing.T) {
 
 func TestFloatPayload_TypeId(t *testing.T) {
 	payload := new(FloatPayload)
-	expected := FloatType
+	expected := TagTypeFloat
 	actual := payload.TypeId()
 	assert.Equal(t, expected, actual)
 }

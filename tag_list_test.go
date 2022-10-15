@@ -63,7 +63,7 @@ func TestNewListTag(t *testing.T) {
 
 func TestListTag_TypeId(t *testing.T) {
 	tag := new(ListTag)
-	expected := ListType
+	expected := TagTypeList
 	actual := tag.TypeId()
 	assert.Equal(t, expected, actual)
 }

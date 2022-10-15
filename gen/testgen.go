@@ -74,7 +74,7 @@ func testgen() error {
 			return err
 		}
 
-		if typ == nbt.EndType {
+		if typ == nbt.TagTypeEnd {
 			continue
 		}
 

@@ -55,7 +55,7 @@ func TestNewShortPayload(t *testing.T) {
 
 func TestShortPayload_TypeId(t *testing.T) {
 	payload := new(ShortPayload)
-	expected := ShortType
+	expected := TagTypeShort
 	actual := payload.TypeId()
 	assert.Equal(t, expected, actual)
 }

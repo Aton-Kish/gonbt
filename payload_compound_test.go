@@ -55,7 +55,7 @@ func TestNewCompoundPayload(t *testing.T) {
 
 func TestCompoundPayload_TypeId(t *testing.T) {
 	payload := new(CompoundPayload)
-	expected := CompoundType
+	expected := TagTypeCompound
 	actual := payload.TypeId()
 	assert.Equal(t, expected, actual)
 }

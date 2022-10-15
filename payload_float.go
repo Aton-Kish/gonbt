@@ -36,7 +36,7 @@ func NewFloatPayload(value float32) *FloatPayload {
 }
 
 func (p *FloatPayload) TypeId() TagType {
-	return FloatType
+	return TagTypeFloat
 }
 
 func (p *FloatPayload) encode(w io.Writer) error {

@@ -36,7 +36,7 @@ func NewBytePayload(value int8) *BytePayload {
 }
 
 func (p *BytePayload) TypeId() TagType {
-	return ByteType
+	return TagTypeByte
 }
 
 func (p *BytePayload) encode(w io.Writer) error {

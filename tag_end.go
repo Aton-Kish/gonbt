@@ -34,7 +34,7 @@ func NewEndTag() *EndTag {
 }
 
 func (t *EndTag) TypeId() TagType {
-	return EndType
+	return TagTypeEnd
 }
 
 func (t *EndTag) TagName() *TagName {

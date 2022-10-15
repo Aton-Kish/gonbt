@@ -42,7 +42,7 @@ func NewLongArrayPayload(values ...int64) *LongArrayPayload {
 }
 
 func (p *LongArrayPayload) TypeId() TagType {
-	return LongArrayType
+	return TagTypeLongArray
 }
 
 func (p *LongArrayPayload) encode(w io.Writer) error {

@@ -41,31 +41,31 @@ type Tag interface {
 
 func NewTag(typ TagType) (Tag, error) {
 	switch typ {
-	case EndType:
+	case TagTypeEnd:
 		return NewEndTag(), nil
-	case ByteType:
+	case TagTypeByte:
 		return NewByteTag(new(TagName), new(BytePayload)), nil
-	case ShortType:
+	case TagTypeShort:
 		return NewShortTag(new(TagName), new(ShortPayload)), nil
-	case IntType:
+	case TagTypeInt:
 		return NewIntTag(new(TagName), new(IntPayload)), nil
-	case LongType:
+	case TagTypeLong:
 		return NewLongTag(new(TagName), new(LongPayload)), nil
-	case FloatType:
+	case TagTypeFloat:
 		return NewFloatTag(new(TagName), new(FloatPayload)), nil
-	case DoubleType:
+	case TagTypeDouble:
 		return NewDoubleTag(new(TagName), new(DoublePayload)), nil
-	case ByteArrayType:
+	case TagTypeByteArray:
 		return NewByteArrayTag(new(TagName), new(ByteArrayPayload)), nil
-	case StringType:
+	case TagTypeString:
 		return NewStringTag(new(TagName), new(StringPayload)), nil
-	case ListType:
+	case TagTypeList:
 		return NewListTag(new(TagName), new(ListPayload)), nil
-	case CompoundType:
+	case TagTypeCompound:
 		return NewCompoundTag(new(TagName), new(CompoundPayload)), nil
-	case IntArrayType:
+	case TagTypeIntArray:
 		return NewIntArrayTag(new(TagName), new(IntArrayPayload)), nil
-	case LongArrayType:
+	case TagTypeLongArray:
 		return NewLongArrayTag(new(TagName), new(LongArrayPayload)), nil
 	default:
 		err := &NbtError{Op: "new", Err: ErrInvalidTagType}
@@ -125,7 +125,7 @@ func Encode(w io.Writer, tag Tag) error {
 		return err
 	}
 
-	if typ == EndType {
+	if typ == TagTypeEnd {
 		return nil
 	}
 
@@ -152,7 +152,7 @@ func Decode(r io.Reader) (Tag, error) {
 		return nil, err
 	}
 
-	if typ == EndType {
+	if typ == TagTypeEnd {
 		return tag, nil
 	}
 
@@ -198,7 +198,7 @@ func prettyStringify(tag Tag, space string, indent string) string {
 }
 
 func stringifyTag(tag Tag, space string, indent string, depth int) string {
-	if tag.TypeId() == EndType {
+	if tag.TypeId() == TagTypeEnd {
 		return ""
 	}
 
@@ -227,7 +227,7 @@ func Parse(stringified string) (Tag, error) {
 }
 
 func parseTag(tag Tag, parser *snbt.Parser) error {
-	if tag.TypeId() == EndType {
+	if tag.TypeId() == TagTypeEnd {
 		return nil
 	}
 
@@ -269,7 +269,7 @@ func prettyJson(tag Tag, space string, indent string) string {
 }
 
 func jsonTag(tag Tag, space string, indent string, depth int) string {
-	if tag.TypeId() == EndType {
+	if tag.TypeId() == TagTypeEnd {
 		return ""
 	}
 

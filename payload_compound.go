@@ -42,7 +42,7 @@ func NewCompoundPayload(values ...Tag) *CompoundPayload {
 }
 
 func (p *CompoundPayload) TypeId() TagType {
-	return CompoundType
+	return TagTypeCompound
 }
 
 func (p *CompoundPayload) encode(w io.Writer) error {
@@ -64,7 +64,7 @@ func (p *CompoundPayload) decode(r io.Reader) error {
 
 		*p = append(*p, tag)
 
-		if tag.TypeId() == EndType {
+		if tag.TypeId() == TagTypeEnd {
 			break
 		}
 	}
@@ -75,7 +75,7 @@ func (p *CompoundPayload) decode(r io.Reader) error {
 func (p *CompoundPayload) stringify(space string, indent string, depth int) string {
 	strs := make([]string, 0, len(*p))
 	for _, tag := range *p {
-		if tag.TypeId() == EndType {
+		if tag.TypeId() == TagTypeEnd {
 			break
 		}
 
@@ -137,7 +137,7 @@ func (p *CompoundPayload) parse(parser *snbt.Parser) error {
 func (p *CompoundPayload) json(space string, indent string, depth int) string {
 	strs := make([]string, 0, len(*p))
 	for _, tag := range *p {
-		if tag.TypeId() == EndType {
+		if tag.TypeId() == TagTypeEnd {
 			break
 		}
 

@@ -36,7 +36,7 @@ func NewShortPayload(value int16) *ShortPayload {
 }
 
 func (p *ShortPayload) TypeId() TagType {
-	return ShortType
+	return TagTypeShort
 }
 
 func (p *ShortPayload) encode(w io.Writer) error {

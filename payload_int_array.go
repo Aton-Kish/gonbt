@@ -42,7 +42,7 @@ func NewIntArrayPayload(values ...int32) *IntArrayPayload {
 }
 
 func (p *IntArrayPayload) TypeId() TagType {
-	return IntArrayType
+	return TagTypeIntArray
 }
 
 func (p *IntArrayPayload) encode(w io.Writer) error {

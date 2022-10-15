@@ -55,7 +55,7 @@ func TestNewByteArrayPayload(t *testing.T) {
 
 func TestByteArrayPayload_TypeId(t *testing.T) {
 	payload := new(ByteArrayPayload)
-	expected := ByteArrayType
+	expected := TagTypeByteArray
 	actual := payload.TypeId()
 	assert.Equal(t, expected, actual)
 }
