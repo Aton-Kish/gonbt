@@ -436,7 +436,8 @@ func TestStringTag_encode(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, buf.Bytes())
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -472,7 +473,8 @@ func TestStringTag_decode(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, tag)
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -597,7 +599,8 @@ func TestStringTag_parse(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, payload)
 			} else {
-				assert.Error(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -736,7 +739,8 @@ func TestStringPayload_encode(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, buf.Bytes())
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -772,7 +776,8 @@ func TestStringPayload_decode(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, payload)
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}

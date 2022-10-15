@@ -22,7 +22,6 @@ package nbt
 
 import (
 	"bytes"
-	"errors"
 	"testing"
 
 	"github.com/Aton-Kish/gonbt/pointer"
@@ -132,7 +131,8 @@ func TestTagType_encode(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, buf.Bytes())
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -168,7 +168,8 @@ func TestTagType_decode(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, typ)
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -227,7 +228,8 @@ func TestTagName_encode(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, buf.Bytes())
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -263,7 +265,8 @@ func TestTagName_decode(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, n)
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -450,7 +453,7 @@ func TestNewTag(t *testing.T) {
 			name:        `negative case: out of range`,
 			tagType:     TagType(0x0D),
 			expected:    nil,
-			expectedErr: errors.New("invalid tag type id 13"),
+			expectedErr: &NbtError{Op: "new", Err: InvalidTagTypeError},
 		},
 	}
 
@@ -462,7 +465,8 @@ func TestNewTag(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, tag)
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -647,7 +651,8 @@ func TestEncode(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, buf.Bytes())
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -681,7 +686,8 @@ func TestDecode(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, actual)
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -789,7 +795,8 @@ func TestParse_default(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, Stringify(tt.expected), Stringify(actual))
 			} else {
-				assert.Error(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -822,7 +829,8 @@ func TestParse_compact(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, Stringify(tt.expected), Stringify(actual))
 			} else {
-				assert.Error(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -855,7 +863,8 @@ func TestParse_pretty(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, Stringify(tt.expected), Stringify(actual))
 			} else {
-				assert.Error(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -1019,20 +1028,20 @@ func TestNewPayload(t *testing.T) {
 			name:        `negative case`,
 			tagType:     TagType(0x0D),
 			expected:    nil,
-			expectedErr: errors.New("invalid tag type id 13"),
+			expectedErr: &NbtError{Op: "new", Err: InvalidTagTypeError},
 		},
 		{
 			name:        `negative case: EndType`,
 			tagType:     EndType,
 			expected:    nil,
-			expectedErr: errors.New("invalid tag type id 0"),
+			expectedErr: &NbtError{Op: "new", Err: InvalidTagTypeError},
 		},
 
 		{
 			name:        `negative case: out of range`,
 			tagType:     TagType(0x0D),
 			expected:    nil,
-			expectedErr: errors.New("invalid tag type id 13"),
+			expectedErr: &NbtError{Op: "new", Err: InvalidTagTypeError},
 		},
 	}
 
@@ -1044,7 +1053,8 @@ func TestNewPayload(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, payload)
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}

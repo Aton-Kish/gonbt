@@ -22,7 +22,6 @@ package nbt
 
 import (
 	"encoding/binary"
-	"errors"
 	"fmt"
 	"io"
 	"strconv"
@@ -68,7 +67,8 @@ func (t *StringTag) decode(r io.Reader) error {
 
 	v, ok := tag.(*StringTag)
 	if !ok {
-		return errors.New("decode failed")
+		err = &NbtError{Op: "decode", Err: DecodeError}
+		return err
 	}
 
 	*t = *v
@@ -101,11 +101,13 @@ func (p *StringPayload) TypeId() TagType {
 func (p *StringPayload) encode(w io.Writer) error {
 	l := uint16(len(*p))
 	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
+		err = &NbtError{Op: "encode", Err: err}
 		return err
 	}
 
 	b := []byte(*p)
 	if err := binary.Write(w, binary.BigEndian, b); err != nil {
+		err = &NbtError{Op: "encode", Err: err}
 		return err
 	}
 
@@ -115,11 +117,13 @@ func (p *StringPayload) encode(w io.Writer) error {
 func (p *StringPayload) decode(r io.Reader) error {
 	var l uint16
 	if err := binary.Read(r, binary.BigEndian, &l); err != nil {
+		err = &NbtError{Op: "decode", Err: err}
 		return err
 	}
 
 	b := make([]byte, l)
 	if err := binary.Read(r, binary.BigEndian, b); err != nil {
+		err = &NbtError{Op: "decode", Err: err}
 		return err
 	}
 	*p = StringPayload(b)
@@ -142,6 +146,7 @@ func (p *StringPayload) stringify(space string, indent string, depth int) string
 func (p *StringPayload) parse(parser *snbt.Parser) error {
 	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
 	if err != nil {
+		err = &NbtError{Op: "parse", Err: err}
 		return err
 	}
 
@@ -156,6 +161,7 @@ func (p *StringPayload) parse(parser *snbt.Parser) error {
 
 	s, err := strconv.Unquote(qs)
 	if err != nil {
+		err = &NbtError{Op: "parse", Err: err}
 		return err
 	}
 

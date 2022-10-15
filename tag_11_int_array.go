@@ -22,7 +22,6 @@ package nbt
 
 import (
 	"encoding/binary"
-	"errors"
 	"fmt"
 	"io"
 	"strconv"
@@ -68,7 +67,8 @@ func (t *IntArrayTag) decode(r io.Reader) error {
 
 	v, ok := tag.(*IntArrayTag)
 	if !ok {
-		return errors.New("decode failed")
+		err = &NbtError{Op: "decode", Err: DecodeError}
+		return err
 	}
 
 	*t = *v
@@ -109,11 +109,13 @@ func (p *IntArrayPayload) encode(w io.Writer) error {
 func (p *IntArrayPayload) decode(r io.Reader) error {
 	var l int32
 	if err := binary.Read(r, binary.BigEndian, &l); err != nil {
+		err = &NbtError{Op: "decode", Err: err}
 		return err
 	}
 
 	*p = make(IntArrayPayload, l)
 	if err := binary.Read(r, binary.BigEndian, p); err != nil {
+		err = &NbtError{Op: "decode", Err: err}
 		return err
 	}
 
@@ -131,15 +133,18 @@ func (p *IntArrayPayload) stringify(space string, indent string, depth int) stri
 
 func (p *IntArrayPayload) parse(parser *snbt.Parser) error {
 	if err := parser.Next(); err != nil {
+		err = &NbtError{Op: "parse", Err: err}
 		return err
 	}
 
 	if parser.CurrToken().Char() != ';' {
-		return errors.New("invalid snbt format")
+		err := &NbtError{Op: "parse", Err: InvalidSnbtFormatError}
+		return err
 	}
 
 	for parser.CurrToken().Char() != ']' {
 		if err := parser.Next(); err != nil {
+			err = &NbtError{Op: "parse", Err: err}
 			return err
 		}
 
@@ -151,11 +156,13 @@ func (p *IntArrayPayload) parse(parser *snbt.Parser) error {
 
 		b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
 		if err != nil {
+			err = &NbtError{Op: "parse", Err: err}
 			return err
 		}
 
 		i, err := strconv.ParseInt(string(b), 10, 32)
 		if err != nil {
+			err = &NbtError{Op: "parse", Err: err}
 			return err
 		}
 
@@ -163,6 +170,7 @@ func (p *IntArrayPayload) parse(parser *snbt.Parser) error {
 	}
 
 	if err := parser.Next(); err != nil {
+		err = &NbtError{Op: "parse", Err: err}
 		return err
 	}
 

@@ -21,7 +21,6 @@
 package nbt
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"strconv"
@@ -66,7 +65,8 @@ func (t *DoubleTag) decode(r io.Reader) error {
 
 	v, ok := tag.(*DoubleTag)
 	if !ok {
-		return errors.New("decode failed")
+		err = &NbtError{Op: "decode", Err: DecodeError}
+		return err
 	}
 
 	*t = *v
@@ -118,16 +118,19 @@ func (p *DoublePayload) stringify(space string, indent string, depth int) string
 func (p *DoublePayload) parse(parser *snbt.Parser) error {
 	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
 	if err != nil {
+		err = &NbtError{Op: "parse", Err: err}
 		return err
 	}
 
 	g := doublePattern.FindSubmatch(b)
 	if len(g) < 2 {
-		return errors.New("invalid snbt format")
+		err = &NbtError{Op: "parse", Err: InvalidSnbtFormatError}
+		return err
 	}
 
 	f, err := strconv.ParseFloat(string(g[1]), 64)
 	if err != nil {
+		err = &NbtError{Op: "parse", Err: err}
 		return err
 	}
 
