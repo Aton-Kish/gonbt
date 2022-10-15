@@ -21,6 +21,7 @@
 package nbt
 
 import (
+	"encoding/binary"
 	"fmt"
 	"io"
 	"strconv"
@@ -40,12 +41,18 @@ func (p *IntPayload) TypeId() TagType {
 }
 
 func (p *IntPayload) encode(w io.Writer) error {
-	return encodeNumericPayload(w, p)
+	if err := binary.Write(w, binary.BigEndian, p); err != nil {
+		err = &NbtError{Op: "encode", Err: err}
+		return err
+	}
+
+	return nil
 }
 
 func (p *IntPayload) decode(r io.Reader) error {
-	payload, err := decodeNumericPayload[IntPayload](r)
-	if err != nil {
+	payload := new(IntPayload)
+	if err := binary.Read(r, binary.BigEndian, payload); err != nil {
+		err = &NbtError{Op: "decode", Err: err}
 		return err
 	}
 
