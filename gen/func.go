@@ -35,29 +35,29 @@ func private(typ nbt.TagType) string {
 
 func typeof(typ nbt.TagType) string {
 	switch typ {
-	case nbt.ByteType:
+	case nbt.TagTypeByte:
 		return "int8"
-	case nbt.ShortType:
+	case nbt.TagTypeShort:
 		return "int16"
-	case nbt.IntType:
+	case nbt.TagTypeInt:
 		return "int32"
-	case nbt.LongType:
+	case nbt.TagTypeLong:
 		return "int64"
-	case nbt.FloatType:
+	case nbt.TagTypeFloat:
 		return "float32"
-	case nbt.DoubleType:
+	case nbt.TagTypeDouble:
 		return "float64"
-	case nbt.ByteArrayType:
+	case nbt.TagTypeByteArray:
 		return "[]int8"
-	case nbt.StringType:
+	case nbt.TagTypeString:
 		return "string"
-	case nbt.ListType:
+	case nbt.TagTypeList:
 		return "[]Payload"
-	case nbt.CompoundType:
+	case nbt.TagTypeCompound:
 		return "[]Tag"
-	case nbt.IntArrayType:
+	case nbt.TagTypeIntArray:
 		return "[]int32"
-	case nbt.LongArrayType:
+	case nbt.TagTypeLongArray:
 		return "[]int64"
 	default:
 		return ""

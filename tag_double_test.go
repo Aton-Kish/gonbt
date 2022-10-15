@@ -63,7 +63,7 @@ func TestNewDoubleTag(t *testing.T) {
 
 func TestDoubleTag_TypeId(t *testing.T) {
 	tag := new(DoubleTag)
-	expected := DoubleType
+	expected := TagTypeDouble
 	actual := tag.TypeId()
 	assert.Equal(t, expected, actual)
 }

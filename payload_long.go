@@ -36,7 +36,7 @@ func NewLongPayload(value int64) *LongPayload {
 }
 
 func (p *LongPayload) TypeId() TagType {
-	return LongType
+	return TagTypeLong
 }
 
 func (p *LongPayload) encode(w io.Writer) error {

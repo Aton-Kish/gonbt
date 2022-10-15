@@ -48,29 +48,29 @@ type Payload interface {
 
 func NewPayload(typ TagType) (Payload, error) {
 	switch typ {
-	case ByteType:
+	case TagTypeByte:
 		return new(BytePayload), nil
-	case ShortType:
+	case TagTypeShort:
 		return new(ShortPayload), nil
-	case IntType:
+	case TagTypeInt:
 		return new(IntPayload), nil
-	case LongType:
+	case TagTypeLong:
 		return new(LongPayload), nil
-	case FloatType:
+	case TagTypeFloat:
 		return new(FloatPayload), nil
-	case DoubleType:
+	case TagTypeDouble:
 		return new(DoublePayload), nil
-	case ByteArrayType:
+	case TagTypeByteArray:
 		return new(ByteArrayPayload), nil
-	case StringType:
+	case TagTypeString:
 		return new(StringPayload), nil
-	case ListType:
+	case TagTypeList:
 		return new(ListPayload), nil
-	case CompoundType:
+	case TagTypeCompound:
 		return new(CompoundPayload), nil
-	case IntArrayType:
+	case TagTypeIntArray:
 		return new(IntArrayPayload), nil
-	case LongArrayType:
+	case TagTypeLongArray:
 		return new(LongArrayPayload), nil
 	default:
 		err := &NbtError{Op: "new", Err: ErrInvalidTagType}

@@ -54,7 +54,7 @@ func TestNewEndTag(t *testing.T) {
 
 func TestEndTag_TypeId(t *testing.T) {
 	tag := new(EndTag)
-	expected := EndType
+	expected := TagTypeEnd
 	actual := tag.TypeId()
 	assert.Equal(t, expected, actual)
 }

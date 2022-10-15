@@ -235,7 +235,7 @@ var endTagCases = []tagTestCase[Payload]{
 	{
 		name: `positive case: EndTag`,
 		nbt: nbtTestCase[Payload]{
-			tagType: EndType,
+			tagType: TagTypeEnd,
 		},
 		raw: rawTestCase{
 			tagType: []byte{
@@ -250,7 +250,7 @@ var byteTagCases = []tagTestCase[*BytePayload]{
 	{
 		name: `positive case: ByteTag`,
 		nbt: nbtTestCase[*BytePayload]{
-			tagType: ByteType,
+			tagType: TagTypeByte,
 			tagName: `Byte`,
 			payload: NewBytePayload(123),
 		},
@@ -293,7 +293,7 @@ var shortTagCases = []tagTestCase[*ShortPayload]{
 	{
 		name: `positive case: ShortTag`,
 		nbt: nbtTestCase[*ShortPayload]{
-			tagType: ShortType,
+			tagType: TagTypeShort,
 			tagName: `Short`,
 			payload: NewShortPayload(12345),
 		},
@@ -336,7 +336,7 @@ var intTagCases = []tagTestCase[*IntPayload]{
 	{
 		name: `positive case: IntTag`,
 		nbt: nbtTestCase[*IntPayload]{
-			tagType: IntType,
+			tagType: TagTypeInt,
 			tagName: `Int`,
 			payload: NewIntPayload(123456789),
 		},
@@ -379,7 +379,7 @@ var longTagCases = []tagTestCase[*LongPayload]{
 	{
 		name: `positive case: LongTag`,
 		nbt: nbtTestCase[*LongPayload]{
-			tagType: LongType,
+			tagType: TagTypeLong,
 			tagName: `Long`,
 			payload: NewLongPayload(123456789123456789),
 		},
@@ -422,7 +422,7 @@ var floatTagCases = []tagTestCase[*FloatPayload]{
 	{
 		name: `positive case: FloatTag - %f`,
 		nbt: nbtTestCase[*FloatPayload]{
-			tagType: FloatType,
+			tagType: TagTypeFloat,
 			tagName: `Float`,
 			payload: NewFloatPayload(0.12345678),
 		},
@@ -462,7 +462,7 @@ var floatTagCases = []tagTestCase[*FloatPayload]{
 	{
 		name: `positive case: FloatTag - +%e`,
 		nbt: nbtTestCase[*FloatPayload]{
-			tagType: FloatType,
+			tagType: TagTypeFloat,
 			tagName: `Float`,
 			payload: NewFloatPayload(1234567.8),
 		},
@@ -502,7 +502,7 @@ var floatTagCases = []tagTestCase[*FloatPayload]{
 	{
 		name: `positive case: FloatTag - -%e`,
 		nbt: nbtTestCase[*FloatPayload]{
-			tagType: FloatType,
+			tagType: TagTypeFloat,
 			tagName: `Float`,
 			payload: NewFloatPayload(0.000012345678),
 		},
@@ -545,7 +545,7 @@ var doubleTagCases = []tagTestCase[*DoublePayload]{
 	{
 		name: `positive case: DoubleTag - %f`,
 		nbt: nbtTestCase[*DoublePayload]{
-			tagType: DoubleType,
+			tagType: TagTypeDouble,
 			tagName: `Double`,
 			payload: NewDoublePayload(0.123456789),
 		},
@@ -585,7 +585,7 @@ var doubleTagCases = []tagTestCase[*DoublePayload]{
 	{
 		name: `positive case: DoubleTag - +%g`,
 		nbt: nbtTestCase[*DoublePayload]{
-			tagType: DoubleType,
+			tagType: TagTypeDouble,
 			tagName: `Double`,
 			payload: NewDoublePayload(1234567.89),
 		},
@@ -625,7 +625,7 @@ var doubleTagCases = []tagTestCase[*DoublePayload]{
 	{
 		name: `positive case: DoubleTag - -%g`,
 		nbt: nbtTestCase[*DoublePayload]{
-			tagType: DoubleType,
+			tagType: TagTypeDouble,
 			tagName: `Double`,
 			payload: NewDoublePayload(0.0000123456789),
 		},
@@ -668,7 +668,7 @@ var byteArrayTagCases = []tagTestCase[*ByteArrayPayload]{
 	{
 		name: `positive case: ByteArrayTag - has items`,
 		nbt: nbtTestCase[*ByteArrayPayload]{
-			tagType: ByteArrayType,
+			tagType: TagTypeByteArray,
 			tagName: `ByteArray`,
 			payload: NewByteArrayPayload(0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
 		},
@@ -721,7 +721,7 @@ var byteArrayTagCases = []tagTestCase[*ByteArrayPayload]{
 	{
 		name: `positive case: ByteArrayTag - empty`,
 		nbt: nbtTestCase[*ByteArrayPayload]{
-			tagType: ByteArrayType,
+			tagType: TagTypeByteArray,
 			tagName: `ByteArray`,
 			payload: NewByteArrayPayload(),
 		},
@@ -765,7 +765,7 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 	{
 		name: `positive case: StringTag - "Hello World"`,
 		nbt: nbtTestCase[*StringPayload]{
-			tagType: StringType,
+			tagType: TagTypeString,
 			tagName: `String`,
 			payload: NewStringPayload(`Hello World`),
 		},
@@ -807,7 +807,7 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 	{
 		name: `positive case: StringTag - "Test"`,
 		nbt: nbtTestCase[*StringPayload]{
-			tagType: StringType,
+			tagType: TagTypeString,
 			tagName: `String`,
 			payload: NewStringPayload(`Test`),
 		},
@@ -849,7 +849,7 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 	{
 		name: `positive case: StringTag - '"Test'`,
 		nbt: nbtTestCase[*StringPayload]{
-			tagType: StringType,
+			tagType: TagTypeString,
 			tagName: `String`,
 			payload: NewStringPayload(`"Test`),
 		},
@@ -891,7 +891,7 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 	{
 		name: `positive case: StringTag - "'Test"`,
 		nbt: nbtTestCase[*StringPayload]{
-			tagType: StringType,
+			tagType: TagTypeString,
 			tagName: `String`,
 			payload: NewStringPayload(`'Test`),
 		},
@@ -933,7 +933,7 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 	{
 		name: `positive case: StringTag - "\"'Test"`,
 		nbt: nbtTestCase[*StringPayload]{
-			tagType: StringType,
+			tagType: TagTypeString,
 			tagName: `String`,
 			payload: NewStringPayload(`"'Test`),
 		},
@@ -975,7 +975,7 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 	{
 		name: `positive case: StringTag - "minecraft:the_end"`,
 		nbt: nbtTestCase[*StringPayload]{
-			tagType: StringType,
+			tagType: TagTypeString,
 			tagName: `String`,
 			payload: NewStringPayload(`minecraft:the_end`),
 		},
@@ -1018,7 +1018,7 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 	{
 		name: `positive case: StringTag - ""`,
 		nbt: nbtTestCase[*StringPayload]{
-			tagType: StringType,
+			tagType: TagTypeString,
 			tagName: `String`,
 			payload: NewStringPayload(``),
 		},
@@ -1059,7 +1059,7 @@ var stringTagCases = []tagTestCase[*StringPayload]{
 	{
 		name: `positive case: StringTag - "マインクラフト"`,
 		nbt: nbtTestCase[*StringPayload]{
-			tagType: StringType,
+			tagType: TagTypeString,
 			tagName: `String`,
 			payload: NewStringPayload(`マインクラフト`),
 		},
@@ -1106,7 +1106,7 @@ var listTagCases = []tagTestCase[*ListPayload]{
 	{
 		name: `positive case: ListTag - Short`,
 		nbt: nbtTestCase[*ListPayload]{
-			tagType: ListType,
+			tagType: TagTypeList,
 			tagName: `List`,
 			payload: NewListPayload(NewShortPayload(12345), NewShortPayload(6789)),
 		},
@@ -1159,7 +1159,7 @@ var listTagCases = []tagTestCase[*ListPayload]{
 	{
 		name: `positive case: ListTag - ByteArray`,
 		nbt: nbtTestCase[*ListPayload]{
-			tagType: ListType,
+			tagType: TagTypeList,
 			tagName: `List`,
 			payload: NewListPayload(NewByteArrayPayload(0, 1), NewByteArrayPayload(2, 3)),
 		},
@@ -1220,7 +1220,7 @@ var listTagCases = []tagTestCase[*ListPayload]{
 	{
 		name: `positive case: ListTag - String`,
 		nbt: nbtTestCase[*ListPayload]{
-			tagType: ListType,
+			tagType: TagTypeList,
 			tagName: `List`,
 			payload: NewListPayload(NewStringPayload(`Hello`), NewStringPayload(`World`)),
 		},
@@ -1275,7 +1275,7 @@ var listTagCases = []tagTestCase[*ListPayload]{
 	{
 		name: `positive case: ListTag - List`,
 		nbt: nbtTestCase[*ListPayload]{
-			tagType: ListType,
+			tagType: TagTypeList,
 			tagName: `List`,
 			payload: NewListPayload(
 				NewListPayload(NewBytePayload(123)),
@@ -1344,7 +1344,7 @@ var listTagCases = []tagTestCase[*ListPayload]{
 	{
 		name: `positive case: ListTag - Compound`,
 		nbt: nbtTestCase[*ListPayload]{
-			tagType: ListType,
+			tagType: TagTypeList,
 			tagName: `List`,
 			payload: NewListPayload(
 				NewCompoundPayload(NewByteTag(NewTagName(`Byte`), NewBytePayload(123)), NewEndTag()),
@@ -1423,7 +1423,7 @@ var listTagCases = []tagTestCase[*ListPayload]{
 	{
 		name: `positive case: ListTag - empty`,
 		nbt: nbtTestCase[*ListPayload]{
-			tagType: ListType,
+			tagType: TagTypeList,
 			tagName: `List`,
 			payload: NewListPayload(),
 		},
@@ -1469,7 +1469,7 @@ var compoundTagCases = []tagTestCase[*CompoundPayload]{
 	{
 		name: `positive case: CompoundTag - has items`,
 		nbt: nbtTestCase[*CompoundPayload]{
-			tagType: CompoundType,
+			tagType: TagTypeCompound,
 			tagName: `Compound`,
 			payload: NewCompoundPayload(
 				NewShortTag(NewTagName(`Short`), NewShortPayload(12345)),
@@ -1588,7 +1588,7 @@ var compoundTagCases = []tagTestCase[*CompoundPayload]{
 	{
 		name: `positive case: CompoundTag - empty`,
 		nbt: nbtTestCase[*CompoundPayload]{
-			tagType: CompoundType,
+			tagType: TagTypeCompound,
 			tagName: `Compound`,
 			payload: NewCompoundPayload(NewEndTag()),
 		},
@@ -1632,7 +1632,7 @@ var intArrayTagCases = []tagTestCase[*IntArrayPayload]{
 	{
 		name: `positive case: IntArrayTag - has items`,
 		nbt: nbtTestCase[*IntArrayPayload]{
-			tagType: IntArrayType,
+			tagType: TagTypeIntArray,
 			tagName: `IntArray`,
 			payload: NewIntArrayPayload(0, 1, 2, 3),
 		},
@@ -1682,7 +1682,7 @@ var intArrayTagCases = []tagTestCase[*IntArrayPayload]{
 	{
 		name: `positive case: IntArrayTag - empty`,
 		nbt: nbtTestCase[*IntArrayPayload]{
-			tagType: IntArrayType,
+			tagType: TagTypeIntArray,
 			tagName: `IntArray`,
 			payload: NewIntArrayPayload(),
 		},
@@ -1726,7 +1726,7 @@ var longArrayTagCases = []tagTestCase[*LongArrayPayload]{
 	{
 		name: `positive case: LongArrayTag - has items`,
 		nbt: nbtTestCase[*LongArrayPayload]{
-			tagType: LongArrayType,
+			tagType: TagTypeLongArray,
 			tagName: `LongArray`,
 			payload: NewLongArrayPayload(0, 1, 2, 3),
 		},
@@ -1776,7 +1776,7 @@ var longArrayTagCases = []tagTestCase[*LongArrayPayload]{
 	{
 		name: `positive case: LongArrayTag - empty`,
 		nbt: nbtTestCase[*LongArrayPayload]{
-			tagType: LongArrayType,
+			tagType: TagTypeLongArray,
 			tagName: `LongArray`,
 			payload: NewLongArrayPayload(),
 		},

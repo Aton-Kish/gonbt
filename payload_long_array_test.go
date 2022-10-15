@@ -55,7 +55,7 @@ func TestNewLongArrayPayload(t *testing.T) {
 
 func TestLongArrayPayload_TypeId(t *testing.T) {
 	payload := new(LongArrayPayload)
-	expected := LongArrayType
+	expected := TagTypeLongArray
 	actual := payload.TypeId()
 	assert.Equal(t, expected, actual)
 }

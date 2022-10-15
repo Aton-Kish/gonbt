@@ -63,7 +63,7 @@ func TestNewLongTag(t *testing.T) {
 
 func TestLongTag_TypeId(t *testing.T) {
 	tag := new(LongTag)
-	expected := LongType
+	expected := TagTypeLong
 	actual := tag.TypeId()
 	assert.Equal(t, expected, actual)
 }

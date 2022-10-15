@@ -55,7 +55,7 @@ func TestNewLongPayload(t *testing.T) {
 
 func TestLongPayload_TypeId(t *testing.T) {
 	payload := new(LongPayload)
-	expected := LongType
+	expected := TagTypeLong
 	actual := payload.TypeId()
 	assert.Equal(t, expected, actual)
 }

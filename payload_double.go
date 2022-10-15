@@ -36,7 +36,7 @@ func NewDoublePayload(value float64) *DoublePayload {
 }
 
 func (p *DoublePayload) TypeId() TagType {
-	return DoubleType
+	return TagTypeDouble
 }
 
 func (p *DoublePayload) encode(w io.Writer) error {

@@ -41,13 +41,13 @@ func NewListPayload(values ...Payload) *ListPayload {
 }
 
 func (p *ListPayload) TypeId() TagType {
-	return ListType
+	return TagTypeList
 }
 
 func (p *ListPayload) encode(w io.Writer) error {
 	l := int32(len(*p))
 
-	typ := EndType
+	typ := TagTypeEnd
 	if l > 0 {
 		typ = []Payload(*p)[0].TypeId()
 	}

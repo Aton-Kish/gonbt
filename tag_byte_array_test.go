@@ -63,7 +63,7 @@ func TestNewByteArrayTag(t *testing.T) {
 
 func TestByteArrayTag_TypeId(t *testing.T) {
 	tag := new(ByteArrayTag)
-	expected := ByteArrayType
+	expected := TagTypeByteArray
 	actual := tag.TypeId()
 	assert.Equal(t, expected, actual)
 }

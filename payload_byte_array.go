@@ -42,7 +42,7 @@ func NewByteArrayPayload(values ...int8) *ByteArrayPayload {
 }
 
 func (p *ByteArrayPayload) TypeId() TagType {
-	return ByteArrayType
+	return TagTypeByteArray
 }
 
 func (p *ByteArrayPayload) encode(w io.Writer) error {

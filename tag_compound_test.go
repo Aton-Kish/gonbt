@@ -63,7 +63,7 @@ func TestNewCompoundTag(t *testing.T) {
 
 func TestCompoundTag_TypeId(t *testing.T) {
 	tag := new(CompoundTag)
-	expected := CompoundType
+	expected := TagTypeCompound
 	actual := tag.TypeId()
 	assert.Equal(t, expected, actual)
 }

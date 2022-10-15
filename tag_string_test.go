@@ -63,7 +63,7 @@ func TestNewStringTag(t *testing.T) {
 
 func TestStringTag_TypeId(t *testing.T) {
 	tag := new(StringTag)
-	expected := StringType
+	expected := TagTypeString
 	actual := tag.TypeId()
 	assert.Equal(t, expected, actual)
 }
