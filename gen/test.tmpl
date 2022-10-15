@@ -599,7 +599,7 @@ func Test{{ public .Type }}Payload_parse(t *testing.T) {
 
 			if tt.expectedErr == nil {
 {{ if or (eq .Type.String "ByteArray") (eq .Type.String "List") (eq .Type.String "IntArray") (eq .Type.String "LongArray") -}}
-				assert.ErrorIs(t, err, snbt.StopIterationError)
+				assert.ErrorIs(t, err, snbt.ErrStopIteration)
 {{ else -}}
 				assert.NoError(t, err)
 {{ end -}}

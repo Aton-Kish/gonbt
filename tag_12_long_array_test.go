@@ -509,7 +509,7 @@ func TestLongArrayPayload_parse(t *testing.T) {
 			err = payload.parse(parser)
 
 			if tt.expectedErr == nil {
-				assert.ErrorIs(t, err, snbt.StopIterationError)
+				assert.ErrorIs(t, err, snbt.ErrStopIteration)
 				assert.Equal(t, tt.expected, payload)
 			} else {
 				assert.Error(t, err)

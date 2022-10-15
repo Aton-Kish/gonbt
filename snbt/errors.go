@@ -26,9 +26,9 @@ import (
 )
 
 var (
-	OutOfRangeError    = errors.New("out of range")
-	StopIterationError = errors.New("stop iteration")
-	UnexpectedError    = errors.New("unexpected error")
+	ErrOutOfRange    = errors.New("out of range")
+	ErrStopIteration = errors.New("stop iteration")
+	ErrUnexpected    = errors.New("unexpected error")
 )
 
 type SnbtError struct {

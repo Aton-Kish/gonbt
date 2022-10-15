@@ -67,7 +67,7 @@ func (t *CompoundTag) decode(r io.Reader) error {
 
 	v, ok := tag.(*CompoundTag)
 	if !ok {
-		err = &NbtError{Op: "decode", Err: DecodeError}
+		err = &NbtError{Op: "decode", Err: ErrDecode}
 		return err
 	}
 
@@ -183,7 +183,7 @@ func (p *CompoundPayload) parse(parser *snbt.Parser) error {
 	*p = append(*p, &EndTag{})
 
 	// NOTE: ignore stop iteration error
-	if err := parser.Next(); err != nil && !errors.Is(err, snbt.StopIterationError) {
+	if err := parser.Next(); err != nil && !errors.Is(err, snbt.ErrStopIteration) {
 		err = &NbtError{Op: "parse", Err: err}
 		return err
 	}
