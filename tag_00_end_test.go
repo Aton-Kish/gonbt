@@ -27,21 +27,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var endTagCases = []tagTestCase[Payload]{
-	{
-		name: `positive case: EndTag`,
-		nbt: nbtTestCase[Payload]{
-			tagType: EndType,
-		},
-		raw: rawTestCase{
-			tagType: []byte{
-				// Type: End(=0)
-				0x00,
-			},
-		},
-	},
-}
-
 func TestNewEndTag(t *testing.T) {
 	type Case struct {
 		name     string

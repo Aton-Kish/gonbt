@@ -30,49 +30,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var byteTagCases = []tagTestCase[*BytePayload]{
-	{
-		name: `positive case: ByteTag`,
-		nbt: nbtTestCase[*BytePayload]{
-			tagType: ByteType,
-			tagName: `Byte`,
-			payload: NewBytePayload(123),
-		},
-		snbt: snbtTestCase{
-			tagName: `Byte`,
-			payload: stringifyType{
-				typeDefault: `123b`,
-				typeCompact: `123b`,
-				typePretty:  `123b`,
-			},
-		},
-		json: jsonTestCase{
-			tagName: `"Byte"`,
-			payload: stringifyType{
-				typeDefault: `123`,
-				typeCompact: `123`,
-				typePretty:  `123`,
-			},
-		},
-		raw: rawTestCase{
-			tagType: []byte{
-				// Type: Byte(=1)
-				0x01,
-			},
-			tagName: []byte{
-				// Name Length: 4
-				0x00, 0x04,
-				// Name: Byte
-				0x42, 0x79, 0x74, 0x65,
-			},
-			payload: []byte{
-				// Payload: 123b
-				0x7B,
-			},
-		},
-	},
-}
-
 func TestNewByteTag(t *testing.T) {
 	type Case struct {
 		name     string

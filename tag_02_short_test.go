@@ -30,49 +30,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var shortTagCases = []tagTestCase[*ShortPayload]{
-	{
-		name: `positive case: ShortTag`,
-		nbt: nbtTestCase[*ShortPayload]{
-			tagType: ShortType,
-			tagName: `Short`,
-			payload: NewShortPayload(12345),
-		},
-		snbt: snbtTestCase{
-			tagName: `Short`,
-			payload: stringifyType{
-				typeDefault: `12345s`,
-				typeCompact: `12345s`,
-				typePretty:  `12345s`,
-			},
-		},
-		json: jsonTestCase{
-			tagName: `"Short"`,
-			payload: stringifyType{
-				typeDefault: `12345`,
-				typeCompact: `12345`,
-				typePretty:  `12345`,
-			},
-		},
-		raw: rawTestCase{
-			tagType: []byte{
-				// Type: Short(=2)
-				0x02,
-			},
-			tagName: []byte{
-				// Name Length: 5
-				0x00, 0x05,
-				// Name: Short
-				0x53, 0x68, 0x6f, 0x72, 0x74,
-			},
-			payload: []byte{
-				// Payload: 12345s
-				0x30, 0x39,
-			},
-		},
-	},
-}
-
 func TestNewShortTag(t *testing.T) {
 	type Case struct {
 		name     string

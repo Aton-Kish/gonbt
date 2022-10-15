@@ -30,49 +30,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var intTagCases = []tagTestCase[*IntPayload]{
-	{
-		name: `positive case: IntTag`,
-		nbt: nbtTestCase[*IntPayload]{
-			tagType: IntType,
-			tagName: `Int`,
-			payload: NewIntPayload(123456789),
-		},
-		snbt: snbtTestCase{
-			tagName: `Int`,
-			payload: stringifyType{
-				typeDefault: `123456789`,
-				typeCompact: `123456789`,
-				typePretty:  `123456789`,
-			},
-		},
-		json: jsonTestCase{
-			tagName: `"Int"`,
-			payload: stringifyType{
-				typeDefault: `123456789`,
-				typeCompact: `123456789`,
-				typePretty:  `123456789`,
-			},
-		},
-		raw: rawTestCase{
-			tagType: []byte{
-				// Type: Int(=3)
-				0x03,
-			},
-			tagName: []byte{
-				// Name Length: 3
-				0x00, 0x03,
-				// Name: Int
-				0x49, 0x6E, 0x74,
-			},
-			payload: []byte{
-				// Payload: 123456789
-				0x07, 0x5B, 0xCD, 0x15,
-			},
-		},
-	},
-}
-
 func TestNewIntTag(t *testing.T) {
 	type Case struct {
 		name     string
