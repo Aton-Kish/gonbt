@@ -52,6 +52,44 @@ const (
 	LongArrayType
 )
 
+var TagTypes []TagType = []TagType{
+	EndType, ByteType, ShortType, IntType, LongType, FloatType, DoubleType,
+	ByteArrayType, StringType, ListType, CompoundType, IntArrayType, LongArrayType,
+}
+
+func (t TagType) String() string {
+	switch t {
+	case EndType:
+		return "End"
+	case ByteType:
+		return "Byte"
+	case ShortType:
+		return "Short"
+	case IntType:
+		return "Int"
+	case LongType:
+		return "Long"
+	case FloatType:
+		return "Float"
+	case DoubleType:
+		return "Double"
+	case ByteArrayType:
+		return "ByteArray"
+	case StringType:
+		return "String"
+	case ListType:
+		return "List"
+	case CompoundType:
+		return "Compound"
+	case IntArrayType:
+		return "IntArray"
+	case LongArrayType:
+		return "LongArray"
+	default:
+		return ""
+	}
+}
+
 func (t *TagType) encode(w io.Writer) error {
 	if err := binary.Write(w, binary.BigEndian, t); err != nil {
 		err = &NbtError{Op: "encode", Err: err}

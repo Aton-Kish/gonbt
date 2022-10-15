@@ -32,58 +32,68 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewDoubleTag(t *testing.T) {
+func TestNew{{ public .Type }}Tag(t *testing.T) {
 	type Case struct {
 		name     string
+{{ if not (eq .Type.String "End") -}}
 		tagName  *TagName
-		payload  *DoublePayload
-		expected *DoubleTag
+		payload  *{{ public .Type }}Payload
+{{ end -}}
+		expected *{{ public .Type }}Tag
 	}
 
 	cases := []Case{}
 
-	for _, c := range doubleTagCases {
+	for _, c := range {{ private .Type }}TagCases {
 		cases = append(cases, Case{
 			name:    c.name,
+{{ if eq .Type.String "End" -}}
+			expected: &{{ public .Type }}Tag{},
+{{ else -}}
 			tagName: &c.nbt.tagName,
 			payload: c.nbt.payload,
-			expected: &DoubleTag{
+			expected: &{{ public .Type }}Tag{
 				tagName: &c.nbt.tagName,
 				payload: c.nbt.payload,
 			},
+{{ end -}}
 		})
 	}
 
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
-			actual := NewDoubleTag(tt.tagName, tt.payload)
+			actual := New{{ public .Type }}Tag({{ if not (eq .Type.String "End") }}tt.tagName, tt.payload{{ end }})
 			assert.Equal(t, tt.expected, actual)
 		})
 	}
 }
 
-func TestDoubleTag_TypeId(t *testing.T) {
-	tag := new(DoubleTag)
-	expected := DoubleType
+func Test{{ public .Type }}Tag_TypeId(t *testing.T) {
+	tag := new({{ public .Type }}Tag)
+	expected := {{ public .Type }}Type
 	actual := tag.TypeId()
 	assert.Equal(t, expected, actual)
 }
 
-func TestDoubleTag_encode(t *testing.T) {
+func Test{{ public .Type }}Tag_encode(t *testing.T) {
 	type Case struct {
 		name        string
-		tag         *DoubleTag
+		tag         *{{ public .Type }}Tag
 		expected    []byte
 		expectedErr error
 	}
 
 	cases := []Case{}
 
-	for _, c := range doubleTagCases {
+	for _, c := range {{ private .Type }}TagCases {
 		cases = append(cases, Case{
 			name:        c.name,
-			tag:         NewDoubleTag(&c.nbt.tagName, c.nbt.payload),
+			tag:         New{{ public .Type }}Tag({{ if not (eq .Type.String "End") }}&c.nbt.tagName, c.nbt.payload{{ end }}),
+{{ if eq .Type.String "End" -}}
+			expected:    c.raw.tagType,
+{{ else -}}
 			expected:    slices.Concat(c.raw.tagType, c.raw.tagName, c.raw.payload),
+{{ end -}}
 			expectedErr: nil,
 		})
 	}
@@ -104,21 +114,25 @@ func TestDoubleTag_encode(t *testing.T) {
 	}
 }
 
-func TestDoubleTag_decode(t *testing.T) {
+func Test{{ public .Type }}Tag_decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
-		expected    *DoubleTag
+		expected    *{{ public .Type }}Tag
 		expectedErr error
 	}
 
 	cases := []Case{}
 
-	for _, c := range doubleTagCases {
+	for _, c := range {{ private .Type }}TagCases {
 		cases = append(cases, Case{
 			name:        c.name,
+{{ if eq .Type.String "End" -}}
+			raw:         c.raw.tagType,
+{{ else -}}
 			raw:         slices.Concat(c.raw.tagType, c.raw.tagName, c.raw.payload),
-			expected:    NewDoubleTag(&c.nbt.tagName, c.nbt.payload),
+{{ end -}}
+			expected:    New{{ public .Type }}Tag({{ if not (eq .Type.String "End") }}&c.nbt.tagName, c.nbt.payload{{ end }}),
 			expectedErr: nil,
 		})
 	}
@@ -127,7 +141,7 @@ func TestDoubleTag_decode(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			buf := bytes.NewBuffer(tt.raw)
 
-			tag := new(DoubleTag)
+			tag := new({{ public .Type }}Tag)
 			err := tag.decode(buf)
 
 			if tt.expectedErr == nil {
@@ -141,19 +155,46 @@ func TestDoubleTag_decode(t *testing.T) {
 	}
 }
 
-func TestDoubleTag_stringify_default(t *testing.T) {
+{{ if eq .Type.String "End" -}}
+func Test{{ public .Type }}Tag_stringify(t *testing.T) {
 	type Case struct {
 		name     string
-		tag      *DoubleTag
+		tag      *{{ public .Type }}Tag
 		expected string
 	}
 
 	cases := []Case{}
 
-	for _, c := range doubleTagCases {
+	for _, c := range {{ private .Type }}TagCases {
 		cases = append(cases, Case{
 			name:     c.name,
-			tag:      NewDoubleTag(&c.nbt.tagName, c.nbt.payload),
+			tag:      New{{ public .Type }}Tag(),
+			expected: "",
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.stringify(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+{{ else -}}
+func Test{{ public .Type }}Tag_stringify_default(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *{{ public .Type }}Tag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range {{ private .Type }}TagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      New{{ public .Type }}Tag(&c.nbt.tagName, c.nbt.payload),
 			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload.typeDefault),
 		})
 	}
@@ -166,19 +207,19 @@ func TestDoubleTag_stringify_default(t *testing.T) {
 	}
 }
 
-func TestDoubleTag_stringify_compact(t *testing.T) {
+func Test{{ public .Type }}Tag_stringify_compact(t *testing.T) {
 	type Case struct {
 		name     string
-		tag      *DoubleTag
+		tag      *{{ public .Type }}Tag
 		expected string
 	}
 
 	cases := []Case{}
 
-	for _, c := range doubleTagCases {
+	for _, c := range {{ private .Type }}TagCases {
 		cases = append(cases, Case{
 			name:     c.name,
-			tag:      NewDoubleTag(&c.nbt.tagName, c.nbt.payload),
+			tag:      New{{ public .Type }}Tag(&c.nbt.tagName, c.nbt.payload),
 			expected: fmt.Sprintf("%s:%s", c.snbt.tagName, c.snbt.payload.typeCompact),
 		})
 	}
@@ -191,19 +232,19 @@ func TestDoubleTag_stringify_compact(t *testing.T) {
 	}
 }
 
-func TestDoubleTag_stringify_pretty(t *testing.T) {
+func Test{{ public .Type }}Tag_stringify_pretty(t *testing.T) {
 	type Case struct {
 		name     string
-		tag      *DoubleTag
+		tag      *{{ public .Type }}Tag
 		expected string
 	}
 
 	cases := []Case{}
 
-	for _, c := range doubleTagCases {
+	for _, c := range {{ private .Type }}TagCases {
 		cases = append(cases, Case{
 			name:     c.name,
-			tag:      NewDoubleTag(&c.nbt.tagName, c.nbt.payload),
+			tag:      New{{ public .Type }}Tag(&c.nbt.tagName, c.nbt.payload),
 			expected: fmt.Sprintf("%s: %s", c.snbt.tagName, c.snbt.payload.typePretty),
 		})
 	}
@@ -216,19 +257,48 @@ func TestDoubleTag_stringify_pretty(t *testing.T) {
 	}
 }
 
-func TestDoubleTag_json_default(t *testing.T) {
+{{ end -}}
+
+{{ if eq .Type.String "End" -}}
+func Test{{ public .Type }}Tag_json(t *testing.T) {
 	type Case struct {
 		name     string
-		tag      *DoubleTag
+		tag      *{{ public .Type }}Tag
 		expected string
 	}
 
 	cases := []Case{}
 
-	for _, c := range doubleTagCases {
+	for _, c := range {{ private .Type }}TagCases {
 		cases = append(cases, Case{
 			name:     c.name,
-			tag:      NewDoubleTag(&c.nbt.tagName, c.nbt.payload),
+			tag:      New{{ public .Type }}Tag(),
+			expected: "",
+		})
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := tt.tag.json(" ", "", 0)
+			assert.Equal(t, tt.expected, actual)
+		})
+	}
+}
+
+{{ else -}}
+func Test{{ public .Type }}Tag_json_default(t *testing.T) {
+	type Case struct {
+		name     string
+		tag      *{{ public .Type }}Tag
+		expected string
+	}
+
+	cases := []Case{}
+
+	for _, c := range {{ private .Type }}TagCases {
+		cases = append(cases, Case{
+			name:     c.name,
+			tag:      New{{ public .Type }}Tag({{ if not (eq .Type.String "End") }}&c.nbt.tagName, c.nbt.payload{{ end }}),
 			expected: fmt.Sprintf("%s: %s", c.json.tagName, c.json.payload.typeDefault),
 		})
 	}
@@ -241,19 +311,19 @@ func TestDoubleTag_json_default(t *testing.T) {
 	}
 }
 
-func TestDoubleTag_json_compact(t *testing.T) {
+func Test{{ public .Type }}Tag_json_compact(t *testing.T) {
 	type Case struct {
 		name     string
-		tag      *DoubleTag
+		tag      *{{ public .Type }}Tag
 		expected string
 	}
 
 	cases := []Case{}
 
-	for _, c := range doubleTagCases {
+	for _, c := range {{ private .Type }}TagCases {
 		cases = append(cases, Case{
 			name:     c.name,
-			tag:      NewDoubleTag(&c.nbt.tagName, c.nbt.payload),
+			tag:      New{{ public .Type }}Tag({{ if not (eq .Type.String "End") }}&c.nbt.tagName, c.nbt.payload{{ end }}),
 			expected: fmt.Sprintf("%s:%s", c.json.tagName, c.json.payload.typeCompact),
 		})
 	}
@@ -266,19 +336,19 @@ func TestDoubleTag_json_compact(t *testing.T) {
 	}
 }
 
-func TestDoubleTag_json_pretty(t *testing.T) {
+func Test{{ public .Type }}Tag_json_pretty(t *testing.T) {
 	type Case struct {
 		name     string
-		tag      *DoubleTag
+		tag      *{{ public .Type }}Tag
 		expected string
 	}
 
 	cases := []Case{}
 
-	for _, c := range doubleTagCases {
+	for _, c := range {{ private .Type }}TagCases {
 		cases = append(cases, Case{
 			name:     c.name,
-			tag:      NewDoubleTag(&c.nbt.tagName, c.nbt.payload),
+			tag:      New{{ public .Type }}Tag({{ if not (eq .Type.String "End") }}&c.nbt.tagName, c.nbt.payload{{ end }}),
 			expected: fmt.Sprintf("%s: %s", c.json.tagName, c.json.payload.typePretty),
 		})
 	}
@@ -291,47 +361,62 @@ func TestDoubleTag_json_pretty(t *testing.T) {
 	}
 }
 
-func TestNewDoublePayload(t *testing.T) {
+{{ end -}}
+
+{{ if not (eq .Type.String "End") -}}
+func TestNew{{ public .Type }}Payload(t *testing.T) {
 	type Case struct {
 		name     string
-		value    float64
-		expected *DoublePayload
+{{ if or (eq .Type.String "ByteArray") (eq .Type.String "List") (eq .Type.String "Compound") (eq .Type.String "IntArray") (eq .Type.String "LongArray") -}}
+		values   {{ typeof .Type }}
+{{ else -}}
+		value    {{ typeof .Type }}
+{{ end -}}
+		expected *{{ public .Type }}Payload
 	}
 
 	cases := []Case{}
 
-	for _, c := range doubleTagCases {
+	for _, c := range {{ private .Type }}TagCases {
 		cases = append(cases, Case{
 			name:     c.name,
-			value:    float64(*c.nbt.payload),
+{{ if or (eq .Type.String "ByteArray") (eq .Type.String "List") (eq .Type.String "Compound") (eq .Type.String "IntArray") (eq .Type.String "LongArray") -}}
+			values:   {{ typeof .Type }}(*c.nbt.payload),
+{{ else -}}
+			value:    {{ typeof .Type }}(*c.nbt.payload),
+{{ end -}}
 			expected: c.nbt.payload,
 		})
 	}
 
 	for _, tt := range cases {
-		actual := NewDoublePayload(tt.value)
+{{ if or (eq .Type.String "ByteArray") (eq .Type.String "List") (eq .Type.String "Compound") (eq .Type.String "IntArray") (eq .Type.String "LongArray") -}}
+		actual := New{{ public .Type }}Payload(tt.values...)
+{{ else -}}
+		actual := New{{ public .Type }}Payload(tt.value)
+{{ end -}}
 		assert.Equal(t, tt.expected, actual)
 	}
 }
 
-func TestDoublePayload_TypeId(t *testing.T) {
-	payload := new(DoublePayload)
-	expected := DoubleType
+func Test{{ public .Type }}Payload_TypeId(t *testing.T) {
+	payload := new({{ public .Type }}Payload)
+	expected := {{ public .Type }}Type
 	actual := payload.TypeId()
 	assert.Equal(t, expected, actual)
 }
 
-func TestDoublePayload_encode(t *testing.T) {
+func Test{{ public .Type }}Payload_encode(t *testing.T) {
 	type Case struct {
 		name        string
-		payload     *DoublePayload
+		payload     *{{ public .Type }}Payload
 		expected    []byte
 		expectedErr error
 	}
 
 	cases := []Case{}
 
-	for _, c := range doubleTagCases {
+	for _, c := range {{ private .Type }}TagCases {
 		cases = append(cases, Case{
 			name:        c.name,
 			payload:     c.nbt.payload,
@@ -356,17 +441,17 @@ func TestDoublePayload_encode(t *testing.T) {
 	}
 }
 
-func TestDoublePayload_decode(t *testing.T) {
+func Test{{ public .Type }}Payload_decode(t *testing.T) {
 	type Case struct {
 		name        string
 		raw         []byte
-		expected    *DoublePayload
+		expected    *{{ public .Type }}Payload
 		expectedErr error
 	}
 
 	cases := []Case{}
 
-	for _, c := range doubleTagCases {
+	for _, c := range {{ private .Type }}TagCases {
 		cases = append(cases, Case{
 			name:        c.name,
 			raw:         c.raw.payload,
@@ -379,7 +464,7 @@ func TestDoublePayload_decode(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			buf := bytes.NewBuffer(tt.raw)
 
-			payload := new(DoublePayload)
+			payload := new({{ public .Type }}Payload)
 			err := payload.decode(buf)
 
 			if tt.expectedErr == nil {
@@ -393,16 +478,16 @@ func TestDoublePayload_decode(t *testing.T) {
 	}
 }
 
-func TestDoublePayload_stringify_default(t *testing.T) {
+func Test{{ public .Type }}Payload_stringify_default(t *testing.T) {
 	type Case struct {
 		name     string
-		payload  *DoublePayload
+		payload  *{{ public .Type }}Payload
 		expected string
 	}
 
 	cases := []Case{}
 
-	for _, c := range doubleTagCases {
+	for _, c := range {{ private .Type }}TagCases {
 		cases = append(cases, Case{
 			name:     c.name,
 			payload:  c.nbt.payload,
@@ -418,16 +503,16 @@ func TestDoublePayload_stringify_default(t *testing.T) {
 	}
 }
 
-func TestDoublePayload_stringify_compact(t *testing.T) {
+func Test{{ public .Type }}Payload_stringify_compact(t *testing.T) {
 	type Case struct {
 		name     string
-		payload  *DoublePayload
+		payload  *{{ public .Type }}Payload
 		expected string
 	}
 
 	cases := []Case{}
 
-	for _, c := range doubleTagCases {
+	for _, c := range {{ private .Type }}TagCases {
 		cases = append(cases, Case{
 			name:     c.name,
 			payload:  c.nbt.payload,
@@ -443,16 +528,16 @@ func TestDoublePayload_stringify_compact(t *testing.T) {
 	}
 }
 
-func TestDoublePayload_stringify_pretty(t *testing.T) {
+func Test{{ public .Type }}Payload_stringify_pretty(t *testing.T) {
 	type Case struct {
 		name     string
-		payload  *DoublePayload
+		payload  *{{ public .Type }}Payload
 		expected string
 	}
 
 	cases := []Case{}
 
-	for _, c := range doubleTagCases {
+	for _, c := range {{ private .Type }}TagCases {
 		cases = append(cases, Case{
 			name:     c.name,
 			payload:  c.nbt.payload,
@@ -468,17 +553,17 @@ func TestDoublePayload_stringify_pretty(t *testing.T) {
 	}
 }
 
-func TestDoublePayload_parse(t *testing.T) {
+func Test{{ public .Type }}Payload_parse(t *testing.T) {
 	type Case struct {
 		name        string
 		snbt        string
-		expected    *DoublePayload
+		expected    *{{ public .Type }}Payload
 		expectedErr error
 	}
 
 	cases := []Case{}
 
-	for _, c := range doubleTagCases {
+	for _, c := range {{ private .Type }}TagCases {
 		cases = append(cases, Case{
 			name:        c.name,
 			snbt:        c.snbt.payload.typeDefault,
@@ -505,12 +590,24 @@ func TestDoublePayload_parse(t *testing.T) {
 			err := parser.Compact()
 			assert.NoError(t, err)
 
-			payload := new(DoublePayload)
+{{ if or (eq .Type.String "ByteArray") (eq .Type.String "List") (eq .Type.String "Compound") (eq .Type.String "IntArray") (eq .Type.String "LongArray") -}}
+			payload := New{{ public .Type }}Payload()
+{{ else -}}
+			payload := new({{ public .Type }}Payload)
+{{ end -}}
 			err = payload.parse(parser)
 
 			if tt.expectedErr == nil {
+{{ if or (eq .Type.String "ByteArray") (eq .Type.String "List") (eq .Type.String "IntArray") (eq .Type.String "LongArray") -}}
+				assert.ErrorIs(t, err, snbt.StopIterationError)
+{{ else -}}
 				assert.NoError(t, err)
+{{ end -}}
+{{ if eq .Type.String "Compound" -}}
+				assert.ElementsMatch(t, *tt.expected, *payload)
+{{ else -}}
 				assert.Equal(t, tt.expected, payload)
+{{ end -}}
 			} else {
 				assert.Error(t, err)
 				assert.Equal(t, tt.expectedErr, err)
@@ -519,16 +616,16 @@ func TestDoublePayload_parse(t *testing.T) {
 	}
 }
 
-func TestDoublePayload_json_default(t *testing.T) {
+func Test{{ public .Type }}Payload_json_default(t *testing.T) {
 	type Case struct {
 		name     string
-		payload  *DoublePayload
+		payload  *{{ public .Type }}Payload
 		expected string
 	}
 
 	cases := []Case{}
 
-	for _, c := range doubleTagCases {
+	for _, c := range {{ private .Type }}TagCases {
 		cases = append(cases, Case{
 			name:     c.name,
 			payload:  c.nbt.payload,
@@ -544,16 +641,16 @@ func TestDoublePayload_json_default(t *testing.T) {
 	}
 }
 
-func TestDoublePayload_json_compact(t *testing.T) {
+func Test{{ public .Type }}Payload_json_compact(t *testing.T) {
 	type Case struct {
 		name     string
-		payload  *DoublePayload
+		payload  *{{ public .Type }}Payload
 		expected string
 	}
 
 	cases := []Case{}
 
-	for _, c := range doubleTagCases {
+	for _, c := range {{ private .Type }}TagCases {
 		cases = append(cases, Case{
 			name:     c.name,
 			payload:  c.nbt.payload,
@@ -569,16 +666,16 @@ func TestDoublePayload_json_compact(t *testing.T) {
 	}
 }
 
-func TestDoublePayload_json_pretty(t *testing.T) {
+func Test{{ public .Type }}Payload_json_pretty(t *testing.T) {
 	type Case struct {
 		name     string
-		payload  *DoublePayload
+		payload  *{{ public .Type }}Payload
 		expected string
 	}
 
 	cases := []Case{}
 
-	for _, c := range doubleTagCases {
+	for _, c := range {{ private .Type }}TagCases {
 		cases = append(cases, Case{
 			name:     c.name,
 			payload:  c.nbt.payload,
@@ -593,3 +690,4 @@ func TestDoublePayload_json_pretty(t *testing.T) {
 		})
 	}
 }
+{{ end -}}
