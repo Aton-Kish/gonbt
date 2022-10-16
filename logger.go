@@ -21,6 +21,7 @@
 package nbt
 
 import (
+	"io"
 	"log"
 	"runtime"
 	"sync"
@@ -29,7 +30,7 @@ import (
 )
 
 var (
-	logger liblog.Logger = log.Default()
+	logger liblog.Logger = log.New(io.Discard, "", log.LstdFlags)
 	logmu  sync.Mutex
 )
 
