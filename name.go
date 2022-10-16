@@ -48,14 +48,14 @@ func (n *TagName) encode(w io.Writer) error {
 	l := uint16(len(*n))
 	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
 		err = &NbtError{Op: "encode", Err: err}
-		logger.Printf("(*TagName).encode; name: %s; error: %s", n, err)
+		logger.Println("failed to encode", "func", getFuncName(), "name", n, "error", err)
 		return err
 	}
 
 	b := []byte(*n)
 	if err := binary.Write(w, binary.BigEndian, b); err != nil {
 		err = &NbtError{Op: "encode", Err: err}
-		logger.Printf("(*TagName).encode; name: %s; error: %s", n, err)
+		logger.Println("failed to encode", "func", getFuncName(), "name", n, "error", err)
 		return err
 	}
 
@@ -66,14 +66,14 @@ func (n *TagName) decode(r io.Reader) error {
 	var l uint16
 	if err := binary.Read(r, binary.BigEndian, &l); err != nil {
 		err = &NbtError{Op: "decode", Err: err}
-		logger.Printf("(*TagName).decode; name: %s; error: %s", n, err)
+		logger.Println("failed to decode", "func", getFuncName(), "name", n, "error", err)
 		return err
 	}
 
 	b := make([]byte, l)
 	if err := binary.Read(r, binary.BigEndian, b); err != nil {
 		err = &NbtError{Op: "decode", Err: err}
-		logger.Printf("(*TagName).decode; name: %s; error: %s", n, err)
+		logger.Println("failed to decode", "func", getFuncName(), "name", n, "error", err)
 		return err
 	}
 	*n = TagName(b)
@@ -101,7 +101,7 @@ func (n *TagName) parse(parser *snbt.Parser) error {
 	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
 	if err != nil {
 		err = &NbtError{Op: "parse", Err: err}
-		logger.Printf("(*TagName).parse; name: %s; error: %s", n, err)
+		logger.Println("failed to parse", "func", getFuncName(), "name", n, "error", err)
 		return err
 	}
 
@@ -113,7 +113,7 @@ func (n *TagName) parse(parser *snbt.Parser) error {
 
 	if err := parser.Next(); err != nil {
 		err = &NbtError{Op: "parse", Err: err}
-		logger.Printf("(*TagName).parse; name: %s; error: %s", n, err)
+		logger.Println("failed to parse", "func", getFuncName(), "name", n, "error", err)
 		return err
 	}
 

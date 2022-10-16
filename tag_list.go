@@ -56,7 +56,7 @@ func (t *ListTag) Payload() Payload {
 
 func (t *ListTag) encode(w io.Writer) error {
 	if err := Encode(w, t); err != nil {
-		logger.Printf("(*ListTag).encode; tag: %s; error: %s", t, err)
+		logger.Println("failed to encode", "func", getFuncName(), "tag", t, "error", err)
 		return err
 	}
 
@@ -66,14 +66,14 @@ func (t *ListTag) encode(w io.Writer) error {
 func (t *ListTag) decode(r io.Reader) error {
 	tag, err := Decode(r)
 	if err != nil {
-		logger.Printf("(*ListTag).decode; tag: %s; error: %s", t, err)
+		logger.Println("failed to decode", "func", getFuncName(), "tag", t, "error", err)
 		return err
 	}
 
 	v, ok := tag.(*ListTag)
 	if !ok {
 		err = &NbtError{Op: "decode", Err: ErrDecode}
-		logger.Printf("(*ListTag).decode; tag: %s; error: %s", t, err)
+		logger.Println("failed to decode", "func", getFuncName(), "tag", t, "error", err)
 		return err
 	}
 
@@ -88,7 +88,7 @@ func (t *ListTag) stringify(space string, indent string, depth int) string {
 
 func (t *ListTag) parse(parser *snbt.Parser) error {
 	if err := parseTag(t, parser); err != nil {
-		logger.Printf("(*ListTag).parse; tag: %s; error: %s", t, err)
+		logger.Println("failed to parse", "func", getFuncName(), "tag", t, "error", err)
 		return err
 	}
 

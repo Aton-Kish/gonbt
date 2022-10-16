@@ -56,7 +56,7 @@ func (t *ShortTag) Payload() Payload {
 
 func (t *ShortTag) encode(w io.Writer) error {
 	if err := Encode(w, t); err != nil {
-		logger.Printf("(*ShortTag).encode; tag: %s; error: %s", t, err)
+		logger.Println("failed to encode", "func", getFuncName(), "tag", t, "error", err)
 		return err
 	}
 
@@ -66,14 +66,14 @@ func (t *ShortTag) encode(w io.Writer) error {
 func (t *ShortTag) decode(r io.Reader) error {
 	tag, err := Decode(r)
 	if err != nil {
-		logger.Printf("(*ShortTag).decode; tag: %s; error: %s", t, err)
+		logger.Println("failed to decode", "func", getFuncName(), "tag", t, "error", err)
 		return err
 	}
 
 	v, ok := tag.(*ShortTag)
 	if !ok {
 		err = &NbtError{Op: "decode", Err: ErrDecode}
-		logger.Printf("(*ShortTag).decode; tag: %s; error: %s", t, err)
+		logger.Println("failed to decode", "func", getFuncName(), "tag", t, "error", err)
 		return err
 	}
 
@@ -88,7 +88,7 @@ func (t *ShortTag) stringify(space string, indent string, depth int) string {
 
 func (t *ShortTag) parse(parser *snbt.Parser) error {
 	if err := parseTag(t, parser); err != nil {
-		logger.Printf("(*ShortTag).parse; tag: %s; error: %s", t, err)
+		logger.Println("failed to parse", "func", getFuncName(), "tag", t, "error", err)
 		return err
 	}
 

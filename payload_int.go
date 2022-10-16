@@ -47,7 +47,7 @@ func (p *IntPayload) TypeId() TagType {
 func (p *IntPayload) encode(w io.Writer) error {
 	if err := binary.Write(w, binary.BigEndian, p); err != nil {
 		err = &NbtError{Op: "encode", Err: err}
-		logger.Printf("(*IntPayload).encode; payload: %s; error: %s", p, err)
+		logger.Println("failed to encode", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 
@@ -58,7 +58,7 @@ func (p *IntPayload) decode(r io.Reader) error {
 	payload := new(IntPayload)
 	if err := binary.Read(r, binary.BigEndian, payload); err != nil {
 		err = &NbtError{Op: "decode", Err: err}
-		logger.Printf("(*IntPayload).decode; payload: %s; error: %s", p, err)
+		logger.Println("failed to decode", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 
@@ -75,14 +75,14 @@ func (p *IntPayload) parse(parser *snbt.Parser) error {
 	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
 	if err != nil {
 		err = &NbtError{Op: "parse", Err: err}
-		logger.Printf("(*IntPayload).parse; payload: %s; error: %s", p, err)
+		logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 
 	i, err := strconv.ParseInt(string(b), 10, 32)
 	if err != nil {
 		err = &NbtError{Op: "parse", Err: err}
-		logger.Printf("(*IntPayload).parse; payload: %s; error: %s", p, err)
+		logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 

@@ -47,7 +47,7 @@ func (p *FloatPayload) TypeId() TagType {
 func (p *FloatPayload) encode(w io.Writer) error {
 	if err := binary.Write(w, binary.BigEndian, p); err != nil {
 		err = &NbtError{Op: "encode", Err: err}
-		logger.Printf("(*FloatPayload).encode; payload: %s; error: %s", p, err)
+		logger.Println("failed to encode", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 
@@ -58,7 +58,7 @@ func (p *FloatPayload) decode(r io.Reader) error {
 	payload := new(FloatPayload)
 	if err := binary.Read(r, binary.BigEndian, payload); err != nil {
 		err = &NbtError{Op: "decode", Err: err}
-		logger.Printf("(*FloatPayload).decode; payload: %s; error: %s", p, err)
+		logger.Println("failed to decode", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 
@@ -75,21 +75,21 @@ func (p *FloatPayload) parse(parser *snbt.Parser) error {
 	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
 	if err != nil {
 		err = &NbtError{Op: "parse", Err: err}
-		logger.Printf("(*FloatPayload).parse; payload: %s; error: %s", p, err)
+		logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 
 	g := floatPattern.FindSubmatch(b)
 	if len(g) < 2 {
 		err = &NbtError{Op: "parse", Err: ErrInvalidSnbtFormat}
-		logger.Printf("(*FloatPayload).parse; payload: %s; error: %s", p, err)
+		logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 
 	f, err := strconv.ParseFloat(string(g[1]), 32)
 	if err != nil {
 		err = &NbtError{Op: "parse", Err: err}
-		logger.Printf("(*FloatPayload).parse; payload: %s; error: %s", p, err)
+		logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 
