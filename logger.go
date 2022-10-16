@@ -22,6 +22,7 @@ package nbt
 
 import (
 	"log"
+	"runtime"
 	"sync"
 
 	liblog "github.com/Aton-Kish/gonbt/log"
@@ -41,4 +42,13 @@ func SetLogger(l liblog.Logger) {
 	}
 
 	logger = l
+}
+
+func getFuncName() string {
+	pc, _, _, ok := runtime.Caller(1)
+	if !ok {
+		return "unknown"
+	}
+
+	return runtime.FuncForPC(pc).Name()
 }
