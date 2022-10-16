@@ -22,344 +22,10 @@ package nbt
 
 import (
 	"bytes"
-	"errors"
 	"testing"
 
-	"github.com/Aton-Kish/gonbt/pointer"
-	"github.com/Aton-Kish/gonbt/slices"
 	"github.com/stretchr/testify/assert"
 )
-
-type tagTestCase[T Payload] struct {
-	name string
-	nbt  nbtTestCase[T]
-	snbt snbtTestCase
-	json jsonTestCase
-	raw  rawTestCase
-}
-
-type nbtTestCase[T Payload] struct {
-	tagType TagType
-	tagName TagName
-	payload T
-}
-
-type snbtTestCase struct {
-	tagName string
-	payload stringifyType
-}
-
-type jsonTestCase struct {
-	tagName string
-	payload stringifyType
-}
-
-type stringifyType struct {
-	typeDefault string
-	typeCompact string
-	typePretty  string
-}
-
-type rawTestCase struct {
-	tagType []byte
-	tagName []byte
-	payload []byte
-}
-
-func interfacedTagTestCases[T Payload](cases []tagTestCase[T]) []tagTestCase[Payload] {
-	interfacedCases := make([]tagTestCase[Payload], 0, len(cases))
-
-	for _, c := range cases {
-		interfacedCases = append(interfacedCases, tagTestCase[Payload]{
-			name: c.name,
-			nbt: nbtTestCase[Payload]{
-				tagType: c.nbt.tagType,
-				tagName: c.nbt.tagName,
-				payload: c.nbt.payload,
-			},
-			snbt: c.snbt,
-			json: c.json,
-			raw:  c.raw,
-		})
-	}
-
-	return interfacedCases
-}
-
-var (
-	excludeEndTagCases = slices.Concat(
-		interfacedTagTestCases(byteTagCases),
-		interfacedTagTestCases(shortTagCases),
-		interfacedTagTestCases(intTagCases),
-		interfacedTagTestCases(longTagCases),
-		interfacedTagTestCases(floatTagCases),
-		interfacedTagTestCases(doubleTagCases),
-		interfacedTagTestCases(byteArrayTagCases),
-		interfacedTagTestCases(stringTagCases),
-		interfacedTagTestCases(listTagCases),
-		interfacedTagTestCases(compoundTagCases),
-		interfacedTagTestCases(intArrayTagCases),
-		interfacedTagTestCases(longArrayTagCases),
-	)
-	tagCases = slices.Concat(endTagCases, excludeEndTagCases)
-)
-
-func TestTagType_encode(t *testing.T) {
-	type Case struct {
-		name        string
-		tagType     TagType
-		expected    []byte
-		expectedErr error
-	}
-
-	cases := []Case{}
-
-	for _, c := range tagCases {
-		cases = append(cases, Case{
-			name:        c.name,
-			tagType:     c.nbt.tagType,
-			expected:    c.raw.tagType,
-			expectedErr: nil,
-		})
-	}
-
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			buf := new(bytes.Buffer)
-			err := tt.tagType.encode(buf)
-
-			if tt.expectedErr == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tt.expected, buf.Bytes())
-			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
-			}
-		})
-	}
-}
-
-func TestTagType_decode(t *testing.T) {
-	type Case struct {
-		name        string
-		raw         []byte
-		expected    TagType
-		expectedErr error
-	}
-
-	cases := []Case{}
-
-	for _, c := range tagCases {
-		cases = append(cases, Case{
-			name:        c.name,
-			raw:         c.raw.tagType,
-			expected:    c.nbt.tagType,
-			expectedErr: nil,
-		})
-	}
-
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			buf := bytes.NewBuffer(tt.raw)
-
-			var typ TagType
-			err := typ.decode(buf)
-
-			if tt.expectedErr == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tt.expected, typ)
-			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
-			}
-		})
-	}
-}
-
-func TestNewTagName(t *testing.T) {
-	type Case struct {
-		name     string
-		value    string
-		expected *TagName
-	}
-
-	cases := []Case{}
-
-	for _, c := range tagCases {
-		cases = append(cases, Case{
-			name:     c.name,
-			value:    string(c.nbt.tagName),
-			expected: pointer.Pointer(c.nbt.tagName),
-		})
-	}
-
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := NewTagName(tt.value)
-			assert.Equal(t, tt.expected, actual)
-		})
-	}
-}
-
-func TestTagName_encode(t *testing.T) {
-	type Case struct {
-		name        string
-		tagName     TagName
-		expected    []byte
-		expectedErr error
-	}
-
-	cases := []Case{}
-
-	for _, c := range excludeEndTagCases {
-		cases = append(cases, Case{
-			name:        c.name,
-			tagName:     c.nbt.tagName,
-			expected:    c.raw.tagName,
-			expectedErr: nil,
-		})
-	}
-
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			buf := new(bytes.Buffer)
-			err := tt.tagName.encode(buf)
-
-			if tt.expectedErr == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tt.expected, buf.Bytes())
-			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
-			}
-		})
-	}
-}
-
-func TestTagName_decode(t *testing.T) {
-	type Case struct {
-		name        string
-		raw         []byte
-		expected    TagName
-		expectedErr error
-	}
-
-	cases := []Case{}
-
-	for _, c := range excludeEndTagCases {
-		cases = append(cases, Case{
-			name:        c.name,
-			raw:         c.raw.tagName,
-			expected:    c.nbt.tagName,
-			expectedErr: nil,
-		})
-	}
-
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			buf := bytes.NewBuffer(tt.raw)
-
-			var n TagName
-			err := n.decode(buf)
-
-			if tt.expectedErr == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tt.expected, n)
-			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
-			}
-		})
-	}
-}
-
-func TestTagName_stringify(t *testing.T) {
-	type Case struct {
-		name     string
-		tagName  TagName
-		expected string
-	}
-
-	cases := []Case{
-		{
-			name:     `positive case: quotation - Test`,
-			tagName:  TagName(`Test`),
-			expected: `Test`,
-		},
-		{
-			name:     `positive case: quotation - '"Test'`,
-			tagName:  TagName(`"Test`),
-			expected: `'"Test'`,
-		},
-		{
-			name:     `positive case: quotation - "'Test"`,
-			tagName:  TagName(`'Test`),
-			expected: `"'Test"`,
-		},
-		{
-			name:     `positive case: quotation - "\"'Test"`,
-			tagName:  TagName(`"'Test`),
-			expected: `"\"'Test"`,
-		},
-	}
-
-	for _, c := range excludeEndTagCases {
-		cases = append(cases, Case{
-			name:     c.name,
-			tagName:  c.nbt.tagName,
-			expected: c.snbt.tagName,
-		})
-	}
-
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := tt.tagName.stringify()
-			assert.Equal(t, tt.expected, actual)
-		})
-	}
-}
-
-func TestTagName_json(t *testing.T) {
-	type Case struct {
-		name     string
-		tagName  TagName
-		expected string
-	}
-
-	cases := []Case{
-		{
-			name:     `positive case: quotation - Test`,
-			tagName:  TagName(`Test`),
-			expected: `"Test"`,
-		},
-		{
-			name:     `positive case: quotation - '"Test'`,
-			tagName:  TagName(`"Test`),
-			expected: `"\"Test"`,
-		},
-		{
-			name:     `positive case: quotation - "'Test"`,
-			tagName:  TagName(`'Test`),
-			expected: `"'Test"`,
-		},
-		{
-			name:     `positive case: quotation - "\"'Test"`,
-			tagName:  TagName(`"'Test`),
-			expected: `"\"'Test"`,
-		},
-	}
-
-	for _, c := range excludeEndTagCases {
-		cases = append(cases, Case{
-			name:     c.name,
-			tagName:  c.nbt.tagName,
-			expected: c.json.tagName,
-		})
-	}
-
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			actual := tt.tagName.json()
-			assert.Equal(t, tt.expected, actual)
-		})
-	}
-}
 
 func TestNewTag(t *testing.T) {
 	cases := []struct {
@@ -369,80 +35,80 @@ func TestNewTag(t *testing.T) {
 		expectedErr error
 	}{
 		{
-			name:        `positive case: EndType`,
-			tagType:     EndType,
+			name:        `positive case: TagTypeEnd`,
+			tagType:     TagTypeEnd,
 			expected:    NewEndTag(),
 			expectedErr: nil,
 		},
 		{
-			name:        `positive case: ByteType`,
-			tagType:     ByteType,
+			name:        `positive case: TagTypeByte`,
+			tagType:     TagTypeByte,
 			expected:    NewByteTag(new(TagName), new(BytePayload)),
 			expectedErr: nil,
 		},
 		{
-			name:        `positive case: ShortType`,
-			tagType:     ShortType,
+			name:        `positive case: TagTypeShort`,
+			tagType:     TagTypeShort,
 			expected:    NewShortTag(new(TagName), new(ShortPayload)),
 			expectedErr: nil,
 		},
 		{
-			name:        `positive case: IntType`,
-			tagType:     IntType,
+			name:        `positive case: TagTypeInt`,
+			tagType:     TagTypeInt,
 			expected:    NewIntTag(new(TagName), new(IntPayload)),
 			expectedErr: nil,
 		},
 		{
-			name:        `positive case: LongType`,
-			tagType:     LongType,
+			name:        `positive case: TagTypeLong`,
+			tagType:     TagTypeLong,
 			expected:    NewLongTag(new(TagName), new(LongPayload)),
 			expectedErr: nil,
 		},
 		{
-			name:        `positive case: FloatType`,
-			tagType:     FloatType,
+			name:        `positive case: TagTypeFloat`,
+			tagType:     TagTypeFloat,
 			expected:    NewFloatTag(new(TagName), new(FloatPayload)),
 			expectedErr: nil,
 		},
 		{
-			name:        `positive case: DoubleType`,
-			tagType:     DoubleType,
+			name:        `positive case: TagTypeDouble`,
+			tagType:     TagTypeDouble,
 			expected:    NewDoubleTag(new(TagName), new(DoublePayload)),
 			expectedErr: nil,
 		},
 		{
-			name:        `positive case: ByteArrayType`,
-			tagType:     ByteArrayType,
+			name:        `positive case: TagTypeByteArray`,
+			tagType:     TagTypeByteArray,
 			expected:    NewByteArrayTag(new(TagName), new(ByteArrayPayload)),
 			expectedErr: nil,
 		},
 		{
-			name:        `positive case: StringType`,
-			tagType:     StringType,
+			name:        `positive case: TagTypeString`,
+			tagType:     TagTypeString,
 			expected:    NewStringTag(new(TagName), new(StringPayload)),
 			expectedErr: nil,
 		},
 		{
-			name:        `positive case: ListType`,
-			tagType:     ListType,
+			name:        `positive case: TagTypeList`,
+			tagType:     TagTypeList,
 			expected:    NewListTag(new(TagName), new(ListPayload)),
 			expectedErr: nil,
 		},
 		{
-			name:        `positive case: CompoundType`,
-			tagType:     CompoundType,
+			name:        `positive case: TagTypeCompound`,
+			tagType:     TagTypeCompound,
 			expected:    NewCompoundTag(new(TagName), new(CompoundPayload)),
 			expectedErr: nil,
 		},
 		{
-			name:        `positive case: IntArrayType`,
-			tagType:     IntArrayType,
+			name:        `positive case: TagTypeIntArray`,
+			tagType:     TagTypeIntArray,
 			expected:    NewIntArrayTag(new(TagName), new(IntArrayPayload)),
 			expectedErr: nil,
 		},
 		{
-			name:        `positive case: LongArrayType`,
-			tagType:     LongArrayType,
+			name:        `positive case: TagTypeLongArray`,
+			tagType:     TagTypeLongArray,
 			expected:    NewLongArrayTag(new(TagName), new(LongArrayPayload)),
 			expectedErr: nil,
 		},
@@ -450,7 +116,7 @@ func TestNewTag(t *testing.T) {
 			name:        `negative case: out of range`,
 			tagType:     TagType(0x0D),
 			expected:    nil,
-			expectedErr: errors.New("invalid tag type id 13"),
+			expectedErr: &NbtError{Op: "new", Err: ErrInvalidTagType},
 		},
 	}
 
@@ -462,161 +128,11 @@ func TestNewTag(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, tag)
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
-}
-
-var nbtCases = []struct {
-	name string
-	nbt  Tag
-	snbt stringifyType
-	json stringifyType
-	raw  []byte
-}{
-	{
-		name: `positive case: Simple`,
-		nbt: NewCompoundTag(NewTagName(``), NewCompoundPayload(
-			NewCompoundTag(NewTagName(`Hello World`), NewCompoundPayload(
-				NewStringTag(NewTagName(`Name`), NewStringPayload(`Steve`)),
-				NewEndTag(),
-			)),
-			NewEndTag(),
-		)),
-		snbt: stringifyType{
-			typeDefault: `{"Hello World": {Name: "Steve"}}`,
-			typeCompact: `{"Hello World":{Name:"Steve"}}`,
-			typePretty: `{
-  "Hello World": {
-    Name: "Steve"
-  }
-}`,
-		},
-		json: stringifyType{
-			typeDefault: `{"Hello World": {"Name": "Steve"}}`,
-			typeCompact: `{"Hello World":{"Name":"Steve"}}`,
-			typePretty: `{
-  "Hello World": {
-    "Name": "Steve"
-  }
-}`,
-		},
-		raw: []byte{
-			// CompoundTag():
-			0x0A,
-			0x00, 0x00,
-			//   - CompoundTag(Hello World):
-			0x0A,
-			0x00, 0x0B,
-			0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64,
-			//       - StringTag(Name): "Steve"
-			0x08,
-			0x00, 0x04,
-			0x4E, 0x61, 0x6D, 0x65,
-			0x00, 0x05,
-			0x53, 0x74, 0x65, 0x76, 0x65,
-			//       - EndTag
-			0x00,
-			//   - EndTag
-			0x00,
-		},
-	},
-	{
-		name: `positive case: Tag Check`,
-		nbt: NewCompoundTag(NewTagName(`Compound`), NewCompoundPayload(
-			NewShortTag(NewTagName(`Short`), NewShortPayload(12345)),
-			NewByteArrayTag(NewTagName(`ByteArray`), NewByteArrayPayload(0, 1)),
-			NewStringTag(NewTagName(`String`), NewStringPayload(`Hello`)),
-			NewListTag(NewTagName(`List`), NewListPayload(NewBytePayload(123))),
-			NewCompoundTag(NewTagName(`Compound`), NewCompoundPayload(
-				NewStringTag(NewTagName(`String`), NewStringPayload(`World`)),
-				NewEndTag(),
-			)),
-			NewEndTag(),
-		)),
-		snbt: stringifyType{
-			typeDefault: `{Compound: {ByteArray: [B; 0b, 1b], Compound: {String: "World"}, List: [123b], Short: 12345s, String: "Hello"}}`,
-			typeCompact: `{Compound:{ByteArray:[B;0b,1b],Compound:{String:"World"},List:[123b],Short:12345s,String:"Hello"}}`,
-			typePretty: `{
-  Compound: {
-    ByteArray: [B; 0b, 1b],
-    Compound: {
-      String: "World"
-    },
-    List: [
-      123b
-    ],
-    Short: 12345s,
-    String: "Hello"
-  }
-}`,
-		},
-		json: stringifyType{
-			typeDefault: `{"Compound": {"ByteArray": [0, 1], "Compound": {"String": "World"}, "List": [123], "Short": 12345, "String": "Hello"}}`,
-			typeCompact: `{"Compound":{"ByteArray":[0,1],"Compound":{"String":"World"},"List":[123],"Short":12345,"String":"Hello"}}`,
-			typePretty: `{
-  "Compound": {
-    "ByteArray": [
-      0,
-      1
-    ],
-    "Compound": {
-      "String": "World"
-    },
-    "List": [
-      123
-    ],
-    "Short": 12345,
-    "String": "Hello"
-  }
-}`,
-		},
-		raw: []byte{
-			// CompoundTag(Compound):
-			0x0A,
-			0x00, 0x08,
-			0x43, 0x6F, 0x6D, 0x70, 0x6F, 0x75, 0x6E, 0x64,
-			//   - ShortTag(Short): 12345s
-			0x02,
-			0x00, 0x05,
-			0x53, 0x68, 0x6f, 0x72, 0x74,
-			0x30, 0x39,
-			//   - ByteArrayTag(ByteArray): [B; 0b, 1b]
-			0x07,
-			0x00, 0x09,
-			0x42, 0x79, 0x74, 0x65, 0x41, 0x72, 0x72, 0x61, 0x79,
-			0x00, 0x00, 0x00, 0x02,
-			0x00, 0x01,
-			//   - StringTag(String): "Hello"
-			0x08,
-			0x00, 0x06,
-			0x53, 0x74, 0x72, 0x69, 0x6E, 0x67,
-			0x00, 0x05,
-			0x48, 0x65, 0x6C, 0x6C, 0x6F,
-			//   - ListTag(List): [123b]
-			0x09,
-			0x00, 0x04,
-			0x4C, 0x69, 0x73, 0x74,
-			0x01,
-			0x00, 0x00, 0x00, 0x01,
-			0x7B,
-			//   - CompoundTag(Compound):
-			0x0A,
-			0x00, 0x08,
-			0x43, 0x6F, 0x6D, 0x70, 0x6F, 0x75, 0x6E, 0x64,
-			//       - StringTag(String): "World"
-			0x08,
-			0x00, 0x06,
-			0x53, 0x74, 0x72, 0x69, 0x6E, 0x67,
-			0x00, 0x05,
-			0x57, 0x6F, 0x72, 0x6C, 0x64,
-			//       - EndTag
-			0x00,
-			//   - EndTag
-			0x00,
-		},
-	},
 }
 
 func TestEncode(t *testing.T) {
@@ -647,7 +163,8 @@ func TestEncode(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, buf.Bytes())
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -681,7 +198,8 @@ func TestDecode(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expected, actual)
 			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -789,7 +307,8 @@ func TestParse_default(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, Stringify(tt.expected), Stringify(actual))
 			} else {
-				assert.Error(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -822,7 +341,8 @@ func TestParse_compact(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, Stringify(tt.expected), Stringify(actual))
 			} else {
-				assert.Error(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -855,7 +375,8 @@ func TestParse_pretty(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, Stringify(tt.expected), Stringify(actual))
 			} else {
-				assert.Error(t, err, tt.expectedErr.Error())
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedErr, err)
 			}
 		})
 	}
@@ -932,120 +453,6 @@ func TestPrettyJson(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := PrettyJson(tt.nbt, "  ")
 			assert.Equal(t, tt.expected, actual)
-		})
-	}
-}
-
-func TestNewPayload(t *testing.T) {
-	cases := []struct {
-		name        string
-		tagType     TagType
-		expected    Payload
-		expectedErr error
-	}{
-		{
-			name:        `positive case: ByteType`,
-			tagType:     ByteType,
-			expected:    new(BytePayload),
-			expectedErr: nil,
-		},
-		{
-			name:        `positive case: ShortType`,
-			tagType:     ShortType,
-			expected:    new(ShortPayload),
-			expectedErr: nil,
-		},
-		{
-			name:        `positive case: IntType`,
-			tagType:     IntType,
-			expected:    new(IntPayload),
-			expectedErr: nil,
-		},
-		{
-			name:        `positive case: LongType`,
-			tagType:     LongType,
-			expected:    new(LongPayload),
-			expectedErr: nil,
-		},
-		{
-			name:        `positive case: FloatType`,
-			tagType:     FloatType,
-			expected:    new(FloatPayload),
-			expectedErr: nil,
-		},
-		{
-			name:        `positive case: DoubleType`,
-			tagType:     DoubleType,
-			expected:    new(DoublePayload),
-			expectedErr: nil,
-		},
-		{
-			name:        `positive case: ByteArrayType`,
-			tagType:     ByteArrayType,
-			expected:    new(ByteArrayPayload),
-			expectedErr: nil,
-		},
-		{
-			name:        `positive case: StringType`,
-			tagType:     StringType,
-			expected:    new(StringPayload),
-			expectedErr: nil,
-		},
-		{
-			name:        `positive case: ListType`,
-			tagType:     ListType,
-			expected:    new(ListPayload),
-			expectedErr: nil,
-		},
-		{
-			name:        `positive case: CompoundType`,
-			tagType:     CompoundType,
-			expected:    new(CompoundPayload),
-			expectedErr: nil,
-		},
-		{
-			name:        `positive case: IntArrayType`,
-			tagType:     IntArrayType,
-			expected:    new(IntArrayPayload),
-			expectedErr: nil,
-		},
-		{
-			name:        `positive case: LongArrayType`,
-			tagType:     LongArrayType,
-			expected:    new(LongArrayPayload),
-			expectedErr: nil,
-		},
-		{
-			name:        `negative case`,
-			tagType:     TagType(0x0D),
-			expected:    nil,
-			expectedErr: errors.New("invalid tag type id 13"),
-		},
-		{
-			name:        `negative case: EndType`,
-			tagType:     EndType,
-			expected:    nil,
-			expectedErr: errors.New("invalid tag type id 0"),
-		},
-
-		{
-			name:        `negative case: out of range`,
-			tagType:     TagType(0x0D),
-			expected:    nil,
-			expectedErr: errors.New("invalid tag type id 13"),
-		},
-	}
-
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			payload, err := NewPayload(tt.tagType)
-
-			if tt.expectedErr == nil {
-				assert.NoError(t, err)
-				assert.Equal(t, tt.expected, payload)
-			} else {
-				assert.EqualError(t, err, tt.expectedErr.Error())
-			}
 		})
 	}
 }

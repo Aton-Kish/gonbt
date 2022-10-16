@@ -21,136 +21,15 @@
 package nbt
 
 import (
-	"encoding/binary"
-	"errors"
 	"fmt"
 	"io"
-	"regexp"
-	"strconv"
 	"strings"
 
-	"github.com/Aton-Kish/gonbt/pointer"
 	"github.com/Aton-Kish/gonbt/snbt"
 )
 
-// Tag Type
-
-type TagType byte
-
-const (
-	EndType TagType = iota
-	ByteType
-	ShortType
-	IntType
-	LongType
-	FloatType
-	DoubleType
-	ByteArrayType
-	StringType
-	ListType
-	CompoundType
-	IntArrayType
-	LongArrayType
-)
-
-func (t *TagType) encode(w io.Writer) error {
-	if err := binary.Write(w, binary.BigEndian, t); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (t *TagType) decode(r io.Reader) error {
-	if err := binary.Read(r, binary.BigEndian, t); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// Tag Name
-
-var quoteRequiredCharacters = regexp.MustCompile(`[ !"#$%&'()*,/:;<=>?@[\\\]^\x60{|}~]`)
-
-type TagName string
-
-func NewTagName(value string) *TagName {
-	return pointer.Pointer(TagName(value))
-}
-
-func (n *TagName) encode(w io.Writer) error {
-	l := uint16(len(*n))
-	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
-		return err
-	}
-
-	b := []byte(*n)
-	if err := binary.Write(w, binary.BigEndian, b); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (n *TagName) decode(r io.Reader) error {
-	var l uint16
-	if err := binary.Read(r, binary.BigEndian, &l); err != nil {
-		return err
-	}
-
-	b := make([]byte, l)
-	if err := binary.Read(r, binary.BigEndian, b); err != nil {
-		return err
-	}
-	*n = TagName(b)
-
-	return nil
-}
-
-func (n *TagName) stringify() string {
-	s := string(*n)
-	if !quoteRequiredCharacters.MatchString(s) {
-		return s
-	}
-
-	qs := strconv.Quote(s)
-	if strings.Contains(s, "\"") && !strings.Contains(s, "'") {
-		qs = fmt.Sprintf("'%s'", qs[1:len(qs)-1])
-		qs = strings.ReplaceAll(qs, "\\\"", "\"")
-		return qs
-	}
-
-	return qs
-}
-
-func (n *TagName) parse(parser *snbt.Parser) error {
-	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
-	if err != nil {
-		return err
-	}
-
-	if s, err := strconv.Unquote(string(b)); err != nil {
-		*n = TagName(b)
-	} else {
-		*n = TagName(s)
-	}
-
-	if err := parser.Next(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (n *TagName) json() string {
-	s := string(*n)
-	return strconv.Quote(s)
-}
-
-// Tag
-
 type Tag interface {
+	String() string
 	TypeId() TagType
 	TagName() *TagName
 	Payload() Payload
@@ -163,34 +42,36 @@ type Tag interface {
 
 func NewTag(typ TagType) (Tag, error) {
 	switch typ {
-	case EndType:
+	case TagTypeEnd:
 		return NewEndTag(), nil
-	case ByteType:
+	case TagTypeByte:
 		return NewByteTag(new(TagName), new(BytePayload)), nil
-	case ShortType:
+	case TagTypeShort:
 		return NewShortTag(new(TagName), new(ShortPayload)), nil
-	case IntType:
+	case TagTypeInt:
 		return NewIntTag(new(TagName), new(IntPayload)), nil
-	case LongType:
+	case TagTypeLong:
 		return NewLongTag(new(TagName), new(LongPayload)), nil
-	case FloatType:
+	case TagTypeFloat:
 		return NewFloatTag(new(TagName), new(FloatPayload)), nil
-	case DoubleType:
+	case TagTypeDouble:
 		return NewDoubleTag(new(TagName), new(DoublePayload)), nil
-	case ByteArrayType:
+	case TagTypeByteArray:
 		return NewByteArrayTag(new(TagName), new(ByteArrayPayload)), nil
-	case StringType:
+	case TagTypeString:
 		return NewStringTag(new(TagName), new(StringPayload)), nil
-	case ListType:
+	case TagTypeList:
 		return NewListTag(new(TagName), new(ListPayload)), nil
-	case CompoundType:
+	case TagTypeCompound:
 		return NewCompoundTag(new(TagName), new(CompoundPayload)), nil
-	case IntArrayType:
+	case TagTypeIntArray:
 		return NewIntArrayTag(new(TagName), new(IntArrayPayload)), nil
-	case LongArrayType:
+	case TagTypeLongArray:
 		return NewLongArrayTag(new(TagName), new(LongArrayPayload)), nil
 	default:
-		return nil, fmt.Errorf("invalid tag type id %d", typ)
+		err := &NbtError{Op: "new", Err: ErrInvalidTagType}
+		logger.Println("failed to new", "func", getFuncName(), "error", err)
+		return nil, err
 	}
 }
 
@@ -199,12 +80,15 @@ func newTagFromSnbt(parser *snbt.Parser) (Tag, error) {
 	// NOTE: skip if nameless root
 	if parser.CurrToken().Index() > 0 {
 		if err := name.parse(parser); err != nil {
+			err = &NbtError{Op: "new", Err: err}
+			logger.Println("failed to new", "func", getFuncName(), "error", err)
 			return nil, err
 		}
 	}
 
 	p, err := newPayloadFromSnbt(parser)
 	if err != nil {
+		logger.Println("failed to new", "func", getFuncName(), "error", err)
 		return nil, err
 	}
 
@@ -234,25 +118,30 @@ func newTagFromSnbt(parser *snbt.Parser) (Tag, error) {
 	case *LongArrayPayload:
 		return NewLongArrayTag(&name, payload), nil
 	default:
-		return nil, errors.New("invalid snbt format")
+		err = &NbtError{Op: "new", Err: ErrInvalidSnbtFormat}
+		logger.Println("failed to new", "func", getFuncName(), "error", err)
+		return nil, err
 	}
 }
 
 func Encode(w io.Writer, tag Tag) error {
 	typ := tag.TypeId()
 	if err := typ.encode(w); err != nil {
+		logger.Println("failed to encode", "func", getFuncName(), "error", err)
 		return err
 	}
 
-	if typ == EndType {
+	if typ == TagTypeEnd {
 		return nil
 	}
 
 	if err := tag.TagName().encode(w); err != nil {
+		logger.Println("failed to encode", "func", getFuncName(), "error", err)
 		return err
 	}
 
 	if err := tag.Payload().encode(w); err != nil {
+		logger.Println("failed to encode", "func", getFuncName(), "error", err)
 		return err
 	}
 
@@ -262,23 +151,28 @@ func Encode(w io.Writer, tag Tag) error {
 func Decode(r io.Reader) (Tag, error) {
 	var typ TagType
 	if err := typ.decode(r); err != nil {
+		logger.Println("failed to decode", "func", getFuncName(), "error", err)
 		return nil, err
 	}
 
 	tag, err := NewTag(typ)
 	if err != nil {
+		err = &NbtError{Op: "decode", Err: err}
+		logger.Println("failed to decode", "func", getFuncName(), "error", err)
 		return nil, err
 	}
 
-	if typ == EndType {
+	if typ == TagTypeEnd {
 		return tag, nil
 	}
 
 	if err := tag.TagName().decode(r); err != nil {
+		logger.Println("failed to decode", "func", getFuncName(), "error", err)
 		return nil, err
 	}
 
 	if err := tag.Payload().decode(r); err != nil {
+		logger.Println("failed to decode", "func", getFuncName(), "error", err)
 		return nil, err
 	}
 
@@ -316,7 +210,7 @@ func prettyStringify(tag Tag, space string, indent string) string {
 }
 
 func stringifyTag(tag Tag, space string, indent string, depth int) string {
-	if tag.TypeId() == EndType {
+	if tag.TypeId() == TagTypeEnd {
 		return ""
 	}
 
@@ -327,15 +221,20 @@ func Parse(stringified string) (Tag, error) {
 	p := snbt.NewParser(stringified)
 
 	if err := p.Compact(); err != nil {
+		err = &NbtError{Op: "parse", Err: err}
+		logger.Println("failed to parse", "func", getFuncName(), "error", err)
 		return nil, err
 	}
 
 	tag, err := newTagFromSnbt(p)
 	if err != nil {
+		err = &NbtError{Op: "parse", Err: err}
+		logger.Println("failed to parse", "func", getFuncName(), "error", err)
 		return nil, err
 	}
 
 	if err := tag.parse(p); err != nil {
+		logger.Println("failed to parse", "func", getFuncName(), "error", err)
 		return nil, err
 	}
 
@@ -343,11 +242,12 @@ func Parse(stringified string) (Tag, error) {
 }
 
 func parseTag(tag Tag, parser *snbt.Parser) error {
-	if tag.TypeId() == EndType {
+	if tag.TypeId() == TagTypeEnd {
 		return nil
 	}
 
 	if err := tag.Payload().parse(parser); err != nil {
+		logger.Println("failed to parse", "func", getFuncName(), "error", err)
 		return err
 	}
 
@@ -385,158 +285,9 @@ func prettyJson(tag Tag, space string, indent string) string {
 }
 
 func jsonTag(tag Tag, space string, indent string, depth int) string {
-	if tag.TypeId() == EndType {
+	if tag.TypeId() == TagTypeEnd {
 		return ""
 	}
 
 	return fmt.Sprintf("%s:%s%s", tag.TagName().json(), space, tag.Payload().json(space, indent, depth))
-}
-
-// Payload
-
-var (
-	bytePattern   = regexp.MustCompile(`^(-?\d+)[Bb]$`)
-	shortPattern  = regexp.MustCompile(`^(-?\d+)[Ss]$`)
-	intPattern    = regexp.MustCompile(`^-?\d+$`)
-	longPattern   = regexp.MustCompile(`^(-?\d+)[Ll]$`)
-	floatPattern  = regexp.MustCompile(`^(-?\d+(\.\d+)?([Ee][+-]?\d+)?)[Ff]$`)
-	doublePattern = regexp.MustCompile(`^(-?\d+(\.\d+)?([Ee][+-]?\d+)?)[Dd]?$`)
-)
-
-type Payload interface {
-	TypeId() TagType
-	encode(w io.Writer) error
-	decode(r io.Reader) error
-	stringify(space string, indent string, depth int) string
-	parse(parser *snbt.Parser) error
-	json(space string, indent string, depth int) string
-}
-
-func NewPayload(typ TagType) (Payload, error) {
-	switch typ {
-	case ByteType:
-		return new(BytePayload), nil
-	case ShortType:
-		return new(ShortPayload), nil
-	case IntType:
-		return new(IntPayload), nil
-	case LongType:
-		return new(LongPayload), nil
-	case FloatType:
-		return new(FloatPayload), nil
-	case DoubleType:
-		return new(DoublePayload), nil
-	case ByteArrayType:
-		return new(ByteArrayPayload), nil
-	case StringType:
-		return new(StringPayload), nil
-	case ListType:
-		return new(ListPayload), nil
-	case CompoundType:
-		return new(CompoundPayload), nil
-	case IntArrayType:
-		return new(IntArrayPayload), nil
-	case LongArrayType:
-		return new(LongArrayPayload), nil
-	default:
-		return nil, fmt.Errorf("invalid tag type id %d", typ)
-	}
-}
-
-func newPayloadFromSnbt(parser *snbt.Parser) (Payload, error) {
-	switch parser.CurrToken().Char() {
-	case '{':
-		return new(CompoundPayload), nil
-	case '[':
-		typ, err := parser.Char(parser.CurrToken().Index() + 1)
-		if err != nil {
-			return nil, err
-		}
-
-		switch typ {
-		case 'B':
-			return new(ByteArrayPayload), nil
-		case 'I':
-			return new(IntArrayPayload), nil
-		case 'L':
-			return new(LongArrayPayload), nil
-		}
-
-		return new(ListPayload), nil
-	case *new(rune), '"', ' ', ':', ';':
-		return nil, errors.New("invalid snbt format")
-	}
-
-	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
-	if err != nil {
-		return nil, err
-	}
-
-	if bytePattern.Match(b) {
-		return new(BytePayload), nil
-	}
-
-	if shortPattern.Match(b) {
-		return new(ShortPayload), nil
-	}
-
-	if intPattern.Match(b) {
-		return new(IntPayload), nil
-	}
-
-	if longPattern.Match(b) {
-		return new(LongPayload), nil
-	}
-
-	if floatPattern.Match(b) {
-		return new(FloatPayload), nil
-	}
-
-	if doublePattern.Match(b) {
-		return new(DoublePayload), nil
-	}
-
-	return new(StringPayload), nil
-}
-
-type NumericPayload interface {
-	BytePayload | ShortPayload | IntPayload | LongPayload | FloatPayload | DoublePayload
-}
-
-type PrimitivePayload interface {
-	NumericPayload | StringPayload
-}
-
-type ArrayPayload interface {
-	ByteArrayPayload | IntArrayPayload | LongArrayPayload
-}
-
-func encodeNumericPayload[T NumericPayload](w io.Writer, payload *T) error {
-	if err := binary.Write(w, binary.BigEndian, payload); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func encodeArrayPayload[T ArrayPayload](w io.Writer, payload *T) error {
-	l := int32(len(*payload))
-	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
-		return err
-	}
-
-	if err := binary.Write(w, binary.BigEndian, payload); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func decodeNumericPayload[T NumericPayload](r io.Reader) (*T, error) {
-	var payload T
-	if err := binary.Read(r, binary.BigEndian, &payload); err != nil {
-		return nil, err
-	}
-
-	return &payload, nil
 }

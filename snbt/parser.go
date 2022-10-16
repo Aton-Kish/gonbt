@@ -206,7 +206,9 @@ func (p *Parser) parseMask() {
 
 func (p *Parser) Char(index int) (rune, error) {
 	if index < 0 || index >= len(p.raw) {
-		return *new(rune), errors.New("out of range")
+		err := &SnbtError{Op: "char", Err: ErrOutOfRange}
+		logger.Println("failed to get character", "func", getFuncName(), "error", err)
+		return *new(rune), err
 	}
 
 	return rune(p.raw[index]), nil
@@ -214,7 +216,9 @@ func (p *Parser) Char(index int) (rune, error) {
 
 func (p *Parser) Slice(start int, end int) ([]byte, error) {
 	if start < 0 || start > len(p.raw) || end < 0 || end > len(p.raw) || start > end {
-		return nil, errors.New("out of range")
+		err := &SnbtError{Op: "slice", Err: ErrOutOfRange}
+		logger.Println("failed to get slice", "func", getFuncName(), "error", err)
+		return nil, err
 	}
 
 	return p.raw[start:end], nil
@@ -239,6 +243,8 @@ func (p *Parser) next(optFns ...func(options *parseOptions) error) error {
 	}
 	for _, optFn := range optFns {
 		if err := optFn(&options); err != nil {
+			err = &SnbtError{Op: "next", Err: err}
+			logger.Println("failed to next", "func", getFuncName(), "error", err)
 			return err
 		}
 	}
@@ -308,12 +314,16 @@ func (p *Parser) next(optFns ...func(options *parseOptions) error) error {
 	p.curr = Token{index: index, char: token}
 
 	if index == l || !strings.ContainsRune(`" {}[],:;`, token) {
-		return errors.New("stop iteration")
+		err := &SnbtError{Op: "next", Err: ErrStopIteration}
+		logger.Println("failed to next", "func", getFuncName(), "error", err)
+		return err
 	}
 
 	bitmaps := p.tokenBitmaps(token)
 	if bitmaps == nil {
-		return errors.New("unexpected error")
+		err := &SnbtError{Op: "next", Err: ErrUnexpected}
+		logger.Println("failed to next", "func", getFuncName(), "error", err)
+		return err
 	}
 
 	idx := index / bitmapSize
@@ -349,13 +359,17 @@ func (p *Parser) Compact() error {
 			if i == orgp.CurrToken().Index() {
 				bitmaps := comp.tokenBitmaps(orgp.CurrToken().Char())
 				if bitmaps == nil {
-					return errors.New("unexpected error")
+					err := &SnbtError{Op: "compact", Err: ErrUnexpected}
+					logger.Println("failed to compact", "func", getFuncName(), "error", err)
+					return err
 				}
 
 				cidx, cpos := ci/bitmapSize, ci%bitmapSize
 				(*bitmaps)[cidx] |= 1 << cpos
 
-				if err := orgp.next(optFn); err != nil && err.Error() != "stop iteration" {
+				if err := orgp.next(optFn); err != nil && !errors.Is(err, ErrStopIteration) {
+					err = &SnbtError{Op: "compact", Err: err}
+					logger.Println("failed to compact", "func", getFuncName(), "error", err)
 					return err
 				}
 			}

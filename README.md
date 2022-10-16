@@ -33,7 +33,7 @@ import (
 )
 
 func main() {
-  // Load NBT Data
+	// Load NBT Data
 	f, err := os.Open("level.dat")
 	if err != nil {
 		log.Fatal(err)
