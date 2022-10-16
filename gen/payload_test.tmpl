@@ -67,7 +67,7 @@ func TestNew{{ public .Type }}Payload(t *testing.T) {
 
 func Test{{ public .Type }}Payload_TypeId(t *testing.T) {
 	payload := new({{ public .Type }}Payload)
-	expected := {{ public .Type }}Type
+	expected := TagType{{ public .Type }}
 	actual := payload.TypeId()
 	assert.Equal(t, expected, actual)
 }

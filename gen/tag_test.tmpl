@@ -69,7 +69,7 @@ func TestNew{{ public .Type }}Tag(t *testing.T) {
 
 func Test{{ public .Type }}Tag_TypeId(t *testing.T) {
 	tag := new({{ public .Type }}Tag)
-	expected := {{ public .Type }}Type
+	expected := TagType{{ public .Type }}
 	actual := tag.TypeId()
 	assert.Equal(t, expected, actual)
 }
