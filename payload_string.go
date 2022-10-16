@@ -37,6 +37,10 @@ func NewStringPayload(value string) *StringPayload {
 	return pointer.Pointer(StringPayload(value))
 }
 
+func (p StringPayload) String() string {
+	return p.stringify(" ", "", 0)
+}
+
 func (p *StringPayload) TypeId() TagType {
 	return TagTypeString
 }
@@ -45,12 +49,14 @@ func (p *StringPayload) encode(w io.Writer) error {
 	l := uint16(len(*p))
 	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
 		err = &NbtError{Op: "encode", Err: err}
+		logger.Println("failed to encode", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 
 	b := []byte(*p)
 	if err := binary.Write(w, binary.BigEndian, b); err != nil {
 		err = &NbtError{Op: "encode", Err: err}
+		logger.Println("failed to encode", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 
@@ -61,12 +67,14 @@ func (p *StringPayload) decode(r io.Reader) error {
 	var l uint16
 	if err := binary.Read(r, binary.BigEndian, &l); err != nil {
 		err = &NbtError{Op: "decode", Err: err}
+		logger.Println("failed to decode", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 
 	b := make([]byte, l)
 	if err := binary.Read(r, binary.BigEndian, b); err != nil {
 		err = &NbtError{Op: "decode", Err: err}
+		logger.Println("failed to decode", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 	*p = StringPayload(b)
@@ -90,6 +98,7 @@ func (p *StringPayload) parse(parser *snbt.Parser) error {
 	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
 	if err != nil {
 		err = &NbtError{Op: "parse", Err: err}
+		logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 
@@ -105,6 +114,7 @@ func (p *StringPayload) parse(parser *snbt.Parser) error {
 	s, err := strconv.Unquote(qs)
 	if err != nil {
 		err = &NbtError{Op: "parse", Err: err}
+		logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 

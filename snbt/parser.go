@@ -207,6 +207,7 @@ func (p *Parser) parseMask() {
 func (p *Parser) Char(index int) (rune, error) {
 	if index < 0 || index >= len(p.raw) {
 		err := &SnbtError{Op: "char", Err: ErrOutOfRange}
+		logger.Println("failed to get character", "func", getFuncName(), "error", err)
 		return *new(rune), err
 	}
 
@@ -216,6 +217,7 @@ func (p *Parser) Char(index int) (rune, error) {
 func (p *Parser) Slice(start int, end int) ([]byte, error) {
 	if start < 0 || start > len(p.raw) || end < 0 || end > len(p.raw) || start > end {
 		err := &SnbtError{Op: "slice", Err: ErrOutOfRange}
+		logger.Println("failed to get slice", "func", getFuncName(), "error", err)
 		return nil, err
 	}
 
@@ -242,6 +244,7 @@ func (p *Parser) next(optFns ...func(options *parseOptions) error) error {
 	for _, optFn := range optFns {
 		if err := optFn(&options); err != nil {
 			err = &SnbtError{Op: "next", Err: err}
+			logger.Println("failed to next", "func", getFuncName(), "error", err)
 			return err
 		}
 	}
@@ -312,12 +315,14 @@ func (p *Parser) next(optFns ...func(options *parseOptions) error) error {
 
 	if index == l || !strings.ContainsRune(`" {}[],:;`, token) {
 		err := &SnbtError{Op: "next", Err: ErrStopIteration}
+		logger.Println("failed to next", "func", getFuncName(), "error", err)
 		return err
 	}
 
 	bitmaps := p.tokenBitmaps(token)
 	if bitmaps == nil {
 		err := &SnbtError{Op: "next", Err: ErrUnexpected}
+		logger.Println("failed to next", "func", getFuncName(), "error", err)
 		return err
 	}
 
@@ -355,6 +360,7 @@ func (p *Parser) Compact() error {
 				bitmaps := comp.tokenBitmaps(orgp.CurrToken().Char())
 				if bitmaps == nil {
 					err := &SnbtError{Op: "compact", Err: ErrUnexpected}
+					logger.Println("failed to compact", "func", getFuncName(), "error", err)
 					return err
 				}
 
@@ -363,6 +369,7 @@ func (p *Parser) Compact() error {
 
 				if err := orgp.next(optFn); err != nil && !errors.Is(err, ErrStopIteration) {
 					err = &SnbtError{Op: "compact", Err: err}
+					logger.Println("failed to compact", "func", getFuncName(), "error", err)
 					return err
 				}
 			}

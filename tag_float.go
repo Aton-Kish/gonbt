@@ -37,6 +37,11 @@ func NewFloatTag(tagName *TagName, payload *FloatPayload) *FloatTag {
 		payload: payload,
 	}
 }
+
+func (t FloatTag) String() string {
+	return t.stringify(" ", "", 0)
+}
+
 func (t *FloatTag) TypeId() TagType {
 	return t.Payload().TypeId()
 }
@@ -50,18 +55,25 @@ func (t *FloatTag) Payload() Payload {
 }
 
 func (t *FloatTag) encode(w io.Writer) error {
-	return Encode(w, t)
+	if err := Encode(w, t); err != nil {
+		logger.Println("failed to encode", "func", getFuncName(), "tag", t, "error", err)
+		return err
+	}
+
+	return nil
 }
 
 func (t *FloatTag) decode(r io.Reader) error {
 	tag, err := Decode(r)
 	if err != nil {
+		logger.Println("failed to decode", "func", getFuncName(), "tag", t, "error", err)
 		return err
 	}
 
 	v, ok := tag.(*FloatTag)
 	if !ok {
 		err = &NbtError{Op: "decode", Err: ErrDecode}
+		logger.Println("failed to decode", "func", getFuncName(), "tag", t, "error", err)
 		return err
 	}
 
@@ -75,7 +87,12 @@ func (t *FloatTag) stringify(space string, indent string, depth int) string {
 }
 
 func (t *FloatTag) parse(parser *snbt.Parser) error {
-	return parseTag(t, parser)
+	if err := parseTag(t, parser); err != nil {
+		logger.Println("failed to parse", "func", getFuncName(), "tag", t, "error", err)
+		return err
+	}
+
+	return nil
 }
 
 func (t *FloatTag) json(space string, indent string, depth int) string {

@@ -33,6 +33,10 @@ func NewEndTag() *EndTag {
 	return &EndTag{}
 }
 
+func (t EndTag) String() string {
+	return t.stringify(" ", "", 0)
+}
+
 func (t *EndTag) TypeId() TagType {
 	return TagTypeEnd
 }
@@ -46,18 +50,25 @@ func (t *EndTag) Payload() Payload {
 }
 
 func (t *EndTag) encode(w io.Writer) error {
-	return Encode(w, t)
+	if err := Encode(w, t); err != nil {
+		logger.Println("failed to encode", "func", getFuncName(), "tag", t, "error", err)
+		return err
+	}
+
+	return nil
 }
 
 func (t *EndTag) decode(r io.Reader) error {
 	tag, err := Decode(r)
 	if err != nil {
+		logger.Println("failed to decode", "func", getFuncName(), "tag", t, "error", err)
 		return err
 	}
 
 	v, ok := tag.(*EndTag)
 	if !ok {
 		err = &NbtError{Op: "decode", Err: ErrDecode}
+		logger.Println("failed to decode", "func", getFuncName(), "tag", t, "error", err)
 		return err
 	}
 
@@ -71,7 +82,12 @@ func (t *EndTag) stringify(space string, indent string, depth int) string {
 }
 
 func (t *EndTag) parse(parser *snbt.Parser) error {
-	return parseTag(t, parser)
+	if err := parseTag(t, parser); err != nil {
+		logger.Println("failed to parse", "func", getFuncName(), "tag", t, "error", err)
+		return err
+	}
+
+	return nil
 }
 
 func (t *EndTag) json(space string, indent string, depth int) string {

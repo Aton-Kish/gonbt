@@ -21,6 +21,7 @@
 package nbt
 
 import (
+	"encoding/binary"
 	"fmt"
 	"io"
 	"strconv"
@@ -35,17 +36,29 @@ func NewDoublePayload(value float64) *DoublePayload {
 	return pointer.Pointer(DoublePayload(value))
 }
 
+func (p DoublePayload) String() string {
+	return p.stringify(" ", "", 0)
+}
+
 func (p *DoublePayload) TypeId() TagType {
 	return TagTypeDouble
 }
 
 func (p *DoublePayload) encode(w io.Writer) error {
-	return encodeNumericPayload(w, p)
+	if err := binary.Write(w, binary.BigEndian, p); err != nil {
+		err = &NbtError{Op: "encode", Err: err}
+		logger.Println("failed to encode", "func", getFuncName(), "payload", p, "error", err)
+		return err
+	}
+
+	return nil
 }
 
 func (p *DoublePayload) decode(r io.Reader) error {
-	payload, err := decodeNumericPayload[DoublePayload](r)
-	if err != nil {
+	payload := new(DoublePayload)
+	if err := binary.Read(r, binary.BigEndian, payload); err != nil {
+		err = &NbtError{Op: "decode", Err: err}
+		logger.Println("failed to decode", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 
@@ -62,18 +75,21 @@ func (p *DoublePayload) parse(parser *snbt.Parser) error {
 	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
 	if err != nil {
 		err = &NbtError{Op: "parse", Err: err}
+		logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 
 	g := doublePattern.FindSubmatch(b)
 	if len(g) < 2 {
 		err = &NbtError{Op: "parse", Err: ErrInvalidSnbtFormat}
+		logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 
 	f, err := strconv.ParseFloat(string(g[1]), 64)
 	if err != nil {
 		err = &NbtError{Op: "parse", Err: err}
+		logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 

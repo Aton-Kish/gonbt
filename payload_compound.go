@@ -41,6 +41,10 @@ func NewCompoundPayload(values ...Tag) *CompoundPayload {
 	return pointer.Pointer(CompoundPayload(values))
 }
 
+func (p CompoundPayload) String() string {
+	return p.stringify(" ", "", 0)
+}
+
 func (p *CompoundPayload) TypeId() TagType {
 	return TagTypeCompound
 }
@@ -48,6 +52,7 @@ func (p *CompoundPayload) TypeId() TagType {
 func (p *CompoundPayload) encode(w io.Writer) error {
 	for _, tag := range *p {
 		if err := tag.encode(w); err != nil {
+			logger.Println("failed to encode", "func", getFuncName(), "payload", p, "error", err)
 			return err
 		}
 	}
@@ -59,6 +64,7 @@ func (p *CompoundPayload) decode(r io.Reader) error {
 	for {
 		tag, err := Decode(r)
 		if err != nil {
+			logger.Println("failed to decode", "func", getFuncName(), "payload", p, "error", err)
 			return err
 		}
 
@@ -101,6 +107,7 @@ func (p *CompoundPayload) parse(parser *snbt.Parser) error {
 	for parser.CurrToken().Char() != '}' {
 		if err := parser.Next(); err != nil {
 			err = &NbtError{Op: "parse", Err: err}
+			logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 			return err
 		}
 
@@ -113,10 +120,12 @@ func (p *CompoundPayload) parse(parser *snbt.Parser) error {
 		tag, err := newTagFromSnbt(parser)
 		if err != nil {
 			err = &NbtError{Op: "parse", Err: err}
+			logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 			return err
 		}
 
 		if err := tag.parse(parser); err != nil {
+			logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 			return err
 		}
 
@@ -128,6 +137,7 @@ func (p *CompoundPayload) parse(parser *snbt.Parser) error {
 	// NOTE: ignore stop iteration error
 	if err := parser.Next(); err != nil && !errors.Is(err, snbt.ErrStopIteration) {
 		err = &NbtError{Op: "parse", Err: err}
+		logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 

@@ -41,24 +41,43 @@ func NewIntArrayPayload(values ...int32) *IntArrayPayload {
 	return pointer.Pointer(IntArrayPayload(values))
 }
 
+func (p IntArrayPayload) String() string {
+	return p.stringify(" ", "", 0)
+}
+
 func (p *IntArrayPayload) TypeId() TagType {
 	return TagTypeIntArray
 }
 
 func (p *IntArrayPayload) encode(w io.Writer) error {
-	return encodeArrayPayload(w, p)
+	l := int32(len(*p))
+	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
+		err = &NbtError{Op: "encode", Err: err}
+		logger.Println("failed to encode", "func", getFuncName(), "payload", p, "error", err)
+		return err
+	}
+
+	if err := binary.Write(w, binary.BigEndian, p); err != nil {
+		err = &NbtError{Op: "encode", Err: err}
+		logger.Println("failed to encode", "func", getFuncName(), "payload", p, "error", err)
+		return err
+	}
+
+	return nil
 }
 
 func (p *IntArrayPayload) decode(r io.Reader) error {
 	var l int32
 	if err := binary.Read(r, binary.BigEndian, &l); err != nil {
 		err = &NbtError{Op: "decode", Err: err}
+		logger.Println("failed to decode", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 
 	*p = make(IntArrayPayload, l)
 	if err := binary.Read(r, binary.BigEndian, p); err != nil {
 		err = &NbtError{Op: "decode", Err: err}
+		logger.Println("failed to decode", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 
@@ -77,17 +96,20 @@ func (p *IntArrayPayload) stringify(space string, indent string, depth int) stri
 func (p *IntArrayPayload) parse(parser *snbt.Parser) error {
 	if err := parser.Next(); err != nil {
 		err = &NbtError{Op: "parse", Err: err}
+		logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 
 	if parser.CurrToken().Char() != ';' {
 		err := &NbtError{Op: "parse", Err: ErrInvalidSnbtFormat}
+		logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 
 	for parser.CurrToken().Char() != ']' {
 		if err := parser.Next(); err != nil {
 			err = &NbtError{Op: "parse", Err: err}
+			logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 			return err
 		}
 
@@ -100,12 +122,14 @@ func (p *IntArrayPayload) parse(parser *snbt.Parser) error {
 		b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
 		if err != nil {
 			err = &NbtError{Op: "parse", Err: err}
+			logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 			return err
 		}
 
 		i, err := strconv.ParseInt(string(b), 10, 32)
 		if err != nil {
 			err = &NbtError{Op: "parse", Err: err}
+			logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 			return err
 		}
 
@@ -114,6 +138,7 @@ func (p *IntArrayPayload) parse(parser *snbt.Parser) error {
 
 	if err := parser.Next(); err != nil {
 		err = &NbtError{Op: "parse", Err: err}
+		logger.Println("failed to parse", "func", getFuncName(), "payload", p, "error", err)
 		return err
 	}
 

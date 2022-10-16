@@ -21,7 +21,6 @@
 package nbt
 
 import (
-	"encoding/binary"
 	"io"
 	"regexp"
 
@@ -38,6 +37,7 @@ var (
 )
 
 type Payload interface {
+	String() string
 	TypeId() TagType
 	encode(w io.Writer) error
 	decode(r io.Reader) error
@@ -74,6 +74,7 @@ func NewPayload(typ TagType) (Payload, error) {
 		return new(LongArrayPayload), nil
 	default:
 		err := &NbtError{Op: "new", Err: ErrInvalidTagType}
+		logger.Println("failed to new", "func", getFuncName(), "error", err)
 		return nil, err
 	}
 }
@@ -86,6 +87,7 @@ func newPayloadFromSnbt(parser *snbt.Parser) (Payload, error) {
 		typ, err := parser.Char(parser.CurrToken().Index() + 1)
 		if err != nil {
 			err = &NbtError{Op: "new", Err: err}
+			logger.Println("failed to new", "func", getFuncName(), "error", err)
 			return nil, err
 		}
 
@@ -101,12 +103,14 @@ func newPayloadFromSnbt(parser *snbt.Parser) (Payload, error) {
 		return new(ListPayload), nil
 	case *new(rune), '"', ' ', ':', ';':
 		err := &NbtError{Op: "new", Err: ErrInvalidSnbtFormat}
+		logger.Println("failed to new", "func", getFuncName(), "error", err)
 		return nil, err
 	}
 
 	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
 	if err != nil {
 		err = &NbtError{Op: "new", Err: err}
+		logger.Println("failed to new", "func", getFuncName(), "error", err)
 		return nil, err
 	}
 
@@ -135,50 +139,4 @@ func newPayloadFromSnbt(parser *snbt.Parser) (Payload, error) {
 	}
 
 	return new(StringPayload), nil
-}
-
-type NumericPayload interface {
-	BytePayload | ShortPayload | IntPayload | LongPayload | FloatPayload | DoublePayload
-}
-
-type PrimitivePayload interface {
-	NumericPayload | StringPayload
-}
-
-type ArrayPayload interface {
-	ByteArrayPayload | IntArrayPayload | LongArrayPayload
-}
-
-func encodeNumericPayload[T NumericPayload](w io.Writer, payload *T) error {
-	if err := binary.Write(w, binary.BigEndian, payload); err != nil {
-		err = &NbtError{Op: "encode", Err: err}
-		return err
-	}
-
-	return nil
-}
-
-func encodeArrayPayload[T ArrayPayload](w io.Writer, payload *T) error {
-	l := int32(len(*payload))
-	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
-		err = &NbtError{Op: "encode", Err: err}
-		return err
-	}
-
-	if err := binary.Write(w, binary.BigEndian, payload); err != nil {
-		err = &NbtError{Op: "encode", Err: err}
-		return err
-	}
-
-	return nil
-}
-
-func decodeNumericPayload[T NumericPayload](r io.Reader) (*T, error) {
-	var payload T
-	if err := binary.Read(r, binary.BigEndian, &payload); err != nil {
-		err = &NbtError{Op: "decode", Err: err}
-		return nil, err
-	}
-
-	return &payload, nil
 }

@@ -38,6 +38,10 @@ func NewShortTag(tagName *TagName, payload *ShortPayload) *ShortTag {
 	}
 }
 
+func (t ShortTag) String() string {
+	return t.stringify(" ", "", 0)
+}
+
 func (t *ShortTag) TypeId() TagType {
 	return t.Payload().TypeId()
 }
@@ -51,18 +55,25 @@ func (t *ShortTag) Payload() Payload {
 }
 
 func (t *ShortTag) encode(w io.Writer) error {
-	return Encode(w, t)
+	if err := Encode(w, t); err != nil {
+		logger.Println("failed to encode", "func", getFuncName(), "tag", t, "error", err)
+		return err
+	}
+
+	return nil
 }
 
 func (t *ShortTag) decode(r io.Reader) error {
 	tag, err := Decode(r)
 	if err != nil {
+		logger.Println("failed to decode", "func", getFuncName(), "tag", t, "error", err)
 		return err
 	}
 
 	v, ok := tag.(*ShortTag)
 	if !ok {
 		err = &NbtError{Op: "decode", Err: ErrDecode}
+		logger.Println("failed to decode", "func", getFuncName(), "tag", t, "error", err)
 		return err
 	}
 
@@ -76,7 +87,12 @@ func (t *ShortTag) stringify(space string, indent string, depth int) string {
 }
 
 func (t *ShortTag) parse(parser *snbt.Parser) error {
-	return parseTag(t, parser)
+	if err := parseTag(t, parser); err != nil {
+		logger.Println("failed to parse", "func", getFuncName(), "tag", t, "error", err)
+		return err
+	}
+
+	return nil
 }
 
 func (t *ShortTag) json(space string, indent string, depth int) string {
