@@ -56,6 +56,7 @@ func (t *FloatTag) Payload() Payload {
 
 func (t *FloatTag) encode(w io.Writer) error {
 	if err := Encode(w, t); err != nil {
+		logger.Printf("(*FloatTag).encode; tag: %s; error: %s", t, err)
 		return err
 	}
 
@@ -65,12 +66,14 @@ func (t *FloatTag) encode(w io.Writer) error {
 func (t *FloatTag) decode(r io.Reader) error {
 	tag, err := Decode(r)
 	if err != nil {
+		logger.Printf("(*FloatTag).decode; tag: %s; error: %s", t, err)
 		return err
 	}
 
 	v, ok := tag.(*FloatTag)
 	if !ok {
 		err = &NbtError{Op: "decode", Err: ErrDecode}
+		logger.Printf("(*FloatTag).decode; tag: %s; error: %s", t, err)
 		return err
 	}
 
@@ -85,6 +88,7 @@ func (t *FloatTag) stringify(space string, indent string, depth int) string {
 
 func (t *FloatTag) parse(parser *snbt.Parser) error {
 	if err := parseTag(t, parser); err != nil {
+		logger.Printf("(*FloatTag).parse; tag: %s; error: %s", t, err)
 		return err
 	}
 

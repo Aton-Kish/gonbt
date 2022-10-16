@@ -51,6 +51,7 @@ func (t *EndTag) Payload() Payload {
 
 func (t *EndTag) encode(w io.Writer) error {
 	if err := Encode(w, t); err != nil {
+		logger.Printf("(*EndTag).encode; tag: %s; error: %s", t, err)
 		return err
 	}
 
@@ -60,12 +61,14 @@ func (t *EndTag) encode(w io.Writer) error {
 func (t *EndTag) decode(r io.Reader) error {
 	tag, err := Decode(r)
 	if err != nil {
+		logger.Printf("(*EndTag).decode; tag: %s; error: %s", t, err)
 		return err
 	}
 
 	v, ok := tag.(*EndTag)
 	if !ok {
 		err = &NbtError{Op: "decode", Err: ErrDecode}
+		logger.Printf("(*EndTag).decode; tag: %s; error: %s", t, err)
 		return err
 	}
 
@@ -80,6 +83,7 @@ func (t *EndTag) stringify(space string, indent string, depth int) string {
 
 func (t *EndTag) parse(parser *snbt.Parser) error {
 	if err := parseTag(t, parser); err != nil {
+		logger.Printf("(*EndTag).parse; tag: %s; error: %s", t, err)
 		return err
 	}
 

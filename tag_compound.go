@@ -56,6 +56,7 @@ func (t *CompoundTag) Payload() Payload {
 
 func (t *CompoundTag) encode(w io.Writer) error {
 	if err := Encode(w, t); err != nil {
+		logger.Printf("(*CompoundTag).encode; tag: %s; error: %s", t, err)
 		return err
 	}
 
@@ -65,12 +66,14 @@ func (t *CompoundTag) encode(w io.Writer) error {
 func (t *CompoundTag) decode(r io.Reader) error {
 	tag, err := Decode(r)
 	if err != nil {
+		logger.Printf("(*CompoundTag).decode; tag: %s; error: %s", t, err)
 		return err
 	}
 
 	v, ok := tag.(*CompoundTag)
 	if !ok {
 		err = &NbtError{Op: "decode", Err: ErrDecode}
+		logger.Printf("(*CompoundTag).decode; tag: %s; error: %s", t, err)
 		return err
 	}
 
@@ -85,6 +88,7 @@ func (t *CompoundTag) stringify(space string, indent string, depth int) string {
 
 func (t *CompoundTag) parse(parser *snbt.Parser) error {
 	if err := parseTag(t, parser); err != nil {
+		logger.Printf("(*CompoundTag).parse; tag: %s; error: %s", t, err)
 		return err
 	}
 

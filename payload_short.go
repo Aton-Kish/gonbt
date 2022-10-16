@@ -47,6 +47,7 @@ func (p *ShortPayload) TypeId() TagType {
 func (p *ShortPayload) encode(w io.Writer) error {
 	if err := binary.Write(w, binary.BigEndian, p); err != nil {
 		err = &NbtError{Op: "encode", Err: err}
+		logger.Printf("(*ShortPayload).encode; payload: %s; error: %s", p, err)
 		return err
 	}
 
@@ -57,6 +58,7 @@ func (p *ShortPayload) decode(r io.Reader) error {
 	payload := new(ShortPayload)
 	if err := binary.Read(r, binary.BigEndian, payload); err != nil {
 		err = &NbtError{Op: "decode", Err: err}
+		logger.Printf("(*ShortPayload).decode; payload: %s; error: %s", p, err)
 		return err
 	}
 
@@ -73,18 +75,21 @@ func (p *ShortPayload) parse(parser *snbt.Parser) error {
 	b, err := parser.Slice(parser.PrevToken().Index()+1, parser.CurrToken().Index())
 	if err != nil {
 		err = &NbtError{Op: "parse", Err: err}
+		logger.Printf("(*ShortPayload).parse; payload: %s; error: %s", p, err)
 		return err
 	}
 
 	g := shortPattern.FindSubmatch(b)
 	if len(g) < 2 {
 		err = &NbtError{Op: "parse", Err: ErrInvalidSnbtFormat}
+		logger.Printf("(*ShortPayload).parse; payload: %s; error: %s", p, err)
 		return err
 	}
 
 	i, err := strconv.ParseInt(string(g[1]), 10, 16)
 	if err != nil {
 		err = &NbtError{Op: "parse", Err: err}
+		logger.Printf("(*ShortPayload).parse; payload: %s; error: %s", p, err)
 		return err
 	}
 

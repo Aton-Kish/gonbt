@@ -58,16 +58,19 @@ func (p *ListPayload) encode(w io.Writer) error {
 
 	if err := binary.Write(w, binary.BigEndian, &typ); err != nil {
 		err = &NbtError{Op: "encode", Err: err}
+		logger.Printf("(*ListPayload).encode; payload: %s; error: %s", p, err)
 		return err
 	}
 
 	if err := binary.Write(w, binary.BigEndian, &l); err != nil {
 		err = &NbtError{Op: "encode", Err: err}
+		logger.Printf("(*ListPayload).encode; payload: %s; error: %s", p, err)
 		return err
 	}
 
 	for _, payload := range *p {
 		if err := payload.encode(w); err != nil {
+			logger.Printf("(*ListPayload).encode; payload: %s; error: %s", p, err)
 			return err
 		}
 	}
@@ -79,12 +82,14 @@ func (p *ListPayload) decode(r io.Reader) error {
 	var typ TagType
 	if err := binary.Read(r, binary.BigEndian, &typ); err != nil {
 		err = &NbtError{Op: "decode", Err: err}
+		logger.Printf("(*ListPayload).decode; payload: %s; error: %s", p, err)
 		return err
 	}
 
 	var l int32
 	if err := binary.Read(r, binary.BigEndian, &l); err != nil {
 		err = &NbtError{Op: "decode", Err: err}
+		logger.Printf("(*ListPayload).decode; payload: %s; error: %s", p, err)
 		return err
 	}
 
@@ -93,10 +98,12 @@ func (p *ListPayload) decode(r io.Reader) error {
 		payload, err := NewPayload(typ)
 		if err != nil {
 			err = &NbtError{Op: "decode", Err: err}
+			logger.Printf("(*ListPayload).decode; payload: %s; error: %s", p, err)
 			return err
 		}
 
 		if err := payload.decode(r); err != nil {
+			logger.Printf("(*ListPayload).decode; payload: %s; error: %s", p, err)
 			return err
 		}
 
@@ -129,6 +136,7 @@ func (p *ListPayload) parse(parser *snbt.Parser) error {
 	for parser.CurrToken().Char() != ']' {
 		if err := parser.Next(); err != nil {
 			err = &NbtError{Op: "parse", Err: err}
+			logger.Printf("(*ListPayload).parse; payload: %s; error: %s", p, err)
 			return err
 		}
 
@@ -141,10 +149,12 @@ func (p *ListPayload) parse(parser *snbt.Parser) error {
 		payload, err := newPayloadFromSnbt(parser)
 		if err != nil {
 			err = &NbtError{Op: "parse", Err: err}
+			logger.Printf("(*ListPayload).parse; payload: %s; error: %s", p, err)
 			return err
 		}
 
 		if err := payload.parse(parser); err != nil {
+			logger.Printf("(*ListPayload).parse; payload: %s; error: %s", p, err)
 			return err
 		}
 
@@ -153,6 +163,7 @@ func (p *ListPayload) parse(parser *snbt.Parser) error {
 
 	if err := parser.Next(); err != nil {
 		err = &NbtError{Op: "parse", Err: err}
+		logger.Printf("(*ListPayload).parse; payload: %s; error: %s", p, err)
 		return err
 	}
 

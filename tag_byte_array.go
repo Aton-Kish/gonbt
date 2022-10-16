@@ -56,6 +56,7 @@ func (t *ByteArrayTag) Payload() Payload {
 
 func (t *ByteArrayTag) encode(w io.Writer) error {
 	if err := Encode(w, t); err != nil {
+		logger.Printf("(*ByteArrayTag).encode; tag: %s; error: %s", t, err)
 		return err
 	}
 
@@ -65,12 +66,14 @@ func (t *ByteArrayTag) encode(w io.Writer) error {
 func (t *ByteArrayTag) decode(r io.Reader) error {
 	tag, err := Decode(r)
 	if err != nil {
+		logger.Printf("(*ByteArrayTag).decode; tag: %s; error: %s", t, err)
 		return err
 	}
 
 	v, ok := tag.(*ByteArrayTag)
 	if !ok {
 		err = &NbtError{Op: "decode", Err: ErrDecode}
+		logger.Printf("(*ByteArrayTag).decode; tag: %s; error: %s", t, err)
 		return err
 	}
 
@@ -85,6 +88,7 @@ func (t *ByteArrayTag) stringify(space string, indent string, depth int) string 
 
 func (t *ByteArrayTag) parse(parser *snbt.Parser) error {
 	if err := parseTag(t, parser); err != nil {
+		logger.Printf("(*ByteArrayTag).parse; tag: %s; error: %s", t, err)
 		return err
 	}
 
