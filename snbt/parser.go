@@ -110,7 +110,10 @@ func (p *Parser) tokenBitmaps(token rune) *bitmaps {
 }
 
 func (p *Parser) init(length int) {
-	bl := length/bitmapSize + 1
+	bl := length / bitmapSize
+	if length%bitmapSize > 0 {
+		bl += 1
+	}
 
 	p.raw = make([]byte, length)
 	p.stringMask = make(bitmaps, bl)
