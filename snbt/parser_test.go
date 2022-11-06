@@ -489,6 +489,11 @@ func TestParser_Compact(t *testing.T) {
 }`),
 			expected: NewParser(`{Compound:{ByteArray:[B;0b,1b],Compound:{String:"World"},List:[123b],Short:12345s,String:"Hello"}}`),
 		},
+		{
+			name:     `positive case: divisible by 64`,
+			parser:   NewParser(`{Compound: {ByteArray: [B; 0b, 1b], List: [123b], Short: 1234s}}`),
+			expected: NewParser(`{Compound:{ByteArray:[B;0b,1b],List:[123b],Short:1234s}}`),
+		},
 	}
 
 	for _, tt := range cases {
